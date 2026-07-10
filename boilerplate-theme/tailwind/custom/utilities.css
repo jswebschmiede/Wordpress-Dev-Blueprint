@@ -1,0 +1,72 @@
+/**
+ * Custom styles to immediately follow Tailwind’s `utilities` layer
+ *
+ * Add your own utility classes to this theme. Complex utility classes should
+ * be added using Tailwind’s plugin system:
+ *
+ * https://tailwindcss.com/docs/adding-custom-styles#adding-custom-utilities
+ */
+
+@utility btn {
+	@apply inline-flex items-center justify-center p-0 px-8 py-2.5 rounded-form font-semibold transition no-underline! border-2 text-base lg:text-lg cursor-pointer;
+}
+
+@utility alignfull {
+	@apply max-w-none w-screen -ml-[calc(50vw-50%)] -mr-[calc(50vw-50%)];
+}
+
+@utility reset-alignfull {
+	@apply w-full max-w-full ml-0 mr-0;
+}
+
+@utility btn-primary {
+	@apply bg-primary text-white! border-primary hover:bg-secondary hover:text-white! hover:border-secondary;
+}
+
+@utility btn-secondary {
+	@apply bg-white text-primary! border-primary hover:bg-primary hover:text-white! hover:border-primary;
+}
+
+@utility btn-outline {
+	@apply bg-transparent text-primary! border-primary hover:bg-secondary hover:text-white! hover:border-secondary;
+}
+
+@utility btn-gray {
+	@apply bg-light-gray text-primary! border-light-gray hover:bg-primary hover:text-white! hover:border-primary;
+}
+
+@utility btn-icon {
+	@apply px-3! rounded-full! aspect-square!;
+}
+
+@utility wave-header-svg {
+	clip-path: url(#wave-bottom-clip);
+}
+
+@utility badge {
+	@apply inline-flex w-fit items-center justify-center px-2 py-1 rounded-2xl text-sm bg-primary border-2 border-primary text-white leading-snug;
+}
+
+@utility headline-border {
+	@apply block bg-secondary lg:h-5 xs:h-3.5 h-2.5 w-38.5 lg:w-82 xs:w-64 [clip-path:polygon(0%_0%,97%_0%,100%_100%,0%_100%)];
+}
+
+@utility list-style {
+	@apply list-none relative ps-7 lg:ps-8 before:absolute before:inset-s-0 before:top-0 before:font-fa-classic before:leading-loose before:text-primary before:text-sm lg:before:text-base before:font-black;
+}
+
+@utility list-checkmark {
+	@apply before:content-["\f00c"];
+}
+
+@utility list-checkmark-bullet {
+	@apply before:content-["\f058"];
+}
+
+@utility list-info {
+	@apply before:content-["\f05a"];
+}
+
+@utility list-circle {
+	@apply before:content-["\f111"] before:font-normal;
+}

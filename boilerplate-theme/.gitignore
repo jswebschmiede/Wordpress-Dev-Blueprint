@@ -1,0 +1,24 @@
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Node modules
+node_modules/
+
+# Composer vendor directories
+vendor/
+theme/vendor/
+plugins/*/vendor/
+
+# Generated assets
+theme/js/*.min.js
+theme/js/*.map
+theme/js/blocks-view/
+plugins/*/build/
+tailwind-intellisense.css
+
+# ZIP directory
+zip/

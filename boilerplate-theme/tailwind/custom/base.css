@@ -1,0 +1,39 @@
+/**
+ * Custom styles to immediately follow Tailwind’s `base` layer
+ */
+
+/**
+ * This uses the background and foreground colors declared in the `theme.json`
+ * file and is applied both to the front end and in the block editor.
+ */
+/**
+ * Custom styles to immediately follow Tailwind’s `base` layer
+ */
+
+/**
+ * This uses the background and foreground colors declared in the `theme.json`
+ * file and is applied both to the front end and in the block editor.
+ */
+
+::after,
+::before,
+::backdrop,
+::file-selector-button {
+	@apply border-zinc-200;
+}
+
+html {
+	@apply overflow-x-clip scroll-smooth scrollbar-thin scrollbar-track-slate-200 scrollbar-thumb-secondary scrollbar-thumb-rounded;
+}
+
+body {
+	@apply bg-background overflow-x-clip text-foreground font-sans antialiased min-h-[calc(100vh-var(--wp-admin--admin-bar--height,0px))] flex flex-col mx-auto max-w-site;
+}
+
+a {
+	@apply transition-colors duration-300 ease-in-out underline-offset-4;
+}
+
+body.is-gray-background {
+	@apply bg-light-gray;
+}

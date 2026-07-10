@@ -1,0 +1,61 @@
+---
+alwaysApply: true
+---
+
+# General Rules
+
+## Language & Communication
+
+- Always respond in German
+- Code comments and commit messages always in English
+- Generate commit messages following best practices (Conventional Commits format: `type(scope): subject`)
+- Use clear, precise language in code comments
+
+## Code Quality
+
+- Write clean, maintainable code
+- Follow DRY principles (Don't Repeat Yourself)
+- Consider performance optimizations
+- Use meaningful variable and function names
+- Keep functions and methods short and focused
+- Avoid nested callbacks where possible
+- Use type hints in PHP where possible
+
+## Project Structure
+
+- Theme files are located in `_wp-content-dev/boilerplate-theme/theme/`
+- JavaScript source files in `_wp-content-dev/boilerplate-theme/javascript/`
+- Block definitions in `_wp-content-dev/boilerplate-theme/blocks/`
+- Build outputs:
+    - JavaScript: `_wp-content-dev/boilerplate-theme/theme/js/*.min.js`
+    - CSS: `_wp-content-dev/boilerplate-theme/theme/style.css` and `style-editor.css`
+- PHP classes in `_wp-content-dev/boilerplate-theme/theme/src/`
+- Template parts in `_wp-content-dev/boilerplate-theme/theme/template-parts/`
+
+## Blocks Development
+
+- Blocks are developed in the `_wp-content-dev/boilerplate-theme/blocks/` directory
+- Blocks are developed using `_wp-content-dev/boilerplate-theme/node_scripts/build-blocks.js`
+- Blocks are registered in `_wp-content-dev/boilerplate-theme/theme/src/Blocks/*.php`
+- Blocks are rendered in `_wp-content-dev/boilerplate-theme/theme/template-parts/blocks/*.php`
+- Blocks are styled in `_wp-content-dev/boilerplate-theme/tailwind/custom/components/*.css` with Tailwind CSS
+
+## Boilerplate / Cursor Setup
+
+- Cursor AI configuration template lives in `_wp-content-dev/cursor/`
+- For new projects: run `node node_scripts/rename-theme.js <slug>` from the package root, then copy `cursor/` to the workspace root as `.cursor/`
+- See `_wp-content-dev/README-boilerplates.md` and `_wp-content-dev/boilerplate-theme/README.md` for the full workflow
+
+## Important Notes
+
+- Do not modify build configuration files without consultation
+- Respect the existing project structure
+- Use existing npm scripts for development and production
+- Minified files (`.min.js`) are automatically generated, do not edit manually
+
+## GitHub issue workflow
+
+- Read the related GitHub issue for requirements, acceptance criteria, and discussion before branching; clarify open questions in the issue when needed.
+- Create a dedicated branch from the integration branch (e.g. `main` or `develop`), named with the issue number and a short slug (e.g. `issue-20-theme-inline-handles`).
+- Reference the issue number in commit messages (e.g. Conventional Commits: `fix(theme): correct inline handles (#20)`). Use `Closes #N` or `Fixes #N` in the pull request description or merge commit when the change resolves the issue.
+- Open a pull request that links to the issue; prefer small, logical commits where practical.

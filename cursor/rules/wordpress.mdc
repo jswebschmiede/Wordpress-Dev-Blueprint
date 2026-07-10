@@ -1,0 +1,100 @@
+---
+tags: [wordpress, wp, php]
+description: WordPress-specific rules and best practices
+---
+
+# WordPress-Specific Rules
+
+## WordPress Functions & Hooks
+
+-   Use WordPress functions and hooks correctly
+-   Follow WordPress coding patterns and conventions
+-   Use WordPress action and filter hooks appropriately
+-   Register hooks in appropriate places (e.g., `after_setup_theme`, `init`, `wp_enqueue_scripts`)
+
+## Text Domain
+
+-   Text domain: `boilerplate-theme` for all translation functions
+-   Always use `__()`, `_e()`, `_x()`, `esc_html__()`, `esc_html_e()`, etc. with text domain `boilerplate-theme`
+-   Example: `__( 'Text', 'boilerplate-theme' )`
+
+## Block Editor Integration
+
+-   Use WordPress Block API for custom blocks
+-   Register blocks in `_wp-content-dev/boilerplate-theme/blocks/`
+-   Block JSON files should follow WordPress block.json schema
+-   Use WordPress block editor components and utilities
+-   Support block editor features (alignments, colors, etc.)
+
+## Theme Support Features
+
+-   Register theme support features correctly
+-   Use `add_theme_support()` for WordPress features
+-   Common features: `title-tag`, `post-thumbnails`, `editor-styles`, `html5`, etc.
+-   Remove unsupported features: `remove_theme_support( 'block-templates' )`
+
+## Security Functions
+
+-   Always escape output: `esc_html()`, `esc_attr()`, `esc_url()`, `esc_textarea()`
+-   Always sanitize input: `sanitize_text_field()`, `sanitize_email()`, `sanitize_url()`, etc.
+-   Use nonces for form submissions and AJAX requests
+-   Validate and sanitize user input before database operations
+-   Use prepared statements for database queries
+
+## Example: Secure Function
+
+```php
+/**
+ * Processes form submission securely.
+ *
+ * @param array $data Form data.
+ * @return bool|WP_Error Success or error.
+ */
+function process_form_submission( array $data ) {
+    // Verify nonce
+    if ( ! isset( $data['nonce'] ) || ! wp_verify_nonce( $data['nonce'], 'form_action' ) ) {
+        return new WP_Error( 'invalid_nonce', __( 'Invalid security token.', 'boilerplate-theme' ) );
+    }
+
+    // Sanitize input
+    $name = sanitize_text_field( $data['name'] ?? '' );
+    $email = sanitize_email( $data['email'] ?? '' );
+
+    // Validate
+    if ( empty( $name ) || empty( $email ) ) {
+        return new WP_Error( 'missing_fields', __( 'Required fields are missing.', 'boilerplate-theme' ) );
+    }
+
+    // Process data...
+    return true;
+}
+```
+
+## Example: Escaped Output
+
+```php
+/**
+ * Displays a custom title with escaped output.
+ *
+ * @param string $title Title text.
+ * @return void
+ */
+function display_title( string $title ): void {
+    echo '<h1>' . esc_html( $title ) . '</h1>';
+}
+
+/**
+ * Outputs a link with escaped URL and text.
+ *
+ * @param string $url  Link URL.
+ * @param string $text Link text.
+ * @return void
+ */
+function display_link( string $url, string $text ): void {
+    printf(
+        '<a href="%s">%s</a>',
+        esc_url( $url ),
+        esc_html( $text )
+    );
+}
+```

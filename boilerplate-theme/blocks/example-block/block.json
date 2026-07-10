@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "boilerplate/example-block",
+    "version": "1.0.0",
+    "title": "Example Block",
+    "category": "boilerplate-theme",
+    "icon": "block-default",
+    "description": "Dynamic example block for the boilerplate theme.",
+    "keywords": ["boilerplate", "example", "dynamic"],
+    "textdomain": "boilerplate-theme",
+    "supports": {
+        "html": false,
+        "anchor": true,
+        "className": true
+    },
+    "attributes": {
+        "title": {
+            "type": "string",
+            "default": "Example Block"
+        },
+        "description": {
+            "type": "string",
+            "default": "Use this block as a starting point for new dynamic blocks."
+        },
+        "url": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "editorScript": "boilerplate-theme-blocks-editor"
+}

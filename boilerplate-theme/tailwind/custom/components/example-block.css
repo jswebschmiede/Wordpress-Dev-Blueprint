@@ -1,0 +1,19 @@
+.example-block {
+    @apply my-8 rounded-2xl bg-slate-100 p-6 text-slate-950;
+}
+
+.example-block__inner {
+    @apply mx-auto max-w-3xl;
+}
+
+.example-block__title {
+    @apply mb-3 text-2xl font-semibold;
+}
+
+.example-block__description {
+    @apply mb-4 text-base leading-relaxed;
+}
+
+.example-block__link {
+    @apply inline-flex rounded-full bg-slate-950 px-5 py-2 text-sm font-semibold text-white no-underline;
+}

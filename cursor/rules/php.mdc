@@ -1,0 +1,76 @@
+---
+tags: [php, wordpress]
+description: PHP coding standards for WordPress theme development
+---
+
+# PHP Coding Standards
+
+## General PHP Rules
+
+- Use strict types in PHP: `declare(strict_types=1);` at the beginning of every PHP file
+- Always add PHPDoc comments in English for PHP functions and methods
+- Follow WordPress Coding Standards (WPCS)
+- Namespace: `SmartMedia24\BoilerplateTheme\Theme` for theme classes
+- No comments for simple structures and code
+- Use tabs for indentation (WordPress standard)
+- Array syntax: Use `array()` instead of `[]` for WordPress compatibility
+
+## PHPDoc Standards
+
+Use `@param` and `@return` only on **functions, methods, and closures**—they must match the declared parameters. Do **not** put `@param` on docblocks that sit above `apply_filters()`, `do_action()`, `add_filter()`, or other calls: IDEs report “Unknown parameter” because there is no function signature. For those hooks, describe arguments in prose (and optionally name the hook), or document the **assigned variable** with `@var` when useful.
+
+Always include PHPDoc comments for functions and methods:
+
+```php
+/**
+ * Retrieves a custom post meta value.
+ *
+ * @param int    $post_id Post ID.
+ * @param string $key     Meta key.
+ * @param mixed  $default Default value if meta doesn't exist.
+ * @return mixed Meta value or default.
+ */
+function get_post_meta_value( int $post_id, string $key, $default = '' ) {
+    $value = get_post_meta( $post_id, $key, true );
+    return $value !== '' ? $value : $default;
+}
+```
+
+## Class Example
+
+```php
+<?php
+
+declare( strict_types=1 );
+
+namespace SmartMedia24\BoilerplateTheme\Theme;
+
+/**
+ * Class ThemeSetup.
+ *
+ * Handles basic theme setup and WordPress features
+ */
+class ThemeSetup {
+	/**
+	 * Initialize theme setup.
+	 */
+	public function init(): void {
+		add_action( 'after_setup_theme', array( $this, 'setup_theme' ) );
+	}
+
+	/**
+	 * Sets up theme defaults and registers support for various WordPress features.
+	 *
+	 * @return void
+	 */
+	public function setup_theme(): void {
+		// Implementation
+	}
+}
+```
+
+## WordPress PHP Standards
+
+- Use WordPress functions and hooks correctly
+- Text domain: `boilerplate-theme` for all translation functions
+- Use WordPress security functions (escaping, sanitization, nonces)

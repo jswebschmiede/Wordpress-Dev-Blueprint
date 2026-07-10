@@ -1,0 +1,83 @@
+---
+tags: [javascript, js, es6]
+description: JavaScript coding standards for WordPress theme development
+---
+
+# JavaScript Coding Standards
+
+## General JavaScript Rules
+
+-   Always add JSDoc comments in English for JavaScript functions and methods
+-   Use ES Modules (`import`/`export`)
+-   Follow ESLint and Prettier rules
+-   Use modern JavaScript features (ES2020+)
+-   For block editor files: Globals `wp` is readonly available
+-   For browser files: Browser globals are available
+-   For Node scripts: Node globals are available
+
+## JSDoc Standards
+
+Always include JSDoc comments for functions and methods:
+
+```javascript
+/**
+ * Initializes the block editor functionality.
+ *
+ * @param {string} blockName - The name of the block to initialize.
+ * @returns {void}
+ */
+function initBlockEditor(blockName) {
+    // Implementation
+}
+```
+
+## ES Modules Example
+
+```javascript
+/**
+ * Handles block editor interactions.
+ *
+ * @param {string} blockId - The ID of the block.
+ * @returns {void}
+ */
+export function handleBlockInteraction(blockId) {
+    // Implementation
+}
+
+/**
+ * Utility function for block validation.
+ *
+ * @param {Object} attributes - Block attributes.
+ * @returns {boolean} Whether attributes are valid.
+ */
+export function validateBlockAttributes(attributes) {
+    // Implementation
+    return true;
+}
+```
+
+## WordPress Block Editor Example
+
+```javascript
+/**
+ * Registers a custom block type.
+ *
+ * @param {string} blockName - The name of the block.
+ * @param {Object} settings - Block settings.
+ * @returns {void}
+ */
+function registerCustomBlock(blockName, settings) {
+    if (typeof wp === 'undefined' || !wp.blocks) {
+        return;
+    }
+
+    wp.blocks.registerBlockType(blockName, settings);
+}
+```
+
+## ESLint Configuration
+
+-   Follow the ESLint configuration in `eslint.config.js`
+-   Block editor files have `wp` as readonly global
+-   Browser files have browser globals
+-   Node scripts have Node globals

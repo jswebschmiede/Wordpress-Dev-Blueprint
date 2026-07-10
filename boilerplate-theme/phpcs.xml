@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 name="Boilerplate Theme"
+		 xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd">
+	<description>A set of rules to check the boilerplate WordPress development package</description>
+
+	<arg value="ps" />
+
+	<arg name="parallel"
+		 value="8" />
+
+	<arg name="extensions"
+		 value="php" />
+
+	<file>.</file>
+
+	<exclude-pattern>vendor/*</exclude-pattern>
+	<exclude-pattern>tests/*</exclude-pattern>
+	<exclude-pattern>node_modules/*</exclude-pattern>
+	<exclude-pattern>theme/vendor/*</exclude-pattern>
+	<exclude-pattern>plugins/*/vendor/*</exclude-pattern>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain"
+					  type="array">
+				<element value="boilerplate-theme" />
+				<element value="boilerplate-plugin" />
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress-Core">
+		<exclude name="WordPress.Files.FileName" />
+	</rule>
+
+	<rule ref="Squiz.Commenting.FunctionComment.Missing" />
+</ruleset>
