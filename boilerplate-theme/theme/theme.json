@@ -1,0 +1,116 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"color": {
+			"background": false,
+			"palette": [
+				{
+					"slug": "background",
+					"color": "#ffffff",
+					"name": "Background"
+				},
+				{
+					"slug": "foreground",
+					"color": "#000000",
+					"name": "Foreground"
+				},
+				{
+					"slug": "primary",
+					"color": "#D9000D",
+					"name": "Primary"
+				},
+				{
+					"slug": "secondary",
+					"color": "#9C0008",
+					"name": "Secondary"
+				}
+			]
+		},
+		"blocks": {
+			"core/button": {
+				"border": {
+					"radius": false
+				},
+				"typography": {
+					"fontWeight": false,
+					"fontStyle": false,
+					"textTransform": false,
+					"textDecoration": false,
+					"letterSpacing": false
+				},
+				"color": {
+					"text": false,
+					"background": false
+				}
+			},
+			"core/group": {
+				"color": {
+					"background": true,
+					"text": true
+				},
+				"spacing": {
+					"padding": true
+				}
+			},
+			"core/columns": {
+				"spacing": {
+					"padding": true,
+					"blockGap": false
+				}
+			}
+		},
+		"typography": {
+			"customFontSize": false,
+			"dropCap": false,
+			"lineHeight": false,
+			"letterSpacing": false,
+			"defaultFontSizes": false,
+			"fontWeight": false,
+			"fontStyle": false,
+			"textTransform": true,
+			"textDecoration": false,
+			"fontSizes": []
+		},
+		"shadow": {
+			"defaultPresets": false
+		},
+		"layout": {
+			"contentSize": "60rem",
+			"wideSize": "80rem"
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"customSpacingSizes": true,
+			"defaultSpacingSizes": false,
+			"spacingSizes": [
+				{
+					"name": "Extra Small",
+					"slug": "xs",
+					"size": "clamp(0.5rem, 1vw, 1rem)"
+				},
+				{
+					"name": "Small",
+					"slug": "sm",
+					"size": "clamp(1rem, 2vw, 1.5rem)"
+				},
+				{
+					"name": "Medium",
+					"slug": "md",
+					"size": "clamp(1.5rem, 5vw, 3rem)"
+				},
+				{
+					"name": "Large",
+					"slug": "lg",
+					"size": "clamp(3rem, 10vw, 6rem)"
+				},
+				{
+					"name": "Extra Large",
+					"slug": "xl",
+					"size": "clamp(6rem, 20vw, 12rem)"
+				}
+			]
+		}
+	}
+}

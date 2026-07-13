@@ -24,9 +24,9 @@
  * By default, _tw uses Tailwind Typography's Neutral gray scale. If you are
  * adapting an existing design and you need to set specific colors throughout,
  * you can do so here. In your `./theme/functions.php file, you will need to
- * replace `-neutral` with `-mvg-aktuell`.
+ * replace `-neutral` with `-boilerplate-theme`.
  */
-@utility prose-mvg-aktuell {
+@utility prose-boilerplate-theme {
 	--tw-prose-body: --theme(--color-foreground, initial);
 	--tw-prose-headings: --theme(--color-primary, initial);
 	--tw-prose-lead: --theme(--color-foreground, initial);

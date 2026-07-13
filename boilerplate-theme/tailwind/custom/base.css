@@ -33,7 +33,3 @@ body {
 a {
 	@apply transition-colors duration-300 ease-in-out underline-offset-4;
 }
-
-body.is-gray-background {
-	@apply bg-light-gray;
-}

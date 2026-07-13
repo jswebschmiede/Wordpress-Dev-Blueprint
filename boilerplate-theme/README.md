@@ -138,6 +138,15 @@ Build, lint, and Composer scripts are documented in `package.json`. See [`docs/D
 
 For deployment, run `pnpm run production` to build optimized assets, then `pnpm run zip` or `pnpm run bundle` to create ZIP archives under `zip/`.
 
+## Theme dependencies and scaffolding
+
+The theme includes general infrastructure migrated from a production reference (navigation, Redux options, templates, admin hygiene):
+
+- **Redux Framework** (recommended): powers Theme Options (logo, search page, breadcrumbs, 404 text, social links, custom CSS/JS). Without Redux, options fall back to defaults and an admin notice is shown.
+- **Font Awesome** (recommended): icons in header search, footer social links, and back-to-top button.
+- **Example CPT** (`example_item` + `example_category`): scaffold in `theme/src/PostTypes/ExamplePostType.php` — copy and adapt for project-specific post types.
+- **Breadcrumb CPT mapping**: extend via the `boilerplate_theme_breadcrumb_cpt_page_map` filter.
+
 ## Adding Blocks
 
 1. Copy `blocks/example-block/` to a new block directory.

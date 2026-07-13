@@ -1,0 +1,22 @@
+/* --------------------------------
+
+File#: _1_breadcrumbs
+Title: Breadcrumbs
+Descr: List of links to help the user move within website structure
+Usage: codyhouse.co/license
+
+-------------------------------- */
+
+.breadcrumbs {
+	&::after {
+		@apply content-[''] headline-border lg:mt-13 xs:mt-9 mt-6;
+	}
+}
+
+.breadcrumbs__item {
+	@apply inline-flex items-center min-w-0 shrink-0 pb-1.5;
+}
+
+.breadcrumbs__separator {
+	@apply text-foreground/40 ms-2 me-3 rotate-45 block w-[0.475rem] h-[0.475rem] border-t border-r bg-transparent;
+}

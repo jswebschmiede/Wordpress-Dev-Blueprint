@@ -21,9 +21,6 @@
 	--color-foreground: var(--wp--preset--color--foreground);
 	--color-primary: var(--wp--preset--color--primary);
 	--color-secondary: var(--wp--preset--color--secondary);
-	--color-light-gray: var(--wp--preset--color--light-gray);
-	--color-medium-gray: var(--wp--preset--color--medium-gray);
-	--color-dark-gray: var(--wp--preset--color--dark-gray);
 	--container-content: var(--wp--style--global--content-size);
 	--container-wide: var(--wp--style--global--wide-size);
 

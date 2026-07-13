@@ -5,6 +5,8 @@ declare( strict_types=1 );
 namespace SmartMedia24\BoilerplateTheme\Theme;
 
 use SmartMedia24\BoilerplateTheme\Blocks\BlockManager;
+use SmartMedia24\BoilerplateTheme\PostTypes\ExamplePostType;
+use SmartMedia24\BoilerplateTheme\Utils\SvgSupport;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -55,10 +57,44 @@ class ThemeManager {
 	 */
 	public function init(): void {
 		$this->set_constants();
-		$this->setup_theme_support();
+
+		$theme_setup = new ThemeSetup();
+		$theme_setup->init();
+
+		$comments_disabled = new CommentsDisabled();
+		$comments_disabled->init();
+
+		$posts_admin_hidden = new PostsAdminHidden();
+		$posts_admin_hidden->init();
+
+		$example_post_type = new ExamplePostType();
+		$example_post_type->init();
+
+		$svg_support = new SvgSupport();
+		$svg_support->init();
+
+		$theme_assets = new ThemeAssets();
+		$theme_assets->init();
 
 		$block_manager = new BlockManager();
 		$block_manager->init();
+
+		if ( class_exists( 'Redux' ) ) {
+			$theme_options = new ThemeOptions();
+			$theme_options->init();
+		} else {
+			add_action(
+				'admin_notices',
+				static function (): void {
+					echo '<div class="notice notice-error"><p>'
+						. esc_html__( 'Redux Framework ist nicht installiert. Bitte installieren Sie es, um die Theme-Optionen zu nutzen.', 'boilerplate-theme' )
+						. ' <a href="https://wordpress.org/plugins/redux-framework/" target="_blank" rel="noopener noreferrer">Redux Framework</a></p></div>';
+				},
+			);
+		}
+
+		$theme_login_security = new ThemeLoginSecurity();
+		$theme_login_security->init();
 	}
 
 	/**
@@ -70,17 +106,12 @@ class ThemeManager {
 		if ( ! defined( 'BOILERPLATE_THEME_VERSION' ) ) {
 			define( 'BOILERPLATE_THEME_VERSION', '1.0.0' );
 		}
-	}
 
-	/**
-	 * Registers minimal WordPress theme support features.
-	 *
-	 * @return void
-	 */
-	private function setup_theme_support(): void {
-		add_theme_support( 'title-tag' );
-		add_theme_support( 'post-thumbnails' );
-		add_theme_support( 'editor-styles' );
-		add_editor_style( 'style-editor.css' );
+		if ( ! defined( 'BOILERPLATE_THEME_TYPOGRAPHY_CLASSES' ) ) {
+			define(
+				'BOILERPLATE_THEME_TYPOGRAPHY_CLASSES',
+				'prose md:prose-lg lg:prose-xl lg:leading-7 leading-6 prose-boilerplate-theme max-w-none prose-a:no-underline prose-a:hover:underline prose-ul:leading-relaxed prose-ol:leading-relaxed prose-p:last:mb-0',
+			);
+		}
 	}
 }
