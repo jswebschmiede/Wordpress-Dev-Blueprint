@@ -8,7 +8,7 @@ use SmartMedia24\BoilerplateTheme\Blocks\BlockManager;
 use SmartMedia24\BoilerplateTheme\PostTypes\ExamplePostType;
 use SmartMedia24\BoilerplateTheme\Utils\SvgSupport;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Manages initialization of theme functionality.
@@ -103,12 +103,12 @@ class ThemeManager {
 	 * @return void
 	 */
 	private function set_constants(): void {
-		if ( ! defined( 'BOILERPLATE_THEME_VERSION' ) ) {
-			define( 'BOILERPLATE_THEME_VERSION', '1.0.0' );
+		if ( ! \defined( 'BOILERPLATE_THEME_VERSION' ) ) {
+			\define( 'BOILERPLATE_THEME_VERSION', '1.0.0' );
 		}
 
-		if ( ! defined( 'BOILERPLATE_THEME_TYPOGRAPHY_CLASSES' ) ) {
-			define(
+		if ( ! \defined( 'BOILERPLATE_THEME_TYPOGRAPHY_CLASSES' ) ) {
+			\define(
 				'BOILERPLATE_THEME_TYPOGRAPHY_CLASSES',
 				'prose md:prose-lg lg:prose-xl lg:leading-7 leading-6 prose-boilerplate-theme max-w-none prose-a:no-underline prose-a:hover:underline prose-ul:leading-relaxed prose-ol:leading-relaxed prose-p:last:mb-0',
 			);

@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace SmartMedia24\BoilerplateTheme\PostTypes;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Registers an example custom post type as a scaffold for new projects.

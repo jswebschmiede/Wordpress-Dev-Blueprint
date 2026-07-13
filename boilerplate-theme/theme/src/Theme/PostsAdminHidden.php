@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace SmartMedia24\BoilerplateTheme\Theme;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Removes Posts screens, menu, shortcuts, and post-only taxonomy admin.

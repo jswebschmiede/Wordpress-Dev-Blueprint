@@ -6,7 +6,7 @@ namespace SmartMedia24\BoilerplateTheme\Blocks;
 
 use SmartMedia24\BoilerplateTheme\Blocks\Blocks\ExampleBlock;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Manages registration and rendering of custom Gutenberg blocks.
@@ -117,7 +117,7 @@ class BlockManager {
 				'wp-i18n',
 				'wp-block-editor',
 			),
-			defined( 'BOILERPLATE_THEME_VERSION' ) ? BOILERPLATE_THEME_VERSION : (string) filemtime( $asset_file ),
+			\defined( 'BOILERPLATE_THEME_VERSION' ) ? BOILERPLATE_THEME_VERSION : (string) filemtime( $asset_file ),
 			true
 		);
 	}

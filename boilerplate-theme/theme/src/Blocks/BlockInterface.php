@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace SmartMedia24\BoilerplateTheme\Blocks;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Defines the contract for custom Gutenberg blocks.

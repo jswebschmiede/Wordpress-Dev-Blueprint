@@ -10,7 +10,7 @@ declare( strict_types=1 );
  * @package BoilerplateTheme
  */
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 $title       = isset( $attributes['title'] ) && is_scalar( $attributes['title'] ) ? (string) $attributes['title'] : '';
 $description = isset( $attributes['description'] ) && is_scalar( $attributes['description'] ) ? (string) $attributes['description'] : '';

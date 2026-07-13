@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace SmartMedia24\BoilerplateTheme\Theme;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Handles basic theme setup and WordPress features.

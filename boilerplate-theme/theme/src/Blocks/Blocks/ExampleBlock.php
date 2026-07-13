@@ -6,7 +6,7 @@ namespace SmartMedia24\BoilerplateTheme\Blocks\Blocks;
 
 use SmartMedia24\BoilerplateTheme\Blocks\BlockInterface;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Handles rendering for the example block.
