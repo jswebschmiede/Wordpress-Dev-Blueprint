@@ -22,15 +22,11 @@ $hide_header_nav = (bool) apply_filters( 'boilerplate_theme_strip_header_footer_
 			<?php boilerplate_theme_render_site_branding(); ?>
 
 			<?php if ( ! $hide_header_nav ) : ?>
-				<div class="f-header__extra-links-wrapper lg:hidden flex">
-					<?php get_template_part( 'template-parts/layout/header-extra-links' ); ?>
-
-					<button
-						class="anim-menu-btn js-anim-menu-btn f-header__nav-control js-tab-focus text-primary"
-						aria-label="<?php esc_attr_e( 'Menü umschalten', 'boilerplate-theme' ); ?>">
-						<i class="anim-menu-btn__icon anim-menu-btn__icon--close" aria-hidden="true"></i>
-					</button>
-				</div>
+				<button
+					class="anim-menu-btn js-anim-menu-btn f-header__nav-control js-tab-focus text-primary lg:hidden"
+					aria-label="<?php esc_attr_e( 'Menü umschalten', 'boilerplate-theme' ); ?>">
+					<i class="anim-menu-btn__icon anim-menu-btn__icon--close" aria-hidden="true"></i>
+				</button>
 			<?php endif; ?>
 		</div>
 
@@ -57,12 +53,6 @@ $hide_header_nav = (bool) apply_filters( 'boilerplate_theme_strip_header_footer_
 						);
 						?>
 					</nav>
-				<?php endif; ?>
-
-				<?php if ( ! $hide_header_nav ) : ?>
-					<div class="f-header__right-wrapper hidden lg:flex ml-12 xl:ml-28 -mt-1.5">
-						<?php get_template_part( 'template-parts/layout/header-extra-links' ); ?>
-					</div>
 				<?php endif; ?>
 
 				<div class="f-header__social-media-wrapper lg:hidden block w-full">
