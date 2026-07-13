@@ -6,8 +6,8 @@
  * @package BoilerplateTheme
  */
 
-use SmartMedia24\BoilerplateTheme\Theme\Breadcrumb;
-use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\Breadcrumb;
+use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 if ( ! function_exists( 'boilerplate_theme_breadcrumb' ) ) :
 	/**

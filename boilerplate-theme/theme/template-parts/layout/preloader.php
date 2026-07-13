@@ -5,7 +5,7 @@
  * @package BoilerplateTheme
  */
 
-use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 $preloader_style = ThemeOptions::get_option( 'preloader_style', 'v1' );
 $preloader_label = esc_html__( 'Seite wird geladen...', 'boilerplate-theme' );

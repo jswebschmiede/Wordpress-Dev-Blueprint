@@ -5,7 +5,7 @@
  * @package BoilerplateTheme
  */
 
-use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 $hide_footer_nav = (bool) apply_filters( 'boilerplate_theme_strip_header_footer_links', false );
 

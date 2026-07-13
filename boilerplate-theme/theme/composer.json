@@ -1,5 +1,5 @@
 {
-    "name": "smartmedia24/boilerplate-theme",
+    "name": "companyname/boilerplate-theme",
     "description": "Reusable WordPress theme boilerplate",
     "type": "wordpress-theme",
     "license": "GPL-2.0-or-later",
@@ -11,7 +11,7 @@
 	},
     "autoload": {
         "psr-4": {
-            "SmartMedia24\\BoilerplateTheme\\": "src/"
+            "CompanyName\\BoilerplateTheme\\": "src/"
         }
     },
     "config": {

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 /**
  * Functions which enhance the theme by hooking into WordPress

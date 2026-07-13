@@ -121,17 +121,20 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 ### 3.5 `node_scripts/rename-theme.js`
 
-**Usage:** `node node_scripts/rename-theme.js <slug> [--dry-run]`
+**Usage:** `node node_scripts/rename-theme.js <slug> --company <company> [--dry-run]`
 
 **What it does:** Replaces boilerplate placeholders in this package and in `_wp-content-dev/cursor/`.
 
 **Replacements:**
 
-| Placeholder | Example for `sw-soltau` |
-| ----------- | ----------------------- |
+| Placeholder | Example for `sw-soltau` + `--company SmartMedia24` |
+| ----------- | -------------------------------------------------- |
 | `boilerplate-theme` | `sw-soltau` |
 | `boilerplate_theme` | `sw_soltau` |
-| `BoilerplateTheme` | `Swsoltau` (becomes `SmartMedia24\Swsoltau` in code) |
+| `CompanyName` | `SmartMedia24` |
+| `companyname` | `smartmedia24` |
+| `https://companyname.example` | `https://smartmedia24.example` |
+| `BoilerplateTheme` | `Swsoltau` (full namespace: `SmartMedia24\Swsoltau`) |
 | `Boilerplate Theme` | `Sw Soltau` |
 | `BOILERPLATE_THEME_` | `SWSOLTAU_` |
 | `boilerplate/example-block` | `sw-soltau/example-block` |
@@ -139,6 +142,8 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 **Edge cases:**
 
 - Slug must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
+- Company must be kebab-case (e.g. `smart-media-24`) or PascalCase (e.g. `SmartMedia24`).
+- `--company` is required.
 - Only file contents are updated; folders are not renamed.
 - Scans `.php`, `.json`, `.js`, `.css`, `.md`, and `.mdc` files.
 

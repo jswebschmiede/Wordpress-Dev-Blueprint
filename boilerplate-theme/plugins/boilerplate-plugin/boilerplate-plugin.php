@@ -3,8 +3,8 @@
  * Plugin Name: Boilerplate Plugin
  * Description: Reusable WordPress plugin boilerplate with Composer autoloading, assets, settings, shortcode, and AJAX examples.
  * Version: 1.0.0
- * Author: smartmedia24
- * Author URI: https://smartmedia24.de
+ * Author: companyname
+ * Author URI: https://companyname.example
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: boilerplate-plugin
@@ -18,7 +18,7 @@ declare( strict_types=1 );
 define( 'BOILERPLATE_PLUGIN_FILE', __FILE__ );
 define( 'BOILERPLATE_PLUGIN_VERSION', '1.0.0' );
 
-use SmartMedia24\BoilerplatePlugin\BoilerplatePlugin;
+use CompanyName\BoilerplatePlugin\BoilerplatePlugin;
 
 $boilerplate_plugin_autoload = plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 

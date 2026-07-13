@@ -2,9 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplateTheme\Blocks;
+namespace CompanyName\BoilerplateTheme\Blocks;
 
-use SmartMedia24\BoilerplateTheme\Blocks\Blocks\ExampleBlock;
+use CompanyName\BoilerplateTheme\Blocks\Blocks\ExampleBlock;
 
 \defined( 'ABSPATH' ) || exit;
 

@@ -10,7 +10,7 @@ description: PHP coding standards for WordPress theme development
 - Use strict types in PHP: `declare(strict_types=1);` at the beginning of every PHP file
 - Always add PHPDoc comments in English for PHP functions and methods
 - Follow WordPress Coding Standards (WPCS)
-- Namespace: `SmartMedia24\BoilerplateTheme\Theme` for theme classes
+- Namespace: `CompanyName\BoilerplateTheme\Theme` for theme classes
 - No comments for simple structures and code
 - Use tabs for indentation (WordPress standard)
 - Array syntax: Use `array()` instead of `[]` for WordPress compatibility
@@ -43,7 +43,7 @@ function get_post_meta_value( int $post_id, string $key, $default = '' ) {
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplateTheme\Theme;
+namespace CompanyName\BoilerplateTheme\Theme;
 
 /**
  * Class ThemeSetup.

@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-use SmartMedia24\BoilerplateTheme\Theme\ThemeManager;
+use CompanyName\BoilerplateTheme\Theme\ThemeManager;
 
 \defined( 'ABSPATH' ) || exit;
 

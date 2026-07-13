@@ -2,9 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplatePlugin\Shortcodes;
+namespace CompanyName\BoilerplatePlugin\Shortcodes;
 
-use SmartMedia24\BoilerplatePlugin\Assets\Assets;
+use CompanyName\BoilerplatePlugin\Assets\Assets;
 
 \defined( 'ABSPATH' ) || exit;
 

@@ -2,12 +2,12 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplatePlugin;
+namespace CompanyName\BoilerplatePlugin;
 
-use SmartMedia24\BoilerplatePlugin\Ajax\AjaxHandler;
-use SmartMedia24\BoilerplatePlugin\Assets\Assets;
-use SmartMedia24\BoilerplatePlugin\Backend\PluginOptions;
-use SmartMedia24\BoilerplatePlugin\Shortcodes\Shortcode;
+use CompanyName\BoilerplatePlugin\Ajax\AjaxHandler;
+use CompanyName\BoilerplatePlugin\Assets\Assets;
+use CompanyName\BoilerplatePlugin\Backend\PluginOptions;
+use CompanyName\BoilerplatePlugin\Shortcodes\Shortcode;
 
 \defined( 'ABSPATH' ) || exit;
 

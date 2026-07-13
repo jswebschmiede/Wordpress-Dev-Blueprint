@@ -7,7 +7,7 @@
  * @package BoilerplateTheme
  */
 
-use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 get_header();
 

@@ -2,9 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplateTheme\Blocks\Blocks;
+namespace CompanyName\BoilerplateTheme\Blocks\Blocks;
 
-use SmartMedia24\BoilerplateTheme\Blocks\BlockInterface;
+use CompanyName\BoilerplateTheme\Blocks\BlockInterface;
 
 \defined( 'ABSPATH' ) || exit;
 

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplatePlugin\Backend;
+namespace CompanyName\BoilerplatePlugin\Backend;
 
 \defined( 'ABSPATH' ) || exit;
 

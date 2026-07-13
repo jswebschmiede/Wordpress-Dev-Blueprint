@@ -56,15 +56,17 @@ The root directory is the development package. The deployable WordPress theme li
 Use the rename script from this directory:
 
 ```bash
-node node_scripts/rename-theme.js sw-soltau --dry-run
-node node_scripts/rename-theme.js sw-soltau
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 ```
 
-For `sw-soltau`, the script derives:
+For `sw-soltau` with `--company SmartMedia24`, the script derives:
 
 - Text domain, asset handle prefix, and paths: `sw-soltau`
 - Hook/function prefix: `sw_soltau`
-- PHP namespace: `Swsoltau`
+- Company namespace: `SmartMedia24`
+- Composer vendor / author slug: `smartmedia24`
+- PHP namespace segment: `Swsoltau` (full namespace: `SmartMedia24\Swsoltau`)
 - Theme name: `Sw Soltau`
 - Constant prefix: `SWSOLTAU_`
 - Block namespace: `sw-soltau/example-block`
@@ -73,7 +75,7 @@ The script replaces placeholders in this package and in `_wp-content-dev/cursor/
 
 ### Recommended order for a new project
 
-1. Run `rename-theme.js` with your slug
+1. Run `rename-theme.js` with your slug and company name
 2. Link or copy theme and plugin into WordPress
 3. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`
 
@@ -83,7 +85,10 @@ If you rename manually, replace:
 
 - `boilerplate-theme` -> your theme slug and text domain.
 - `boilerplate_theme` -> your hook/function prefix.
-- `SmartMedia24\\BoilerplateTheme\\` -> your PSR-4 namespace root (company prefix optional).
+- `CompanyName` -> your company namespace prefix (PascalCase, e.g. `SmartMedia24`).
+- `companyname` -> your Composer vendor and author slug (lowercase, e.g. `smartmedia24`).
+- `https://companyname.example` -> your company URL placeholder (update the domain after rename).
+- `CompanyName\\BoilerplateTheme\\` -> your full PSR-4 namespace root.
 - `BoilerplateTheme` -> your PHP namespace segment (replaced by `rename-theme.js`).
 - `Boilerplate Theme` -> your display name.
 - `BOILERPLATE_THEME_` -> your constant prefix.

@@ -11,7 +11,7 @@
 
 declare( strict_types=1 );
 
-use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 if ( have_posts() ) {
 	the_post();

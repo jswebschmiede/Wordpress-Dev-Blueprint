@@ -1,5 +1,5 @@
 {
-    "name": "smartmedia24/boilerplate-plugin",
+    "name": "companyname/boilerplate-plugin",
     "description": "Reusable WordPress plugin boilerplate",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
@@ -11,7 +11,7 @@
 	},
     "autoload": {
         "psr-4": {
-            "SmartMedia24\\BoilerplatePlugin\\": "includes/"
+            "CompanyName\\BoilerplatePlugin\\": "includes/"
         }
     },
     "scripts": {
@@ -22,8 +22,8 @@
     },
     "authors": [
         {
-            "name": "smartmedia24",
-            "homepage": "https://smartmedia24.de"
+            "name": "companyname",
+            "homepage": "https://companyname.example"
         }
     ]
 }

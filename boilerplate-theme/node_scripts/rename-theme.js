@@ -12,6 +12,8 @@ const cursorDir = join(rootDir, '..', 'cursor');
 const args = process.argv.slice(2);
 const slug = args.find((arg) => !arg.startsWith('--'));
 const isDryRun = args.includes('--dry-run');
+const companyFlagIndex = args.indexOf('--company');
+const company = companyFlagIndex !== -1 ? args[companyFlagIndex + 1] : undefined;
 
 const allowedExtensions = new Set(['.php', '.json', '.js', '.css', '.md', '.mdc']);
 const skippedDirectories = new Set(['vendor', 'node_modules', '.git']);
@@ -67,6 +69,8 @@ function slugToConstantPrefix(value) {
     return `${value.replaceAll('-', '').toUpperCase()}_`;
 }
 
+const usageMessage = 'Usage: node node_scripts/rename-theme.js <slug> --company <company> [--dry-run]';
+
 /**
  * Validates the requested slug.
  *
@@ -75,7 +79,7 @@ function slugToConstantPrefix(value) {
  */
 function validateSlug(value) {
     if (!value) {
-        console.error('Usage: node node_scripts/rename-theme.js <slug> [--dry-run]');
+        console.error(usageMessage);
         process.exit(1);
     }
 
@@ -86,20 +90,72 @@ function validateSlug(value) {
 }
 
 /**
+ * Validates the requested company name.
+ *
+ * @param {string | undefined} value - Requested company name.
+ * @returns {void}
+ */
+function validateCompany(value) {
+    if (!value || value.startsWith('--')) {
+        console.error('Missing required --company flag.');
+        console.error(usageMessage);
+        process.exit(1);
+    }
+
+    const isKebabCase = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+    const isPascalCase = /^[A-Z][A-Za-z0-9]*$/.test(value);
+
+    if (!isKebabCase && !isPascalCase) {
+        console.error('Company must be kebab-case (e.g. smart-media-24) or PascalCase (e.g. SmartMedia24).');
+        process.exit(1);
+    }
+}
+
+/**
+ * Converts a company name to a PascalCase PHP namespace segment.
+ *
+ * @param {string} value - Company name.
+ * @returns {string} PHP namespace segment.
+ */
+function companyToNamespace(value) {
+    if (value.includes('-')) {
+        return slugToNamespace(value);
+    }
+
+    return value;
+}
+
+/**
+ * Converts a company name to a lowercase Composer vendor slug.
+ *
+ * @param {string} value - Company name.
+ * @returns {string} Lowercase vendor slug without hyphens.
+ */
+function companyToVendorSlug(value) {
+    return companyToNamespace(value).toLowerCase();
+}
+
+/**
  * Gets project-specific replacement values.
  *
- * @param {string} value - Theme slug.
+ * @param {string} slugValue - Theme slug.
+ * @param {string} companyValue - Company name.
  * @returns {Record<string, string>} Replacement map.
  */
-function getReplacements(value) {
-    const namespace = slugToNamespace(value);
-    const title = slugToTitle(value);
-    const constantPrefix = slugToConstantPrefix(value);
+function getReplacements(slugValue, companyValue) {
+    const namespace = slugToNamespace(slugValue);
+    const title = slugToTitle(slugValue);
+    const constantPrefix = slugToConstantPrefix(slugValue);
+    const companyNamespace = companyToNamespace(companyValue);
+    const companyVendor = companyToVendorSlug(companyValue);
 
     return {
-        'boilerplate-theme': value,
-        'boilerplate_theme': value.replaceAll('-', '_'),
-        'boilerplate/example-block': `${value}/example-block`,
+        'https://companyname.example': `https://${companyVendor}.example`,
+        'boilerplate-theme': slugValue,
+        'boilerplate_theme': slugValue.replaceAll('-', '_'),
+        'boilerplate/example-block': `${slugValue}/example-block`,
+        CompanyName: companyNamespace,
+        companyname: companyVendor,
         BoilerplateTheme: namespace,
         'Boilerplate Theme': title,
         BOILERPLATE_THEME_: constantPrefix,
@@ -184,13 +240,16 @@ function applyReplacements(content, replacements) {
 }
 
 validateSlug(slug);
+validateCompany(company);
 
-const replacements = getReplacements(slug);
+const replacements = getReplacements(slug, company);
 const files = [...new Set([...collectTextFiles(rootDir), ...collectTextFiles(cursorDir)])];
 const changedFiles = [];
 
 console.log('Theme rename values:');
 console.log(`Slug/Text Domain: ${slug}`);
+console.log(`Company Namespace: ${replacements.CompanyName}`);
+console.log(`Composer Vendor: ${replacements.companyname}`);
 console.log(`PHP Namespace: ${replacements.BoilerplateTheme}`);
 console.log(`Theme Name: ${replacements['Boilerplate Theme']}`);
 console.log(`Constant Prefix: ${replacements.BOILERPLATE_THEME_}`);

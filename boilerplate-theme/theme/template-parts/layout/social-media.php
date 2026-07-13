@@ -5,7 +5,7 @@
  * @package BoilerplateTheme
  */
 
-use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 $linkedin  = esc_url( ThemeOptions::get_option( 'linkedin', '' ) );
 $facebook  = esc_url( ThemeOptions::get_option( 'facebook', '' ) );

@@ -2,11 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplateTheme\Theme;
+namespace CompanyName\BoilerplateTheme\Theme;
 
-use SmartMedia24\BoilerplateTheme\Blocks\BlockManager;
-use SmartMedia24\BoilerplateTheme\PostTypes\ExamplePostType;
-use SmartMedia24\BoilerplateTheme\Utils\SvgSupport;
+use CompanyName\BoilerplateTheme\Blocks\BlockManager;
+use CompanyName\BoilerplateTheme\PostTypes\ExamplePostType;
+use CompanyName\BoilerplateTheme\Utils\SvgSupport;
 
 \defined( 'ABSPATH' ) || exit;
 

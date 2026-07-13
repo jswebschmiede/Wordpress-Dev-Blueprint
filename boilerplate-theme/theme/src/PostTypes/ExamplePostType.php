@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplateTheme\PostTypes;
+namespace CompanyName\BoilerplateTheme\PostTypes;
 
 \defined( 'ABSPATH' ) || exit;
 

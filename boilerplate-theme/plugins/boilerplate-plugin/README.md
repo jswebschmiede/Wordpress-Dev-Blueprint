@@ -29,7 +29,10 @@ Replace these values when starting a new plugin:
 - `boilerplate-plugin` -> your plugin slug and text domain.
 - `boilerplate_plugin` -> your shortcode/action prefix.
 - `BOILERPLATE_PLUGIN_` -> your constant prefix.
-- `SmartMedia24\\BoilerplatePlugin\\` -> your PSR-4 namespace.
+- `CompanyName` -> your company namespace prefix (PascalCase).
+- `companyname` -> your Composer vendor and author slug.
+- `https://companyname.example` -> your company URL placeholder.
+- `CompanyName\\BoilerplatePlugin\\` -> your PSR-4 namespace.
 - `BoilerplatePlugin` -> your main plugin class name.
 
 ## Local Usage

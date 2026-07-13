@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace SmartMedia24\BoilerplatePlugin\Ajax;
+namespace CompanyName\BoilerplatePlugin\Ajax;
 
 \defined( 'ABSPATH' ) || exit;
 

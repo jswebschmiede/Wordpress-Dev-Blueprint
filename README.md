@@ -17,19 +17,22 @@ From the package directory:
 
 ```bash
 cd _wp-content-dev/boilerplate-theme
-node node_scripts/rename-theme.js sw-soltau --dry-run
-node node_scripts/rename-theme.js sw-soltau
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 ```
 
 1. Choose a slug (lowercase letters, numbers, and hyphens only, e.g. `sw-soltau`).
-2. Run with `--dry-run` first to review affected files (includes `_wp-content-dev/cursor/` rules and skills).
-3. Run without `--dry-run` to apply replacements.
+2. Choose a company name (kebab-case or PascalCase, e.g. `SmartMedia24`).
+3. Run with `--dry-run` first to review affected files (includes `_wp-content-dev/cursor/` rules and skills).
+4. Run without `--dry-run` to apply replacements.
 
-For `sw-soltau`, the script derives:
+For `sw-soltau` with `--company SmartMedia24`, the script derives:
 
 - Text domain, asset handle prefix, and paths: `sw-soltau`
 - Hook/function prefix: `sw_soltau`
-- PHP namespace: `Swsoltau`
+- Company namespace: `SmartMedia24`
+- Composer vendor / author slug: `smartmedia24`
+- PHP namespace segment: `Swsoltau` (full namespace: `SmartMedia24\Swsoltau`)
 - Theme name: `Sw Soltau`
 - Constant prefix: `SWSOLTAU_`
 - Block namespace: `sw-soltau/example-block`
