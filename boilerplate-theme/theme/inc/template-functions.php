@@ -18,7 +18,7 @@ use SmartMedia24\BoilerplateTheme\Theme\ThemeOptions;
  * @return string Rendered HTML, or empty string when the paragraph is empty.
  */
 function boilerplate_theme_remove_empty_paragraphs( string $block_content, array $block ): string {
-	if ( 'core/paragraph' === $block['blockName'] && trim( strip_tags( $block_content ) ) === '' ) {
+	if ( 'core/paragraph' === $block['blockName'] && trim( wp_strip_all_tags( $block_content ) ) === '' ) {
 		return '';
 	}
 	return $block_content;
@@ -86,20 +86,35 @@ function boilerplate_theme_get_search_page_url(): string {
 }
 
 /**
+ * Registers public query vars used by theme templates.
+ *
+ * @param array<int, string> $query_vars Existing public query vars.
+ * @return array<int, string> Updated query vars.
+ */
+function boilerplate_theme_register_query_vars( array $query_vars ): array {
+	$query_vars[] = 'search_term';
+
+	return $query_vars;
+}
+add_filter( 'query_vars', 'boilerplate_theme_register_query_vars' );
+
+/**
  * Gets the current custom search term from the request.
  *
  * @return string Sanitized search term.
  */
 function boilerplate_theme_get_current_search_term(): string {
-	if ( isset( $_GET['search_term'] ) ) {
-		return sanitize_text_field( wp_unslash( (string) $_GET['search_term'] ) );
+	$search_term = get_query_var( 'search_term' );
+	if ( is_string( $search_term ) && '' !== $search_term ) {
+		return sanitize_text_field( $search_term );
 	}
 
-	if ( ! isset( $_GET['s'] ) ) {
-		return '';
+	$search_query = get_search_query( false );
+	if ( is_string( $search_query ) && '' !== $search_query ) {
+		return sanitize_text_field( $search_query );
 	}
 
-	return sanitize_text_field( wp_unslash( (string) $_GET['s'] ) );
+	return '';
 }
 
 /**

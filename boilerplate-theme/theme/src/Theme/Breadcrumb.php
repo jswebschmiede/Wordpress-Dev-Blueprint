@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace SmartMedia24\BoilerplateTheme\Theme;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Generates accessible breadcrumb navigation.
@@ -102,7 +102,7 @@ class Breadcrumb {
 		if ( $is_last ) {
 			echo '<li class="breadcrumbs__item" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
 			printf( '<span itemprop="name">%s</span>', esc_html( $crumb['label'] ) );
-			printf( '<meta itemprop="position" content="%d">', $position );
+			printf( '<meta itemprop="position" content="%s">', esc_attr( (string) $position ) );
 			echo '</li>';
 			return;
 		}
@@ -119,7 +119,7 @@ class Breadcrumb {
 			printf( '<span itemprop="name">%s</span>', esc_html( $crumb['label'] ) );
 		}
 
-		printf( '<meta itemprop="position" content="%d">', $position );
+		printf( '<meta itemprop="position" content="%s">', esc_attr( (string) $position ) );
 
 		echo '<span class="breadcrumbs__separator" aria-hidden="true"></span>';
 

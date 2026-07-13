@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace SmartMedia24\BoilerplateTheme\Theme;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Blocks lost-password flows when the Redux option is enabled.
@@ -63,9 +63,10 @@ class ThemeLoginSecurity {
 	 * @return void
 	 */
 	public function block_password_reset_actions(): void {
-		$action  = isset( $_REQUEST['action'] ) ? (string) $_REQUEST['action'] : 'login';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only login routing.
+		$action  = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( (string) $_REQUEST['action'] ) ) : 'login';
 		$blocked = array( 'lostpassword', 'retrievepassword', 'resetpass', 'rp' );
-		if ( ! in_array( $action, $blocked, true ) ) {
+		if ( ! \in_array( $action, $blocked, true ) ) {
 			return;
 		}
 
