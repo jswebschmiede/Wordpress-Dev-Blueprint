@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace SmartMedia24\BoilerplatePlugin\Assets;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Registers and enqueues plugin assets.
@@ -128,7 +128,7 @@ class Assets {
 	 * @return string Plugin root path with trailing slash.
 	 */
 	private function get_plugin_dir_path(): string {
-		if ( defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
+		if ( \defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
 			return plugin_dir_path( BOILERPLATE_PLUGIN_FILE );
 		}
 
@@ -141,7 +141,7 @@ class Assets {
 	 * @return string Plugin root URL with trailing slash.
 	 */
 	private function get_plugin_dir_url(): string {
-		if ( defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
+		if ( \defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
 			return plugin_dir_url( BOILERPLATE_PLUGIN_FILE );
 		}
 

@@ -13,7 +13,7 @@
 
 declare( strict_types=1 );
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 define( 'BOILERPLATE_PLUGIN_FILE', __FILE__ );
 define( 'BOILERPLATE_PLUGIN_VERSION', '1.0.0' );

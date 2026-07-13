@@ -9,7 +9,7 @@ use SmartMedia24\BoilerplatePlugin\Assets\Assets;
 use SmartMedia24\BoilerplatePlugin\Backend\PluginOptions;
 use SmartMedia24\BoilerplatePlugin\Shortcodes\Shortcode;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Main plugin bootstrap.
@@ -57,7 +57,7 @@ class BoilerplatePlugin {
 	 * @return void
 	 */
 	public function run(): void {
-		if ( defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
+		if ( \defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
 			load_plugin_textdomain(
 				'boilerplate-plugin',
 				false,

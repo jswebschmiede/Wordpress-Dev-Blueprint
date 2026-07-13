@@ -10,7 +10,7 @@ declare( strict_types=1 );
  * @package BoilerplatePlugin
  */
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 $title = isset( $atts['title'] ) && is_scalar( $atts['title'] ) ? (string) $atts['title'] : '';
 ?>

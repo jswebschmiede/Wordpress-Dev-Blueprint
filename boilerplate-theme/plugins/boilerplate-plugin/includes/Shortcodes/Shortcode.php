@@ -6,7 +6,7 @@ namespace SmartMedia24\BoilerplatePlugin\Shortcodes;
 
 use SmartMedia24\BoilerplatePlugin\Assets\Assets;
 
-defined( 'ABSPATH' ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Registers the example shortcode.
@@ -54,7 +54,7 @@ class Shortcode {
 	 * @return string Absolute template path.
 	 */
 	private function get_template_path(): string {
-		if ( defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
+		if ( \defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
 			return plugin_dir_path( BOILERPLATE_PLUGIN_FILE ) . 'views/shortcode-view.php';
 		}
 
