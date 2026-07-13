@@ -31,10 +31,6 @@
 	@apply bg-transparent text-primary! border-primary hover:bg-secondary hover:text-white! hover:border-secondary;
 }
 
-@utility btn-gray {
-	@apply bg-light-gray text-primary! border-light-gray hover:bg-primary hover:text-white! hover:border-primary;
-}
-
 @utility btn-icon {
 	@apply px-3! rounded-full! aspect-square!;
 }
