@@ -4,11 +4,26 @@ This directory contains reusable WordPress development boilerplates. Use `boiler
 
 ## WordPress development environment
 
-The boilerplates live inside a preconfigured local WordPress installation. Clone the blueprint repository into your local web root (for example a [Local](https://localwp.com/) site `app/public/` directory), then detach it from the upstream Git history so you can start your own project repository.
+This repository **is** the development tree that lives beside WordPress as `_wp-content-dev/` in your site’s web root. It does **not** include WordPress core — set up a local site first (for example with [Local](https://localwp.com/)), then clone this repository into that site’s `app/public/` directory.
+
+```text
+app/public/                         WordPress web root
+├── wp-admin/
+├── wp-content/
+├── wp-config.php
+└── _wp-content-dev/                clone target (this repository)
+    ├── boilerplate-theme/
+    ├── cursor/
+    ├── ps/
+    └── README.md
+```
+
+Clone into your existing WordPress web root. The folder name `_wp-content-dev` is the convention used throughout this documentation; you may choose another name, but then adjust the paths in the examples accordingly.
 
 ```bash
-git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git my-wordpress-project
-cd my-wordpress-project
+cd /path/to/your-site/app/public
+git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git _wp-content-dev
+cd _wp-content-dev
 rm -rf .git
 git init
 ```
@@ -16,19 +31,20 @@ git init
 On Windows (PowerShell):
 
 ```powershell
-git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git my-wordpress-project
-cd my-wordpress-project
+cd C:\path\to\your-site\app\public
+git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git _wp-content-dev
+cd _wp-content-dev
 Remove-Item -Recurse -Force .git
 git init
 ```
 
 After cloning:
 
-1. Point your local site (Local, DDEV, Laragon, etc.) at the project folder.
-2. Import or create a WordPress database and configure `wp-config.php` if needed.
-3. Continue with the [recommended project setup order](#recommended-project-setup-order) below.
+1. Continue with the [recommended project setup order](#recommended-project-setup-order) below.
+2. Link or copy theme and plugin from `_wp-content-dev/boilerplate-theme/` into `wp-content/` (see [Local WordPress usage](#local-wordpress-usage)).
+3. Optionally copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`.
 
-The blueprint includes WordPress core, a `_wp-content-dev/` development tree, and optional helper scripts under `_wp-content-dev/ps/` for Windows symlinks.
+Helper scripts for Windows symlinks live in `ps/`.
 
 ## Package
 
@@ -43,7 +59,7 @@ Full development workflow (daily commands, builds, release): [`boilerplate-theme
 
 ## Recommended project setup order
 
-1. Clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) and remove `.git` (see above).
+1. Set up a local WordPress site and clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) into its web root as `_wp-content-dev` (see [WordPress development environment](#wordpress-development-environment)).
 2. Install Node and PHP dependencies in `boilerplate-theme/` (see [`boilerplate-theme/README.md`](boilerplate-theme/README.md#prerequisites)).
 3. Rename placeholders with `rename-theme.js` (and `rename-plugin.js` if you use the boilerplate plugin).
 4. Build development assets (`pnpm run development` or `pnpm run watch`).

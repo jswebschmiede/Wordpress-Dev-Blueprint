@@ -4,11 +4,18 @@ Reusable WordPress theme and plugin development boilerplate with Gutenberg block
 
 ## Development environment
 
-This package is meant to live inside a local WordPress site created from [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git). Clone that repository into your web root, remove the upstream Git history, and initialize your own repository:
+This package lives at `_wp-content-dev/boilerplate-theme/` inside your local WordPress site. The [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) repository **is** the `_wp-content-dev/` folder — clone it into your site’s web root, not as a nested subfolder:
+
+```text
+app/public/
+└── _wp-content-dev/              ← clone target (Wordpress-Dev-Blueprint)
+    └── boilerplate-theme/        ← this package (you are here)
+```
 
 ```bash
-git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git my-wordpress-project
-cd my-wordpress-project
+cd /path/to/your-site/app/public
+git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git _wp-content-dev
+cd _wp-content-dev
 rm -rf .git
 git init
 ```
@@ -16,13 +23,16 @@ git init
 On Windows (PowerShell):
 
 ```powershell
-git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git my-wordpress-project
-cd my-wordpress-project
+cd C:\path\to\your-site\app\public
+git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git _wp-content-dev
+cd _wp-content-dev
 Remove-Item -Recurse -Force .git
 git init
 ```
 
-The development package is located at `_wp-content-dev/boilerplate-theme/` inside the cloned site. See also [`../README.md`](../README.md) for the full boilerplate overview and Windows helper scripts.
+Remove `.git` and run `git init` only when starting a new project from the blueprint. If you keep the upstream history, skip that step.
+
+See [`../README.md`](../README.md#wordpress-development-environment) for the full setup overview and Windows helper scripts.
 
 ## Structure
 
@@ -84,7 +94,7 @@ For architecture diagrams and Node script internals, see [`docs/DEVELOPMENT.md`]
 
 ## Recommended project setup order
 
-1. Clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) and remove `.git` (see above).
+1. Set up a local WordPress site and clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) into its web root as `_wp-content-dev` (see [Development environment](#development-environment)).
 2. Install prerequisites and dependencies (see below).
 3. Run `rename-theme.js` with your slug and company name.
 4. Run `rename-plugin.js <plugin-slug>` if you use the boilerplate plugin.
