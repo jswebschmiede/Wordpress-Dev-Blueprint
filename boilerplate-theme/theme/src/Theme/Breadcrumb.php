@@ -13,26 +13,19 @@ namespace CompanyName\BoilerplateTheme\Theme;
  */
 class Breadcrumb {
 	/**
-	 * Whether to show the breadcrumb on the home page.
-	 *
-	 * @var bool
-	 */
-	private bool $show_on_home;
-
-	/**
-	 * Whether to show the current post/page title as the last crumb.
-	 *
-	 * @var bool
-	 */
-	private bool $show_current;
-
-	/**
 	 * @param bool $show_on_home Whether to render breadcrumbs on the front page.
 	 * @param bool $show_current Whether to include the current page title as the last crumb.
 	 */
-	public function __construct( bool $show_on_home = false, bool $show_current = true ) {
-		$this->show_on_home = $show_on_home;
-		$this->show_current = $show_current;
+	public function __construct(
+		/**
+		 * Whether to show the breadcrumb on the home page.
+		 */
+		private readonly bool $show_on_home = false,
+		/**
+		 * Whether to show the current post/page title as the last crumb.
+		 */
+		private readonly bool $show_current = true
+	) {
 	}
 
 	/**
@@ -341,7 +334,7 @@ class Breadcrumb {
 				} else {
 					$crumbs[] = array(
 						'label' => $cpt_label,
-						'url'   => $archive_url ? $archive_url : null,
+						'url'   => $archive_url ?: null,
 					);
 				}
 			}

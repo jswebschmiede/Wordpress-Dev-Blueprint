@@ -159,7 +159,7 @@ if ( ! function_exists( 'boilerplate_theme_content_class' ) ) :
 		}
 
 		$combined_classes = array_merge( $all_classes[0], $all_classes[1] );
-		$combined_classes = array_map( 'esc_attr', $combined_classes );
+		$combined_classes = array_map( esc_attr( ... ), $combined_classes );
 
 		echo 'class="' . esc_attr( implode( ' ', $combined_classes ) ) . '"';
 	}

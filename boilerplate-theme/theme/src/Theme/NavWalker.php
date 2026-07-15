@@ -54,22 +54,22 @@ class NavWalker extends \Walker_Nav_Menu {
 	public function start_el( &$output, $item, $depth = 0, $args = null, $id = 0 ): void {
 		$indent = $depth ? str_repeat( "\t", $depth ) : '';
 
-		if ( 0 === strcasecmp( $item->attr_title, 'divider' ) && 1 === $depth ) {
+		if ( 0 === strcasecmp( (string) $item->attr_title, 'divider' ) && 1 === $depth ) {
 			$output .= $indent . '<li role="presentation" class="divider">';
 			return;
 		}
 
-		if ( 0 === strcasecmp( $item->title, 'divider' ) && 1 === $depth ) {
+		if ( 0 === strcasecmp( (string) $item->title, 'divider' ) && 1 === $depth ) {
 			$output .= $indent . '<li role="presentation" class="divider">';
 			return;
 		}
 
-		if ( 0 === strcasecmp( $item->attr_title, 'dropdown-header' ) && 1 === $depth ) {
+		if ( 0 === strcasecmp( (string) $item->attr_title, 'dropdown-header' ) && 1 === $depth ) {
 			$output .= $indent . '<li role="presentation" class="dropdown-header">' . esc_html( $item->title );
 			return;
 		}
 
-		if ( 0 === strcasecmp( $item->attr_title, 'disabled' ) ) {
+		if ( 0 === strcasecmp( (string) $item->attr_title, 'disabled' ) ) {
 			$output .= $indent . '<li role="presentation" class="disabled"><a href="#">' . esc_html( $item->title ) . '</a>';
 			return;
 		}

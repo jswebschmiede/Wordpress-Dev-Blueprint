@@ -22,14 +22,14 @@ class ThemeOptions {
 	 *
 	 * @var string
 	 */
-	private string $text_domain;
+	private readonly string $text_domain;
 
 	/**
 	 * Current theme object.
 	 *
 	 * @var \WP_Theme
 	 */
-	private \WP_Theme $theme;
+	private readonly \WP_Theme $theme;
 
 	/**
 	 * Redux arguments.

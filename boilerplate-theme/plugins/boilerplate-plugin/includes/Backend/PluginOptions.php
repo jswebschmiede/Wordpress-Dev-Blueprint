@@ -10,8 +10,8 @@ namespace CompanyName\BoilerplatePlugin\Backend;
  * Registers a small Settings API example page.
  */
 class PluginOptions {
-	private const OPTION_NAME = 'boilerplate_plugin_options';
-	private const PAGE_SLUG   = 'boilerplate-plugin';
+	private const string OPTION_NAME = 'boilerplate_plugin_options';
+	private const string PAGE_SLUG   = 'boilerplate-plugin';
 
 	/**
 	 * Initializes admin settings hooks.

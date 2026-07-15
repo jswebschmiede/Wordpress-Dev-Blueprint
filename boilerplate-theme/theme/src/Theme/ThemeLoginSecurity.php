@@ -20,12 +20,12 @@ class ThemeLoginSecurity {
 	/**
 	 * Query argument indicating the user was redirected from a blocked password-reset flow.
 	 */
-	private const PWRESET_QUERY_ARG = 'pwreset';
+	private const string PWRESET_QUERY_ARG = 'pwreset';
 
 	/**
 	 * Query value paired with self::PWRESET_QUERY_ARG.
 	 */
-	private const PWRESET_QUERY_VALUE = 'disabled';
+	private const string PWRESET_QUERY_VALUE = 'disabled';
 
 	/**
 	 * Registers login security hooks when the option is enabled.

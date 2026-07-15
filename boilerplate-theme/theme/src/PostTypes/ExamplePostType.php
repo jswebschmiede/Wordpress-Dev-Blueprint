@@ -13,12 +13,12 @@ class ExamplePostType {
 	/**
 	 * Post type slug.
 	 */
-	private const POST_TYPE = 'example_item';
+	private const string POST_TYPE = 'example_item';
 
 	/**
 	 * Taxonomy slug.
 	 */
-	private const TAXONOMY = 'example_category';
+	private const string TAXONOMY = 'example_category';
 
 	/**
 	 * Initializes post type hooks.

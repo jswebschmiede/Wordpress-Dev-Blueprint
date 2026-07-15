@@ -127,7 +127,7 @@ function boilerplate_theme_get_current_search_term(): string {
 function boilerplate_theme_highlight_search_term( string $text, string $search_term ): string {
 	$keywords = preg_split( '/\s+/u', trim( $search_term ) );
 	$keywords = array_filter(
-		array_map( 'trim', is_array( $keywords ) ? $keywords : array() ),
+		array_map( trim( ... ), is_array( $keywords ) ? $keywords : array() ),
 		static fn( string $keyword ): bool => '' !== $keyword
 	);
 

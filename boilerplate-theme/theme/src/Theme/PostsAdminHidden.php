@@ -37,8 +37,8 @@ class PostsAdminHidden {
 
 		return array_values(
 			array_filter(
-				array_map( 'strval', $fallback ),
-				'post_type_exists'
+				array_map( strval( ... ), $fallback ),
+				post_type_exists( ... )
 			)
 		);
 	}
