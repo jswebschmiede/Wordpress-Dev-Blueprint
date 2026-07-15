@@ -20,7 +20,7 @@ define( 'BOILERPLATE_PLUGIN_VERSION', '1.0.0' );
 
 use CompanyName\BoilerplatePlugin\BoilerplatePlugin;
 
-$boilerplate_plugin_autoload = plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+$boilerplate_plugin_autoload = plugin_dir_path( __FILE__ ) . 'vendor-prefixed/autoload.php';
 
 if ( ! file_exists( $boilerplate_plugin_autoload ) ) {
 	add_action(
@@ -31,7 +31,7 @@ if ( ! file_exists( $boilerplate_plugin_autoload ) ) {
 			}
 
 			echo '<div class="notice notice-error"><p><strong>Boilerplate Plugin:</strong> ';
-			echo esc_html__( 'Run composer install in the plugin directory.', 'boilerplate-plugin' );
+			echo esc_html__( 'Run composer install in the plugin directory to generate vendor-prefixed dependencies.', 'boilerplate-plugin' );
 			echo '</p></div>';
 		}
 	);

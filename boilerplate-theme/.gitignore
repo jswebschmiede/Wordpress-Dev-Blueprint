@@ -13,6 +13,11 @@ vendor/
 theme/vendor/
 plugins/*/vendor/
 
+# Strauss
+bin/strauss.phar
+theme/vendor-prefixed/
+plugins/*/vendor-prefixed/
+
 # Generated assets
 theme/js/*.min.js
 theme/js/*.map

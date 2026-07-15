@@ -24,6 +24,8 @@ return RectorConfig::configure()
 			__DIR__ . '/vendor',
 			__DIR__ . '/theme/vendor',
 			__DIR__ . '/plugins/boilerplate-plugin/vendor',
+			__DIR__ . '/theme/vendor-prefixed',
+			__DIR__ . '/plugins/boilerplate-plugin/vendor-prefixed',
 			__DIR__ . '/node_modules',
 			__DIR__ . '/tests',
 			LongArrayToShortArrayRector::class,

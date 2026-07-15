@@ -146,8 +146,31 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 - `--company` is required.
 - Only file contents are updated; folders are not renamed.
 - Scans `.php`, `.json`, `.js`, `.css`, `.md`, and `.mdc` files.
+- Skips `vendor/`, `vendor-prefixed/`, `build/`, and `zip/` (important after Strauss: never rewrite prefixed dependencies).
 
-### 3.6 `node_scripts/clean-js-sourcemaps.js`
+### 3.6 `node_scripts/rename-plugin.js`
+
+**Usage:** `node node_scripts/rename-plugin.js <slug> [--old-slug boilerplate-plugin] [--dry-run]`
+
+**What it does:** Replaces plugin-specific placeholders, renames `plugins/<old-slug>/` to `plugins/<slug>/`, renames the bootstrap PHP file and main plugin class file.
+
+Run **`rename-theme.js` first** (company + theme), then **`rename-plugin.js`** (plugin slug/namespace).
+
+**Replacements:**
+
+| Placeholder | Example for `mvg-aktuell` |
+| ----------- | ------------------------- |
+| `boilerplate-plugin` | `mvg-aktuell` |
+| `boilerplate_plugin` | `mvg_aktuell` |
+| `BoilerplatePlugin` | `MvgAktuell` |
+| `Boilerplate Plugin` | `Mvg Aktuell` |
+| `BOILERPLATE_PLUGIN_` | `MVGAKTUELL_` |
+
+Also updates root references in `package.json`, `composer.json`, `phpcs.xml`, `rector.php`, and docs.
+
+After renaming, run `composer install --working-dir=plugins/<slug>` to regenerate Strauss `vendor-prefixed/`.
+
+### 3.7 `node_scripts/clean-js-sourcemaps.js`
 
 **Usage:** `node node_scripts/clean-js-sourcemaps.js [<plugin-name>]`
 
@@ -284,6 +307,39 @@ pnpm run composer:install:dev
 pnpm run composer-dev   # alias
 ```
 
+### 5.8 Composer dependencies and Strauss (theme + plugins)
+
+Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins can ship isolated dependencies without autoloader conflicts.
+
+- Strauss PHAR: `bin/strauss.phar` (downloaded automatically on first run, gitignored)
+- Prefixed output: `vendor-prefixed/` (gitignored, generated on `composer install`)
+- Bootstrap loads `vendor-prefixed/autoload.php` (includes project PSR-4 via `include_root_autoload`)
+- `require-dev` packages (e.g. `symfony/var-dumper`) are **not** prefixed
+
+```bash
+# Install all Composer roots (root PHPCS tools, theme, plugins)
+pnpm run composer:install:dev
+
+# Plugin only
+composer install --working-dir=plugins/boilerplate-plugin
+
+# Preview prefixing without writing files
+composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
+
+# Run Strauss manually after config changes
+composer prefix-namespaces --working-dir=plugins/boilerplate-plugin
+```
+
+**Adding a runtime dependency (plugin example):**
+
+1. Add the package to `"require"` in `plugins/boilerplate-plugin/composer.json`
+2. List it in `"extra"."strauss"."packages"` (or leave empty to prefix all `require` entries)
+3. Run `composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin`
+4. Run `composer update --working-dir=plugins/boilerplate-plugin`
+5. Use normal `use Vendor\Class` imports in plugin code; Strauss rewrites call sites on install
+
+The plugin includes a **Strauss demo** on Settings → Boilerplate Plugin (`ramsey/uuid`).
+
 ## 6. Best practices
 
 - Run **`development:copy-blocks`** after any `block.json` change so `theme/blocks/` stays in sync before testing in WordPress.
@@ -291,7 +347,7 @@ pnpm run composer-dev   # alias
 - Use **`apiVersion`: 3** for new blocks (iframe editor compatibility).
 - For dynamic blocks, implement PHP `render` and keep `save` minimal (`null` or inner blocks content only).
 - Align **`editorScript`** with the theme's registered handle (`boilerplate-theme-blocks-editor`); avoid raw file paths in `block.json` where the theme expects a handle.
-- Run **`rename-theme.js`** before copying `_wp-content-dev/cursor/` to `.cursor/` when starting a new project.
+- Run **`rename-theme.js`** then **`rename-plugin.js`** before copying `_wp-content-dev/cursor/` to `.cursor/` when starting a new project.
 
 ## 7. Common pitfalls
 

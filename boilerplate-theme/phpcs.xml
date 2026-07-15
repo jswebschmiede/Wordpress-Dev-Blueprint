@@ -27,6 +27,8 @@
 	<exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>theme/vendor/*</exclude-pattern>
 	<exclude-pattern>plugins/*/vendor/*</exclude-pattern>
+	<exclude-pattern>theme/vendor-prefixed/*</exclude-pattern>
+	<exclude-pattern>plugins/*/vendor-prefixed/*</exclude-pattern>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>

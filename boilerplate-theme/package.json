@@ -53,7 +53,8 @@
         "zip:plugins": "run-s --npm-path pnpm \"zip:plugin:*\"",
         "zip": "run-s --npm-path pnpm zip:theme zip:plugins",
         "bundle": "run-s --npm-path pnpm production zip",
-        "rename:theme": "node node_scripts/rename-theme.js"
+        "rename:theme": "node node_scripts/rename-theme.js",
+        "rename:plugin": "node node_scripts/rename-plugin.js"
     },
     "devDependencies": {
         "@_tw/typography": "^0.5.21",

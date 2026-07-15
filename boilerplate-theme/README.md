@@ -31,6 +31,7 @@ _wp-content-dev/
     │   ├── clean-js-sourcemaps.js
     │   ├── copy-blocks.js
     │   ├── rename-theme.js
+    │   ├── rename-plugin.js
     │   └── zip.js
     ├── javascript/
     │   ├── blocks.js
@@ -76,8 +77,9 @@ The script replaces placeholders in this package and in `_wp-content-dev/cursor/
 ### Recommended order for a new project
 
 1. Run `rename-theme.js` with your slug and company name
-2. Link or copy theme and plugin into WordPress
-3. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`
+2. Run `rename-plugin.js <plugin-slug>` if you use the boilerplate plugin
+3. Link or copy theme and plugin into WordPress
+4. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`
 
 ## Manual Rename Checklist
 

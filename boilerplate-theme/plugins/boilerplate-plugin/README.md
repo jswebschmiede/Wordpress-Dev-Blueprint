@@ -23,7 +23,7 @@ boilerplate-plugin/
 
 ## Rename Checklist
 
-Replace these values when starting a new plugin:
+Replace these values when starting a new plugin (or run `node node_scripts/rename-plugin.js <slug> --dry-run` from the package root):
 
 - `Boilerplate Plugin` -> your plugin display name.
 - `boilerplate-plugin` -> your plugin slug and text domain.
@@ -44,6 +44,18 @@ Install Composer dependencies in the plugin directory before activating the plug
 ```bash
 composer install --working-dir=plugins/boilerplate-plugin
 ```
+
+This runs [Strauss](https://github.com/BrianHenryIE/strauss) automatically and generates `vendor-prefixed/` with prefixed runtime dependencies. WordPress loads `vendor-prefixed/autoload.php` at runtime.
+
+Preview prefixing without changes:
+
+```bash
+composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
+```
+
+## Strauss demo
+
+Settings → Boilerplate Plugin shows a read-only **Strauss test (UUID)** field. It uses `ramsey/uuid` loaded from `vendor-prefixed/` to verify prefixed autoloading works.
 
 Build scripts are defined in the development package root `package.json`, matching the reference structure:
 

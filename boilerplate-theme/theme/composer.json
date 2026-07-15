@@ -6,12 +6,40 @@
     "require": {
         "php": ">=8.3"
     },
-	"require-dev": {
-		"symfony/var-dumper": "^7.0"
-	},
+    "require-dev": {
+        "symfony/var-dumper": "^7.0"
+    },
     "autoload": {
         "psr-4": {
             "CompanyName\\BoilerplateTheme\\": "src/"
+        }
+    },
+    "scripts": {
+        "prefix-namespaces": [
+            "sh -c 'test -f ../bin/strauss.phar || curl -o ../bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'",
+            "@php ../bin/strauss.phar",
+            "@composer dump-autoload"
+        ],
+        "prefix-namespaces:dry-run": [
+            "sh -c 'test -f ../bin/strauss.phar || curl -o ../bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'",
+            "@php ../bin/strauss.phar --dry-run"
+        ],
+        "post-install-cmd": [
+            "@prefix-namespaces"
+        ],
+        "post-update-cmd": [
+            "@prefix-namespaces"
+        ]
+    },
+    "extra": {
+        "strauss": {
+            "target_directory": "vendor-prefixed",
+            "namespace_prefix": "CompanyName\\BoilerplateTheme\\",
+            "classmap_prefix": "CompanyName_BoilerplateTheme_",
+            "packages": [],
+            "update_call_sites": true,
+            "include_root_autoload": true,
+            "delete_vendor_packages": true
         }
     },
     "config": {

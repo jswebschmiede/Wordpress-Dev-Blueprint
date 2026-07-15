@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace CompanyName\BoilerplatePlugin\Backend;
 
+use CompanyName\BoilerplatePlugin\Support\StraussDemo;
+
 \defined( 'ABSPATH' ) || exit;
 
 /**
@@ -70,6 +72,14 @@ class PluginOptions {
 			self::PAGE_SLUG,
 			'boilerplate_plugin_general'
 		);
+
+		add_settings_field(
+			'strauss_demo',
+			__( 'Strauss test (UUID)', 'boilerplate-plugin' ),
+			array( $this, 'render_strauss_demo_field' ),
+			self::PAGE_SLUG,
+			'boilerplate_plugin_general'
+		);
 	}
 
 	/**
@@ -106,6 +116,26 @@ class PluginOptions {
 			value="<?php echo esc_attr( $options['example_text'] ); ?>"
 			class="regular-text"
 		/>
+		<?php
+	}
+
+	/**
+	 * Renders the Strauss demo read-only field.
+	 *
+	 * @return void
+	 */
+	public function render_strauss_demo_field(): void {
+		$sample_uuid = ( new StraussDemo() )->get_sample_uuid();
+		?>
+		<input
+			type="text"
+			value="<?php echo esc_attr( $sample_uuid ); ?>"
+			class="regular-text"
+			readonly
+		/>
+		<p class="description">
+			<?php esc_html_e( 'Random UUID via prefixed ramsey/uuid (Strauss).', 'boilerplate-plugin' ); ?>
+		</p>
 		<?php
 	}
 

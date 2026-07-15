@@ -11,8 +11,10 @@ use CompanyName\BoilerplateTheme\Theme\ThemeManager;
 
 \defined( 'ABSPATH' ) || exit;
 
-if ( file_exists( get_template_directory() . '/vendor/autoload.php' ) ) {
-	require_once get_template_directory() . '/vendor/autoload.php';
+$boilerplate_theme_autoload = get_template_directory() . '/vendor-prefixed/autoload.php';
+
+if ( file_exists( $boilerplate_theme_autoload ) ) {
+	require_once $boilerplate_theme_autoload;
 }
 
 if ( class_exists( ThemeManager::class ) ) {
