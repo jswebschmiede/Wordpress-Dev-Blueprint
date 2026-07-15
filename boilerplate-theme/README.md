@@ -56,21 +56,15 @@ _wp-content-dev/
 
 The root directory is the development package. The deployable WordPress theme lives in `theme/`; plugin boilerplates live in `plugins/`. The Cursor AI template lives in `_wp-content-dev/cursor/`.
 
-**Key ideas:**
-
-- **Dual-path blocks:** Block metadata is synced into `theme/blocks/` for WordPress; editor code is bundled separately; optional **view** bundles load only when the block is present on the page.
-- **Global `@wordpress/*` in bundles:** Editor and plugin builds resolve npm imports to `window.wp.*` instead of duplicating packages.
-- **Boilerplate placeholders:** Use `rename-theme.js` and `rename-plugin.js` before starting a real project.
-
-For architecture diagrams and Node script internals, see [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
+For architecture, build pipeline details, and Node script behaviour, see [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 ## Recommended project setup order
 
 1. Set up a local WordPress site and clone the blueprint into its web root as `_wp-content-dev` (see [`../README.md`](../README.md#wordpress-development-environment)).
-2. Rename this folder to your slug, install dependencies, then run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)).
+2. Rename this folder to your slug, run `pnpm install` and `pnpm run composer:install:dev`, then run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)).
 3. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-4. Link or copy theme and plugin into WordPress.
-5. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`.
+4. Link or copy theme and plugin into WordPress (see [Local usage](#local-usage)).
+5. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/` (see [Cursor AI configuration](#cursor-ai-configuration)).
 
 ## Prerequisites
 
@@ -224,18 +218,9 @@ node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 
 On Windows (PowerShell), replace `mv boilerplate-theme sw-soltau` with `Rename-Item boilerplate-theme sw-soltau`.
 
-For `sw-soltau` with `--company SmartMedia24`, the script derives:
+For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 
-- Text domain, asset handle prefix, and paths: `sw-soltau`
-- Hook/function prefix: `sw_soltau`
-- Company namespace: `SmartMedia24`
-- Composer vendor / author slug: `smartmedia24`
-- PHP namespace segment: `Swsoltau` (full namespace: `SmartMedia24\Swsoltau`)
-- Theme name: `Sw Soltau`
-- Constant prefix: `SWSOLTAU_`
-- Block namespace: `sw-soltau/example-block`
-
-The script replaces placeholders in this package and in `_wp-content-dev/cursor/` (rules and skills, `.md` and `.mdc`). It only replaces file contents and does not rename folders.
+The script replaces placeholders in this package and in `_wp-content-dev/cursor/` (rules and skills). It only replaces file contents and does not rename folders.
 
 ### Rename plugin
 

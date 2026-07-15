@@ -44,7 +44,7 @@ alwaysApply: true
 
 - Cursor AI configuration template lives in `_wp-content-dev/cursor/`
 - For new projects: run `node node_scripts/rename-theme.js <slug>` from the package root, then copy `cursor/` to the workspace root as `.cursor/`
-- See `_wp-content-dev/README-boilerplates.md` and `_wp-content-dev/boilerplate-theme/README.md` for the full workflow
+- See `_wp-content-dev/README.md` and `_wp-content-dev/boilerplate-theme/README.md` for the full workflow
 
 ## Important Notes
 

@@ -1,8 +1,9 @@
 # Boilerplate Theme — development guide
 
-This document describes how the asset pipeline and block system fit together, how the Node scripts behave, and what to watch for when extending the project.
+Technical reference for the asset pipeline, block system, and Node scripts.
 
-For project setup, development workflow, and WordPress linking, see [`../README.md`](../README.md) and [`../../README.md`](../../README.md).
+**Workflow commands** (daily development, production, linting, rename, WordPress linking): see [`../README.md`](../README.md).  
+**Environment setup and clone instructions:** see [`../../README.md`](../../README.md).
 
 ## 1. Overview
 
@@ -12,7 +13,7 @@ For project setup, development workflow, and WordPress linking, see [`../README.
 
 - **Dual-path blocks:** Authoritative block _metadata_ is synced into `theme/blocks/` for WordPress; editor code is bundled separately; optional **view** bundles load only when the block is present on the page.
 - **Global `@wordpress/*` in bundles:** Editor and plugin builds use `esbuild-plugin-external-global` so npm imports resolve to `window.wp.*` (and `window.jQuery` where configured) instead of duplicating packages.
-- **Boilerplate placeholders:** Use `rename-theme.js` to replace `boilerplate-theme`, `BoilerplateTheme`, and related tokens before starting a real project.
+- **Boilerplate placeholders:** Use `rename-theme.js` and `rename-plugin.js` before starting a real project (workflow in [`../README.md`](../README.md#rename-theme-placeholders)).
 
 ## 2. Architecture (high level)
 
@@ -180,7 +181,7 @@ After renaming, run `composer install --working-dir=plugins/<slug>` to regenerat
 
 **When to run:** Automatically invoked by `pnpm run production` after asset and Composer production installs.
 
-### 3.7 `node_scripts/zip.js`
+### 3.8 `node_scripts/zip.js`
 
 **Usage:** `node node_scripts/zip.js <theme|plugin> <slug>`
 
@@ -202,133 +203,16 @@ node node_scripts/zip.js plugin boilerplate-plugin
 - `_TW_ENV=production` enables production-oriented CSS processing via npm scripts.
 - Component-level styling for blocks lives under `tailwind/custom/components/` using `@apply`.
 
-## 5. npm scripts
+Build commands: [`../README.md` §Development workflow](../README.md#development-workflow).
 
-Individual tasks are defined in `package.json`. Common examples:
+## 5. Composer, Strauss, and runtime dependencies
 
-### 5.1 CSS
-
-```bash
-pnpm run development:tailwind:frontend
-pnpm run development:tailwind:editor
-pnpm run production:tailwind:frontend
-```
-
-### 5.2 Theme JavaScript
-
-```bash
-pnpm run development:esbuild
-pnpm run development:esbuild:blocks
-pnpm run development:esbuild:block-views
-pnpm run production:esbuild
-pnpm run production:esbuild:blocks
-pnpm run production:esbuild:block-views
-```
-
-### 5.3 Blocks metadata sync
-
-```bash
-pnpm run development:copy-blocks
-```
-
-Run this after any `block.json` change before testing in WordPress.
-
-### 5.4 Plugin JavaScript
-
-```bash
-pnpm run development:esbuild:plugin:boilerplate-plugin
-pnpm run production:esbuild:plugin:boilerplate-plugin
-```
-
-### 5.5 Linting
-
-PHP linting runs from the package root via Composer (not from theme or plugin directories):
-
-```bash
-composer install
-composer php:lint
-composer php:lint:autofix
-composer php:rector              # dry-run
-composer php:rector:fix:lint     # apply Rector, WPCS autofix, then WPCS check (recommended)
-# or individually:
-composer php:rector:fix
-composer php:lint:autofix
-composer php:lint
-composer make-pot:theme
-composer make-pot:plugin
-```
-
-JavaScript/CSS:
-
-```bash
-pnpm run lint
-pnpm run lint-fix
-```
-
-### 5.6 Development and watch
-
-Build all development assets in parallel:
-
-```bash
-pnpm run development
-pnpm run dev          # alias
-pnpm run watch        # watch mode for CSS, JS, blocks, and plugin assets
-```
-
-### 5.7 Production and release
-
-Full production pipeline (minified assets, production Composer installs, sourcemap cleanup):
-
-```bash
-pnpm run production
-pnpm run prod         # alias
-```
-
-Create deployable ZIP archives (theme + plugins):
-
-```bash
-pnpm run zip:theme
-pnpm run zip:plugin:boilerplate-plugin
-pnpm run zip          # theme + all plugin ZIPs
-```
-
-Production build plus ZIP creation in one step:
-
-```bash
-pnpm run bundle
-```
-
-Output lands in `zip/` (gitignored). After `rename-theme.js`, the `zip:theme` script slug is updated automatically via the `boilerplate-theme` placeholder.
-
-Install Composer dependencies for local development:
-
-```bash
-pnpm run composer:install:dev
-pnpm run composer-dev   # alias
-```
-
-### 5.8 Composer dependencies and Strauss (theme + plugins)
-
-Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins can ship isolated dependencies without autoloader conflicts.
+Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins can ship isolated dependencies without autoloader conflicts. Install commands and the production workflow are documented in [`../README.md`](../README.md#composer-and-strauss).
 
 - Strauss PHAR: `bin/strauss.phar` (downloaded automatically on first run, gitignored)
 - Prefixed output: `vendor-prefixed/` (gitignored, generated on `composer install`)
 - Bootstrap loads `vendor-prefixed/autoload.php` (includes project PSR-4 via `include_root_autoload`)
 - `require-dev` packages (e.g. `symfony/var-dumper`) are **not** prefixed
-
-```bash
-# Install all Composer roots (root PHPCS tools, theme, plugins)
-pnpm run composer:install:dev
-
-# Plugin only
-composer install --working-dir=plugins/boilerplate-plugin
-
-# Preview prefixing without writing files
-composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
-
-# Run Strauss manually after config changes
-composer prefix-namespaces --working-dir=plugins/boilerplate-plugin
-```
 
 **Adding a runtime dependency (plugin example):**
 
@@ -340,28 +224,12 @@ composer prefix-namespaces --working-dir=plugins/boilerplate-plugin
 
 The plugin includes a **Strauss demo** on Settings → Boilerplate Plugin (`ramsey/uuid`).
 
-## 6. Best practices
+## 6. Best practices and pitfalls
 
-- Run **`development:copy-blocks`** after any `block.json` change so `theme/blocks/` stays in sync before testing in WordPress.
-- Keep **`name` in `block.json` stable**; renaming breaks existing post content. Use deprecations for markup migrations.
-- Use **`apiVersion`: 3** for new blocks (iframe editor compatibility).
-- For dynamic blocks, implement PHP `render` and keep `save` minimal (`null` or inner blocks content only).
-- Align **`editorScript`** with the theme's registered handle (`boilerplate-theme-blocks-editor`); avoid raw file paths in `block.json` where the theme expects a handle.
-- Run **`rename-theme.js`** then **`rename-plugin.js`** before copying `_wp-content-dev/cursor/` to `.cursor/` when starting a new project.
+See [`../README.md` §Best practices](../README.md#best-practices) and [`../README.md` §Common pitfalls](../README.md#common-pitfalls).
 
-## 7. Common pitfalls
+## 7. Related documentation
 
-| Pitfall | Symptom | Mitigation |
-| ------- | ------- | ---------- |
-| Forgot `copy-blocks` after `block.json` edit | WordPress loads stale metadata | Run `development:copy-blocks` |
-| New `@wordpress/*` import in blocks bundle | Resolve/bundle errors | Extend `wpGlobals` in `build-blocks.js` |
-| Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP/templates in `theme/`; bundle JS via `javascript/` and `blocks/` |
-| `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
-| Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
-| Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `_wp-content-dev/cursor/`) |
-
-## 8. Related documentation
-
-- [`../README.md`](../README.md) — package structure, rename workflow, local WordPress usage
+- [`../README.md`](../README.md) — package structure, rename workflow, npm/Composer commands, local WordPress usage
 - [`../../README.md`](../../README.md) — boilerplate overview, environment setup, PowerShell helpers
 - [`../../cursor/skills/boilerplate-theme-create-block/SKILL.md`](../../cursor/skills/boilerplate-theme-create-block/SKILL.md) — block scaffolding checklist

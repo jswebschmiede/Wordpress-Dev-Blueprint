@@ -48,12 +48,14 @@ Remove `.git` and run `git init` only when starting a new project from the bluep
 
 ## Documentation
 
-| Topic                                                                   | Location                                                                         |
-| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Project setup, rename workflow, dependencies, builds, WordPress linking | [`boilerplate-theme/README.md`](boilerplate-theme/README.md)                     |
-| Asset pipeline, Node scripts, architecture, pitfalls                    | [`boilerplate-theme/docs/DEVELOPMENT.md`](boilerplate-theme/docs/DEVELOPMENT.md) |
+| Topic                                                                                    | Location                                                                         |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Project setup, rename workflow, npm/Composer commands, WordPress linking, best practices | [`boilerplate-theme/README.md`](boilerplate-theme/README.md)                     |
+| Asset pipeline architecture, Node script API, Tailwind internals, Strauss details        | [`boilerplate-theme/docs/DEVELOPMENT.md`](boilerplate-theme/docs/DEVELOPMENT.md) |
+| Cursor AI rules and skills template                                                      | [`cursor/`](cursor/) (copy to workspace root as `.cursor/` after rename)         |
+| Windows symlink and Cursor copy helpers                                                  | [`ps/`](ps/) (configure paths at the top of each script)                         |
 
 ## Getting started
 
 1. Set up a local WordPress site and clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) into its web root as `_wp-content-dev` (see [WordPress development environment](#wordpress-development-environment)).
-2. Follow the [recommended project setup order](boilerplate-theme/README.md#recommended-project-setup-order) in `boilerplate-theme/README.md`.
+2. Follow the [recommended project setup order](boilerplate-theme/README.md#recommended-project-setup-order) in `boilerplate-theme/README.md` — rename the package folder, install dependencies, run the rename scripts, build assets, link theme/plugin, then copy `cursor/` to `.cursor/`.
