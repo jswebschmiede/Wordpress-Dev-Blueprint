@@ -2,6 +2,28 @@
 
 Reusable WordPress theme and plugin development boilerplate with Gutenberg blocks and Tailwind CSS.
 
+## Development environment
+
+This package is meant to live inside a local WordPress site created from [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git). Clone that repository into your web root, remove the upstream Git history, and initialize your own repository:
+
+```bash
+git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git my-wordpress-project
+cd my-wordpress-project
+rm -rf .git
+git init
+```
+
+On Windows (PowerShell):
+
+```powershell
+git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git my-wordpress-project
+cd my-wordpress-project
+Remove-Item -Recurse -Force .git
+git init
+```
+
+The development package is located at `_wp-content-dev/boilerplate-theme/` inside the cloned site. See also [`../README.md`](../README.md) for the full boilerplate overview and Windows helper scripts.
+
 ## Structure
 
 ```text
@@ -52,7 +74,156 @@ _wp-content-dev/
 
 The root directory is the development package. The deployable WordPress theme lives in `theme/`; plugin boilerplates live in `plugins/`. The Cursor AI template lives in `_wp-content-dev/cursor/`.
 
-## Rename Theme Placeholders
+**Key ideas:**
+
+- **Dual-path blocks:** Block metadata is synced into `theme/blocks/` for WordPress; editor code is bundled separately; optional **view** bundles load only when the block is present on the page.
+- **Global `@wordpress/*` in bundles:** Editor and plugin builds resolve npm imports to `window.wp.*` instead of duplicating packages.
+- **Boilerplate placeholders:** Use `rename-theme.js` and `rename-plugin.js` before starting a real project.
+
+For architecture diagrams and Node script internals, see [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
+
+## Recommended project setup order
+
+1. Clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) and remove `.git` (see above).
+2. Install prerequisites and dependencies (see below).
+3. Run `rename-theme.js` with your slug and company name.
+4. Run `rename-plugin.js <plugin-slug>` if you use the boilerplate plugin.
+5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
+6. Link or copy theme and plugin into WordPress.
+7. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`.
+
+## Prerequisites
+
+From this directory (`_wp-content-dev/boilerplate-theme/`):
+
+- **Node.js** and **pnpm** for CSS/JS builds and linting.
+- **PHP** and **Composer** for autoloading, Strauss prefixing, and PHPCS.
+
+Install all Composer roots (package root, theme, plugins):
+
+```bash
+pnpm install
+pnpm run composer:install:dev
+```
+
+Or manually:
+
+```bash
+composer install
+composer install --working-dir=theme
+composer install --working-dir=plugins/boilerplate-plugin
+```
+
+## Development workflow
+
+All commands below are run from `_wp-content-dev/boilerplate-theme/`.
+
+### Daily development
+
+Build all development assets once:
+
+```bash
+pnpm run development
+pnpm run dev          # alias
+```
+
+Watch CSS, JS, blocks, and plugin assets during active work:
+
+```bash
+pnpm run watch
+```
+
+### Blocks
+
+After any change to `blocks/<name>/block.json`, sync metadata into WordPress:
+
+```bash
+pnpm run development:copy-blocks
+```
+
+Only `block.json` is copied to `theme/blocks/` — PHP templates and classes stay in `theme/`. Editor JavaScript is bundled via `javascript/blocks.js`; optional frontend behaviour uses `blocks/<slug>/view.js` → `theme/js/blocks-view/<slug>.min.js`.
+
+### CSS (Tailwind)
+
+```bash
+pnpm run development:tailwind:frontend
+pnpm run development:tailwind:editor
+pnpm run production:tailwind:frontend
+```
+
+Component-level block styling lives under `tailwind/custom/components/` using `@apply`.
+
+### Theme JavaScript
+
+```bash
+pnpm run development:esbuild
+pnpm run development:esbuild:blocks
+pnpm run development:esbuild:block-views
+pnpm run production:esbuild
+pnpm run production:esbuild:blocks
+pnpm run production:esbuild:block-views
+```
+
+### Plugin JavaScript
+
+```bash
+pnpm run development:esbuild:plugin:boilerplate-plugin
+pnpm run production:esbuild:plugin:boilerplate-plugin
+```
+
+After `rename-plugin.js`, the script name in `package.json` is updated automatically.
+
+### Linting
+
+PHP (from the package root — not from `theme/` or `plugins/`):
+
+```bash
+composer php:lint
+composer php:lint:autofix
+composer php:rector:fix:lint     # apply Rector, WPCS autofix, then WPCS check (recommended)
+composer make-pot:theme
+composer make-pot:plugin
+```
+
+JavaScript and CSS:
+
+```bash
+pnpm run lint
+pnpm run lint-fix
+```
+
+### Production and release
+
+Full production pipeline (minified assets, production Composer installs, sourcemap cleanup):
+
+```bash
+pnpm run production
+pnpm run prod         # alias
+```
+
+Create deployable ZIP archives under `zip/` (gitignored):
+
+```bash
+pnpm run zip:theme
+pnpm run zip:plugin:boilerplate-plugin
+pnpm run zip          # theme + all plugin ZIPs
+pnpm run bundle       # production + zip
+```
+
+### Composer and Strauss
+
+Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins ship isolated dependencies without autoloader conflicts.
+
+- Prefixed output: `vendor-prefixed/` (generated on `composer install`, gitignored)
+- `require-dev` packages are **not** prefixed
+- After renaming a plugin, run `composer install --working-dir=plugins/<slug>` to regenerate `vendor-prefixed/`
+
+```bash
+pnpm run composer:install:dev
+composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
+```
+
+## Rename theme placeholders
 
 Use the rename script from this directory:
 
@@ -74,14 +245,18 @@ For `sw-soltau` with `--company SmartMedia24`, the script derives:
 
 The script replaces placeholders in this package and in `_wp-content-dev/cursor/` (rules and skills, `.md` and `.mdc`). It only replaces file contents and does not rename folders.
 
-### Recommended order for a new project
+### Rename plugin
 
-1. Run `rename-theme.js` with your slug and company name
-2. Run `rename-plugin.js <plugin-slug>` if you use the boilerplate plugin
-3. Link or copy theme and plugin into WordPress
-4. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`
+Run **`rename-theme.js` first**, then:
 
-## Manual Rename Checklist
+```bash
+node node_scripts/rename-plugin.js mvg-aktuell --dry-run
+node node_scripts/rename-plugin.js mvg-aktuell
+```
+
+This renames `plugins/boilerplate-plugin/` to `plugins/<slug>/` and updates plugin-specific placeholders. After renaming, run `composer install --working-dir=plugins/<slug>`.
+
+## Manual rename checklist
 
 If you rename manually, replace:
 
@@ -96,7 +271,7 @@ If you rename manually, replace:
 - `BOILERPLATE_THEME_` -> your constant prefix.
 - `boilerplate/example-block` -> your block namespace.
 
-## Cursor AI Configuration
+## Cursor AI configuration
 
 The template lives in `_wp-content-dev/cursor/` (rules and skills). After renaming placeholders:
 
@@ -109,7 +284,7 @@ cp -r "_wp-content-dev/cursor" ".cursor"
 
 On Windows, use `_wp-content-dev/ps/copy-cursor-config.ps1` or `Copy-Item -Recurse`.
 
-## Local Usage
+## Local usage
 
 Create a symlink or copy the deployable theme directory to WordPress:
 
@@ -118,21 +293,9 @@ ln -s "_wp-content-dev/boilerplate-theme/theme" "wp-content/themes/boilerplate-t
 ln -s "_wp-content-dev/boilerplate-theme/plugins/boilerplate-plugin" "wp-content/plugins/boilerplate-plugin"
 ```
 
-Install Composer dependencies before activating the theme or plugin:
+On Windows, configure and run `_wp-content-dev/ps/create-blueprint-theme-link.ps1` and `create-blueprint-plugin-link.ps1`.
 
-```bash
-composer install --working-dir=theme
-composer install --working-dir=plugins/boilerplate-plugin
-```
-
-For development tooling (PHPCS, i18n), install Composer dependencies in the package root:
-
-```bash
-composer install
-composer php:lint
-composer make-pot:theme
-composer make-pot:plugin
-```
+Activate the theme and plugin in WordPress after linking. Install Composer dependencies before activating if you have not run `pnpm run composer:install:dev` yet.
 
 Root-level tooling:
 
@@ -141,9 +304,25 @@ Root-level tooling:
 - `eslint.config.js`, `prettier.config.js`, `.prettierrc`, and `.prettierignore` provide JavaScript and CSS formatting/linting defaults.
 - `.editorconfig`, `.npmrc`, and `.gitignore` keep editor, dependency, and generated-file behavior consistent.
 
-Build, lint, and Composer scripts are documented in `package.json`. See [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) for the asset pipeline, Node scripts, and common pitfalls. Run builds only when you intentionally want to install dependencies or generate assets.
+## Best practices
 
-For deployment, run `pnpm run production` to build optimized assets, then `pnpm run zip` or `pnpm run bundle` to create ZIP archives under `zip/`.
+- Run **`development:copy-blocks`** after any `block.json` change before testing in WordPress.
+- Keep **`name` in `block.json` stable**; renaming breaks existing post content. Use deprecations for markup migrations.
+- Use **`apiVersion`: 3** for new blocks (iframe editor compatibility).
+- For dynamic blocks, implement PHP `render` and keep `save` minimal (`null` or inner blocks content only).
+- Align **`editorScript`** with the theme's registered handle; avoid raw file paths in `block.json` where the theme expects a handle.
+- Run **`rename-theme.js`** then **`rename-plugin.js`** before copying `_wp-content-dev/cursor/` to `.cursor/` when starting a new project.
+
+## Common pitfalls
+
+| Pitfall | Symptom | Mitigation |
+| ------- | ------- | ---------- |
+| Forgot `copy-blocks` after `block.json` edit | WordPress loads stale metadata | Run `development:copy-blocks` |
+| New `@wordpress/*` import in blocks bundle | Resolve/bundle errors | Extend `wpGlobals` in `build-blocks.js` |
+| Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP/templates in `theme/`; bundle JS via `javascript/` and `blocks/` |
+| `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
+| Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
+| Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `_wp-content-dev/cursor/`) |
 
 ## Theme dependencies and scaffolding
 
@@ -154,7 +333,7 @@ The theme includes general infrastructure migrated from a production reference (
 - **Example CPT** (`example_item` + `example_category`): scaffold in `theme/src/PostTypes/ExamplePostType.php` — copy and adapt for project-specific post types.
 - **Breadcrumb CPT mapping**: extend via the `boilerplate_theme_breadcrumb_cpt_page_map` filter.
 
-## Adding Blocks
+## Adding blocks
 
 1. Copy `blocks/example-block/` to a new block directory.
 2. Update the block name, title, attributes, and editor UI.
@@ -162,4 +341,11 @@ The theme includes general infrastructure migrated from a production reference (
 4. Register the block in `theme/src/Blocks/BlockManager.php`.
 5. Add a template in `theme/template-parts/blocks/`.
 6. Add styles under `tailwind/custom/components/`.
-7. Run the block copy/build scripts when you are ready to generate assets.
+7. Run `pnpm run development:copy-blocks` and rebuild block assets when ready.
+
+For a step-by-step checklist, see [`../cursor/skills/boilerplate-theme-create-block/SKILL.md`](../cursor/skills/boilerplate-theme-create-block/SKILL.md).
+
+## Related documentation
+
+- [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — asset pipeline architecture, Node script API, Tailwind details
+- [`../README.md`](../README.md) — boilerplate overview, Windows helper scripts, environment setup

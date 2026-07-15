@@ -2,7 +2,7 @@
 
 This document describes how the asset pipeline and block system fit together, how the Node scripts behave, and what to watch for when extending the project.
 
-For project setup, renaming placeholders, and WordPress linking, see [`../README.md`](../README.md) and [`../../README-boilerplates.md`](../../README-boilerplates.md).
+For project setup, development workflow, and WordPress linking, see [`../README.md`](../README.md) and [`../../README.md`](../../README.md).
 
 ## 1. Overview
 
@@ -363,5 +363,5 @@ The plugin includes a **Strauss demo** on Settings → Boilerplate Plugin (`rams
 ## 8. Related documentation
 
 - [`../README.md`](../README.md) — package structure, rename workflow, local WordPress usage
-- [`../../README-boilerplates.md`](../../README-boilerplates.md) — boilerplate overview, setup order, PowerShell helpers
+- [`../../README.md`](../../README.md) — boilerplate overview, environment setup, PowerShell helpers
 - [`../../cursor/skills/boilerplate-theme-create-block/SKILL.md`](../../cursor/skills/boilerplate-theme-create-block/SKILL.md) — block scaffolding checklist
