@@ -4,35 +4,7 @@ Reusable WordPress theme and plugin development boilerplate with Gutenberg block
 
 ## Development environment
 
-This package lives at `_wp-content-dev/boilerplate-theme/` inside your local WordPress site. The [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) repository **is** the `_wp-content-dev/` folder — clone it into your site’s web root, not as a nested subfolder:
-
-```text
-app/public/
-└── _wp-content-dev/              ← clone target (Wordpress-Dev-Blueprint)
-    └── boilerplate-theme/        ← this package (you are here)
-```
-
-```bash
-cd /path/to/your-site/app/public
-git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git _wp-content-dev
-cd _wp-content-dev
-rm -rf .git
-git init
-```
-
-On Windows (PowerShell):
-
-```powershell
-cd C:\path\to\your-site\app\public
-git clone https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git _wp-content-dev
-cd _wp-content-dev
-Remove-Item -Recurse -Force .git
-git init
-```
-
-Remove `.git` and run `git init` only when starting a new project from the blueprint. If you keep the upstream history, skip that step.
-
-See [`../README.md`](../README.md#wordpress-development-environment) for the full setup overview and Windows helper scripts.
+This package lives at `_wp-content-dev/boilerplate-theme/` (or your renamed slug) inside a local WordPress site. For clone instructions and the directory layout, see [`../README.md`](../README.md#wordpress-development-environment).
 
 ## Structure
 
@@ -94,27 +66,30 @@ For architecture diagrams and Node script internals, see [`docs/DEVELOPMENT.md`]
 
 ## Recommended project setup order
 
-1. Set up a local WordPress site and clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) into its web root as `_wp-content-dev` (see [Development environment](#development-environment)).
-2. Install prerequisites and dependencies (see below).
-3. Run `rename-theme.js` with your slug and company name.
-4. Run `rename-plugin.js <plugin-slug>` if you use the boilerplate plugin.
-5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-6. Link or copy theme and plugin into WordPress.
-7. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`.
+1. Set up a local WordPress site and clone the blueprint into its web root as `_wp-content-dev` (see [`../README.md`](../README.md#wordpress-development-environment)).
+2. Rename this folder to your slug, install dependencies, then run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)).
+3. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
+4. Link or copy theme and plugin into WordPress.
+5. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/`.
 
 ## Prerequisites
 
-From this directory (`_wp-content-dev/boilerplate-theme/`):
+From this directory after renaming (e.g. `_wp-content-dev/sw-soltau/`):
 
 - **Node.js** and **pnpm** for CSS/JS builds and linting.
 - **PHP** and **Composer** for autoloading, Strauss prefixing, and PHPCS.
 
-Install all Composer roots (package root, theme, plugins):
+Rename the package folder **before** `pnpm install`. pnpm creates symlinks in `node_modules` that break when the parent directory path changes.
 
 ```bash
+cd _wp-content-dev
+mv boilerplate-theme sw-soltau
+cd sw-soltau
 pnpm install
 pnpm run composer:install:dev
 ```
+
+Install all Composer roots (package root, theme, plugins) — or use the convenience script above.
 
 Or manually:
 
@@ -235,12 +210,19 @@ composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
 
 ## Rename theme placeholders
 
-Use the rename script from this directory:
+Rename the package folder **before** `pnpm install`, then run the rename scripts to replace placeholder strings in file contents.
 
 ```bash
+cd _wp-content-dev
+mv boilerplate-theme sw-soltau
+cd sw-soltau
+pnpm install
+pnpm run composer:install:dev
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 ```
+
+On Windows (PowerShell), replace `mv boilerplate-theme sw-soltau` with `Rename-Item boilerplate-theme sw-soltau`.
 
 For `sw-soltau` with `--company SmartMedia24`, the script derives:
 
@@ -257,14 +239,15 @@ The script replaces placeholders in this package and in `_wp-content-dev/cursor/
 
 ### Rename plugin
 
-Run **`rename-theme.js` first**, then:
+Run **`rename-theme.js` first**, then **`rename-plugin.js`** (both after `pnpm install`):
 
 ```bash
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 node node_scripts/rename-plugin.js mvg-aktuell --dry-run
 node node_scripts/rename-plugin.js mvg-aktuell
 ```
 
-This renames `plugins/boilerplate-plugin/` to `plugins/<slug>/` and updates plugin-specific placeholders. After renaming, run `composer install --working-dir=plugins/<slug>`.
+This renames `plugins/boilerplate-plugin/` to `plugins/<slug>/` and updates plugin-specific placeholders.
 
 ## Manual rename checklist
 
@@ -332,6 +315,7 @@ Root-level tooling:
 | Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP/templates in `theme/`; bundle JS via `javascript/` and `blocks/` |
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
 | Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
+| `pnpm install` before folder rename | Broken symlinks in `node_modules` | Rename package folder first, then run `pnpm install` |
 | Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `_wp-content-dev/cursor/`) |
 
 ## Theme dependencies and scaffolding
@@ -358,4 +342,4 @@ For a step-by-step checklist, see [`../cursor/skills/boilerplate-theme-create-bl
 ## Related documentation
 
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — asset pipeline architecture, Node script API, Tailwind details
-- [`../README.md`](../README.md) — boilerplate overview, Windows helper scripts, environment setup
+- [`../README.md`](../README.md) — clone setup, package overview, Windows helper scripts
