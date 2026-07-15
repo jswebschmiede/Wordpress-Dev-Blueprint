@@ -1,6 +1,6 @@
 # Boilerplate Plugin
 
-Reusable WordPress plugin boilerplate based on the MVG Aktuell plugin structure.
+Reusable WordPress plugin boilerplate.
 
 ## Structure
 
