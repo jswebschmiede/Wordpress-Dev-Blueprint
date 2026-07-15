@@ -225,6 +225,12 @@ PHP linting runs from the package root via Composer (not from theme or plugin di
 composer install
 composer php:lint
 composer php:lint:autofix
+composer php:rector              # dry-run
+composer php:rector:fix:lint     # apply Rector, WPCS autofix, then WPCS check (recommended)
+# or individually:
+composer php:rector:fix
+composer php:lint:autofix
+composer php:lint
 composer make-pot:theme
 composer make-pot:plugin
 ```
