@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace CompanyName\BoilerplatePlugin\Backend;
 
+use CompanyName\BoilerplatePlugin\Shortcodes\Shortcode;
 use CompanyName\BoilerplatePlugin\Support\StraussDemo;
 
 \defined( 'ABSPATH' ) || exit;
@@ -80,6 +81,31 @@ class PluginOptions {
 			self::PAGE_SLUG,
 			'boilerplate_plugin_general'
 		);
+
+		add_settings_section(
+			'boilerplate_plugin_shortcode',
+			__( 'Example Shortcode', 'boilerplate-plugin' ),
+			static function (): void {
+				echo '<p>' . esc_html__( 'Insert this shortcode into a page or post to render the example output.', 'boilerplate-plugin' ) . '</p>';
+			},
+			self::PAGE_SLUG
+		);
+
+		add_settings_field(
+			'shortcode_tag',
+			__( 'Shortcode', 'boilerplate-plugin' ),
+			array( $this, 'render_shortcode_tag_field' ),
+			self::PAGE_SLUG,
+			'boilerplate_plugin_shortcode'
+		);
+
+		add_settings_field(
+			'shortcode_preview',
+			__( 'Preview', 'boilerplate-plugin' ),
+			array( $this, 'render_shortcode_preview_field' ),
+			self::PAGE_SLUG,
+			'boilerplate_plugin_shortcode'
+		);
 	}
 
 	/**
@@ -137,6 +163,53 @@ class PluginOptions {
 			<?php esc_html_e( 'Random UUID via prefixed ramsey/uuid (Strauss).', 'boilerplate-plugin' ); ?>
 		</p>
 		<?php
+	}
+
+	/**
+	 * Renders the example shortcode tag field.
+	 *
+	 * @return void
+	 */
+	public function render_shortcode_tag_field(): void {
+		$shortcode = $this->get_example_shortcode();
+		?>
+		<input
+			type="text"
+			value="<?php echo esc_attr( $shortcode ); ?>"
+			class="regular-text code"
+			readonly
+			onclick="this.select();"
+		/>
+		<p class="description">
+			<?php esc_html_e( 'Optional attribute example:', 'boilerplate-plugin' ); ?>
+			<code>[<?php echo esc_html( Shortcode::TAG ); ?> title="<?php echo esc_attr__( 'Custom Title', 'boilerplate-plugin' ); ?>"]</code>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Renders a live preview of the example shortcode output.
+	 *
+	 * @return void
+	 */
+	public function render_shortcode_preview_field(): void {
+		?>
+		<div class="boilerplate-plugin-shortcode-preview" style="max-width: 32rem; padding: 1rem; border: 1px solid #c3c4c7; background: #fff;">
+			<?php echo do_shortcode( $this->get_example_shortcode() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shortcode template escapes output. ?>
+		</div>
+		<p class="description">
+			<?php esc_html_e( 'This is how the shortcode renders on the frontend.', 'boilerplate-plugin' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Gets the example shortcode tag for copy and preview.
+	 *
+	 * @return string Shortcode tag wrapped in brackets.
+	 */
+	private function get_example_shortcode(): string {
+		return sprintf( '[%s]', Shortcode::TAG );
 	}
 
 	/**

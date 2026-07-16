@@ -12,13 +12,14 @@ use CompanyName\BoilerplatePlugin\Assets\Assets;
  * Registers the example shortcode.
  */
 class Shortcode {
+	public const string TAG = 'boilerplate_plugin';
 	/**
 	 * Initializes shortcode hooks.
 	 *
 	 * @return void
 	 */
 	public function init(): void {
-		add_shortcode( 'boilerplate_plugin', array( $this, 'render' ) );
+		add_shortcode( self::TAG, array( $this, 'render' ) );
 	}
 
 	/**
@@ -37,7 +38,7 @@ class Shortcode {
 				'title' => __( 'Boilerplate Plugin', 'boilerplate-plugin' ),
 			),
 			$atts,
-			'boilerplate_plugin'
+			self::TAG
 		);
 
 		( new Assets() )->enqueue_frontend();

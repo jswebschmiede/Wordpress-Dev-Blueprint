@@ -89,6 +89,12 @@ class Assets {
 				$style_version
 			);
 		}
+
+		$this->register_frontend_assets();
+
+		if ( wp_style_is( 'boilerplate-plugin-frontend', 'registered' ) ) {
+			wp_enqueue_style( 'boilerplate-plugin-frontend' );
+		}
 	}
 
 	/**
