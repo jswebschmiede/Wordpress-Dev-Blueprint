@@ -13,9 +13,26 @@ use CompanyName\BoilerplateTheme\Theme\ThemeManager;
 
 $boilerplate_theme_autoload = get_template_directory() . '/vendor-prefixed/autoload.php';
 
-if ( file_exists( $boilerplate_theme_autoload ) ) {
-	require_once $boilerplate_theme_autoload;
+if ( ! file_exists( $boilerplate_theme_autoload ) ) {
+	add_action(
+		'admin_notices',
+		static function (): void {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
+			echo '<div class="notice notice-error"><p><strong>Boilerplate Theme:</strong> ';
+			echo esc_html__(
+				'vendor-prefixed fehlt. Bitte führen Sie „composer install“ im Theme-Verzeichnis aus, um die Abhängigkeiten zu generieren.',
+				'boilerplate-theme'
+			);
+			echo '</p></div>';
+		}
+	);
+	return;
 }
+
+require_once $boilerplate_theme_autoload;
 
 if ( class_exists( ThemeManager::class ) ) {
 	add_action(
