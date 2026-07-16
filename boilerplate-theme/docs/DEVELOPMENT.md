@@ -209,7 +209,8 @@ Build commands: [`../README.md` §Development workflow](../README.md#development
 
 Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins can ship isolated dependencies without autoloader conflicts. Install commands and the production workflow are documented in [`../README.md`](../README.md#composer-and-strauss).
 
-- Strauss PHAR: `bin/strauss.phar` (downloaded automatically on first run, gitignored)
+- Strauss PHAR: `bin/strauss.phar` (gitignored; fetched by `bin/download-strauss.php` on first run)
+- Downloader uses PHP cURL, then `file_get_contents` as fallback — shell curl often fails under WAMP when SSL CA certificates are missing and can leave an empty PHAR
 - Prefixed output: `vendor-prefixed/` (gitignored, generated on `composer install`)
 - Bootstrap loads `vendor-prefixed/autoload.php` (includes project PSR-4 via `include_root_autoload`)
 - `require-dev` packages (e.g. `symfony/var-dumper`) are **not** prefixed

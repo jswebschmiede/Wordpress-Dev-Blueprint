@@ -194,6 +194,7 @@ pnpm run bundle       # production + zip
 Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins ship isolated dependencies without autoloader conflicts.
 
 - Prefixed output: `vendor-prefixed/` (generated on `composer install`, gitignored)
+- Strauss PHAR: downloaded via `bin/download-strauss.php` (cURL with `file_get_contents` fallback; avoids empty files from shell curl under WAMP)
 - `require-dev` packages are **not** prefixed
 - After renaming a plugin, run `composer install --working-dir=plugins/<slug>` to regenerate `vendor-prefixed/`
 

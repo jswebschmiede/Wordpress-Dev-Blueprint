@@ -17,12 +17,12 @@
     },
     "scripts": {
         "prefix-namespaces": [
-            "sh -c 'test -f ../../bin/strauss.phar || curl -o ../../bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'",
+            "@php ../../bin/download-strauss.php",
             "@php ../../bin/strauss.phar",
             "@composer dump-autoload"
         ],
         "prefix-namespaces:dry-run": [
-            "sh -c 'test -f ../../bin/strauss.phar || curl -o ../../bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'",
+            "@php ../../bin/download-strauss.php",
             "@php ../../bin/strauss.phar --dry-run"
         ],
         "post-install-cmd": [

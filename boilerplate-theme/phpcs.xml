@@ -24,6 +24,7 @@
 	<!-- Typische Ordner ausschließen -->
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>tests/*</exclude-pattern>
+	<exclude-pattern>bin/*</exclude-pattern>
 	<exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>theme/vendor/*</exclude-pattern>
 	<exclude-pattern>plugins/*/vendor/*</exclude-pattern>
