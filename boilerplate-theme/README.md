@@ -43,6 +43,7 @@ _wp-content-dev/
     │   └── script.js
     ├── blocks/example-block/
     ├── plugins/boilerplate-plugin/
+    ├── plugins/redux-boilerplate-plugin/
     ├── tailwind/custom/components/example-block.css
     └── theme/
         ├── functions.php
@@ -229,11 +230,22 @@ Run **`rename-theme.js` first**, then **`rename-plugin.js`** (both after `pnpm i
 
 ```bash
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
-node node_scripts/rename-plugin.js mvg-aktuell --dry-run
-node node_scripts/rename-plugin.js mvg-aktuell
+node node_scripts/rename-plugin.js mvg-aktuell \
+  --plugin boilerplate-plugin \
+  --old-slug boilerplate-plugin \
+  --company SmartMedia24 \
+  --namespace MvgAktuell \
+  --dry-run
+node node_scripts/rename-plugin.js mvg-aktuell \
+  --plugin boilerplate-plugin \
+  --old-slug boilerplate-plugin \
+  --company SmartMedia24 \
+  --namespace MvgAktuell
 ```
 
-This renames `plugins/boilerplate-plugin/` to `plugins/<slug>/` and updates plugin-specific placeholders.
+For the Redux alternative, use `--plugin redux-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
+
+This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace).
 
 ## Manual rename checklist
 
@@ -270,11 +282,12 @@ Create a symlink or copy the deployable theme directory to WordPress:
 ```bash
 ln -s "_wp-content-dev/boilerplate-theme/theme" "wp-content/themes/boilerplate-theme"
 ln -s "_wp-content-dev/boilerplate-theme/plugins/boilerplate-plugin" "wp-content/plugins/boilerplate-plugin"
+ln -s "_wp-content-dev/boilerplate-theme/plugins/redux-boilerplate-plugin" "wp-content/plugins/redux-boilerplate-plugin"
 ```
 
-On Windows, configure and run `_wp-content-dev/ps/create-blueprint-theme-link.ps1` and `create-blueprint-plugin-link.ps1`.
+On Windows, configure and run `_wp-content-dev/ps/create-blueprint-theme-link.ps1` and `create-blueprint-plugin-link.ps1` (adapt the script paths for additional plugins as needed).
 
-Activate the theme and plugin in WordPress after linking. Install Composer dependencies before activating if you have not run `pnpm run composer:install:dev` yet.
+Activate the theme and plugin(s) in WordPress after linking. For the Redux demo plugin, also activate **Redux Framework**. Install Composer dependencies before activating if you have not run `pnpm run composer:install:dev` yet.
 
 Root-level tooling:
 
@@ -312,6 +325,15 @@ The theme includes general infrastructure migrated from a production reference (
 - **Font Awesome** (recommended): icons in header search, footer social links, and back-to-top button.
 - **Example CPT** (`example_item` + `example_category`): scaffold in `theme/src/PostTypes/ExamplePostType.php` — copy and adapt for project-specific post types.
 - **Breadcrumb CPT mapping**: extend via the `boilerplate_theme_breadcrumb_cpt_page_map` filter.
+
+## Plugin boilerplates
+
+| Plugin | Options stack | Notes |
+|--------|---------------|--------|
+| `plugins/boilerplate-plugin/` | WordPress Settings API | Shortcode, AJAX skeleton, Strauss demo |
+| `plugins/redux-boilerplate-plugin/` | Redux Framework | Text fields + image repeater; shortcode `[boilerplate_plugin]`; requires the Redux Framework WP plugin |
+
+Redux works the same for themes and plugins: each panel needs its own `opt_name`. See `plugins/redux-boilerplate-plugin/README.md` for setup and local linking.
 
 ## Adding blocks
 

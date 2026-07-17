@@ -1,0 +1,52 @@
+{
+    "name": "companyname/boilerplate-plugin",
+    "description": "Redux Framework demo plugin boilerplate",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "CompanyName\\BoilerplatePlugin\\": "includes/"
+        }
+    },
+    "scripts": {
+        "prefix-namespaces": [
+            "@php ../../bin/download-strauss.php",
+            "@php ../../bin/strauss.phar",
+            "@composer dump-autoload"
+        ],
+        "prefix-namespaces:dry-run": [
+            "@php ../../bin/download-strauss.php",
+            "@php ../../bin/strauss.phar --dry-run"
+        ],
+        "post-install-cmd": [
+            "@prefix-namespaces"
+        ],
+        "post-update-cmd": [
+            "@prefix-namespaces"
+        ],
+        "production": "composer install --no-dev --optimize-autoloader"
+    },
+    "extra": {
+        "strauss": {
+            "target_directory": "vendor-prefixed",
+            "namespace_prefix": "CompanyName\\BoilerplatePlugin\\",
+            "classmap_prefix": "CompanyName_BoilerplatePlugin_",
+            "packages": [],
+            "update_call_sites": true,
+            "include_root_autoload": true,
+            "delete_vendor_packages": true
+        }
+    },
+    "config": {
+        "process-timeout": 600
+    },
+    "authors": [
+        {
+            "name": "companyname",
+            "homepage": "https://companyname.example"
+        }
+    ]
+}

@@ -151,23 +151,56 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 ### 3.6 `node_scripts/rename-plugin.js`
 
-**Usage:** `node node_scripts/rename-plugin.js <slug> [--old-slug boilerplate-plugin] [--dry-run]`
+**Usage:** `node node_scripts/rename-plugin.js <slug> --company <company> [--plugin <plugin-dir>] [--old-slug <placeholder-slug>] [--namespace <Namespace>] [--dry-run]`
 
-**What it does:** Replaces plugin-specific placeholders, renames `plugins/<old-slug>/` to `plugins/<slug>/`, renames the bootstrap PHP file and main plugin class file.
+**What it does:** Replaces plugin-specific placeholders (including company), renames `plugins/<plugin>/` to `plugins/<slug>/`, renames the bootstrap PHP file and main plugin class file.
 
-Run **`rename-theme.js` first** (company + theme), then **`rename-plugin.js`** (plugin slug/namespace).
+Calling the script **without arguments** (or without required parameters) exits with an error listing what is missing and prints the full usage.
 
-**Replacements:**
+Run **`rename-theme.js` first** (company + theme), then **`rename-plugin.js`**.
 
-| Placeholder | Example for `mvg-aktuell` |
-| ----------- | ------------------------- |
+**Parameters:**
+
+| Argument | Meaning | Default |
+| -------- | ------- | ------- |
+| `<slug>` | New plugin slug / text domain | (required) |
+| `--company` | Company (kebab-case or PascalCase) | (required) |
+| `--plugin` | Plugin folder under `plugins/` | = `--old-slug` |
+| `--old-slug` | Placeholder slug in file contents | `boilerplate-plugin` |
+| `--namespace` | PHP namespace / main class segment | derived from `<slug>` |
+| `--dry-run` | Preview only | off |
+
+**Examples:**
+
+```bash
+# Settings API alternative
+node node_scripts/rename-plugin.js mvg-aktuell \
+  --plugin boilerplate-plugin \
+  --old-slug boilerplate-plugin \
+  --company SmartMedia24 \
+  --namespace MvgAktuell
+
+# Redux Framework alternative (folder differs from content placeholders)
+node node_scripts/rename-plugin.js mvg-aktuell \
+  --plugin redux-boilerplate-plugin \
+  --old-slug boilerplate-plugin \
+  --company SmartMedia24 \
+  --namespace MvgAktuell
+```
+
+**Replacements** (FROM `--old-slug` / company placeholders → new values):
+
+| Placeholder | Example for `mvg-aktuell` + `SmartMedia24` |
+| ----------- | ------------------------------------------ |
 | `boilerplate-plugin` | `mvg-aktuell` |
 | `boilerplate_plugin` | `mvg_aktuell` |
-| `BoilerplatePlugin` | `MvgAktuell` |
+| `BoilerplatePlugin` | `MvgAktuell` (or `--namespace`) |
 | `Boilerplate Plugin` | `Mvg Aktuell` |
 | `BOILERPLATE_PLUGIN_` | `MVGAKTUELL_` |
+| `CompanyName` | `SmartMedia24` |
+| `companyname` | `smartmedia24` |
 
-Also updates root references in `package.json`, `composer.json`, `phpcs.xml`, `rector.php`, and docs.
+Also updates the `--plugin` directory name in root references (`package.json`, docs, …) without rewriting the sibling plugin’s `boilerplate-plugin` placeholders.
 
 After renaming, run `composer install --working-dir=plugins/<slug>` to regenerate Strauss `vendor-prefixed/`.
 

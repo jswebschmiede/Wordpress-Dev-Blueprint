@@ -23,7 +23,16 @@ boilerplate-plugin/
 
 ## Rename Checklist
 
-Replace these values when starting a new plugin (or run `node node_scripts/rename-plugin.js <slug> --dry-run` from the package root):
+Replace these values when starting a new plugin (or run `rename-plugin.js` from the package root):
+
+```bash
+node node_scripts/rename-plugin.js <slug> \
+  --plugin boilerplate-plugin \
+  --old-slug boilerplate-plugin \
+  --company <Company> \
+  --namespace <Namespace> \
+  --dry-run
+```
 
 - `Boilerplate Plugin` -> your plugin display name.
 - `boilerplate-plugin` -> your plugin slug and text domain.
