@@ -3,10 +3,10 @@
 declare( strict_types=1 );
 
 /**
- * Template for the Redux demo shortcode.
+ * Template for the CMB2 demo shortcode.
  *
- * @var string $headline Headline from Redux options.
- * @var string $intro    Intro text from Redux options.
+ * @var string $headline Headline from CMB2 options.
+ * @var string $intro    Intro text from CMB2 options.
  *
  * @package BoilerplatePlugin
  */

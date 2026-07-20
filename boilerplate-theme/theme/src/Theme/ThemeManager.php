@@ -79,7 +79,7 @@ class ThemeManager {
 		$block_manager = new BlockManager();
 		$block_manager->init();
 
-		if ( class_exists( 'Redux' ) ) {
+		if ( function_exists( 'new_cmb2_box' ) ) {
 			$theme_options = new ThemeOptions();
 			$theme_options->init();
 		} else {
@@ -87,8 +87,8 @@ class ThemeManager {
 				'admin_notices',
 				static function (): void {
 					echo '<div class="notice notice-error"><p>'
-						. esc_html__( 'Redux Framework ist nicht installiert. Bitte installieren Sie es, um die Theme-Optionen zu nutzen.', 'boilerplate-theme' )
-						. ' <a href="https://wordpress.org/plugins/redux-framework/" target="_blank" rel="noopener noreferrer">Redux Framework</a></p></div>';
+						. esc_html__( 'CMB2 ist nicht installiert. Bitte installieren Sie es, um die Theme-Optionen zu nutzen.', 'boilerplate-theme' )
+						. ' <a href="https://wordpress.org/plugins/cmb2/" target="_blank" rel="noopener noreferrer">CMB2</a></p></div>';
 				},
 			);
 		}

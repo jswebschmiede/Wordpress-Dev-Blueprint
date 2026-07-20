@@ -1,6 +1,6 @@
 {
     "name": "companyname/boilerplate-plugin",
-    "description": "Redux Framework demo plugin boilerplate",
+    "description": "CMB2 demo plugin boilerplate",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "require": {

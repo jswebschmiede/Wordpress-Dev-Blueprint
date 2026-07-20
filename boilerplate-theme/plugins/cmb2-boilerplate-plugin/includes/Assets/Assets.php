@@ -106,6 +106,6 @@ class Assets {
 			return plugin_dir_url( BOILERPLATE_PLUGIN_FILE );
 		}
 
-		return plugin_dir_url( dirname( __DIR__, 2 ) . '/redux-boilerplate-plugin.php' );
+		return plugin_dir_url( dirname( __DIR__, 2 ) . '/boilerplate-plugin.php' );
 	}
 }

@@ -180,9 +180,9 @@ node node_scripts/rename-plugin.js mvg-aktuell \
   --company SmartMedia24 \
   --namespace MvgAktuell
 
-# Redux Framework alternative (folder differs from content placeholders)
+# CMB2 alternative (folder differs from content placeholders)
 node node_scripts/rename-plugin.js mvg-aktuell \
-  --plugin redux-boilerplate-plugin \
+  --plugin cmb2-boilerplate-plugin \
   --old-slug boilerplate-plugin \
   --company SmartMedia24 \
   --namespace MvgAktuell

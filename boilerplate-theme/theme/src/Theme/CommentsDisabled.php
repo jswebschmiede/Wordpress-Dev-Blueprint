@@ -9,7 +9,7 @@ namespace CompanyName\BoilerplateTheme\Theme;
 /**
  * Central place for no-comments UI and legacy comment submission blocking.
  * Does not unregister REST comment routes (editor compatibility).
- * Active only when the Redux option is enabled.
+ * Active only when the theme option is enabled.
  */
 class CommentsDisabled {
 	/**
@@ -114,12 +114,11 @@ class CommentsDisabled {
 	 * @return bool True when comment UI and submissions should be blocked.
 	 */
 	private function is_comments_disabled(): bool {
-		if ( ! class_exists( 'Redux' ) ) {
+		if ( ! function_exists( 'cmb2_get_option' ) ) {
 			return (bool) apply_filters( 'boilerplate_theme_comments_disabled', false );
 		}
 
-		$value   = ThemeOptions::get_option( 'disable_comments', false );
-		$enabled = ( true === $value || 1 === $value || '1' === $value );
+		$enabled = (bool) ThemeOptions::get_option( 'disable_comments', false );
 
 		return (bool) apply_filters( 'boilerplate_theme_comments_disabled', $enabled );
 	}

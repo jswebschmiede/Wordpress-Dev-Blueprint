@@ -4,14 +4,12 @@ declare( strict_types=1 );
 
 namespace CompanyName\BoilerplateTheme\PostTypes;
 
-use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
-
 \defined( 'ABSPATH' ) || exit;
 
 /**
  * Registers an example custom post type as a scaffold for new projects.
  *
- * Uses Redux metaboxes for custom fields and the classic editor (Gutenberg off).
+ * Uses CMB2 metaboxes for custom fields and the classic editor (Gutenberg off).
  */
 class ExamplePostType {
 	/**
@@ -31,9 +29,7 @@ class ExamplePostType {
 	 */
 	public function init(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
-		add_action( 'init', array( $this, 'register_redux_metaboxes' ), 5 );
-		// Priority > 20: Redux metaboxes enqueue their script at priority 20.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_redux_repeater_metabox_fix' ), 25 );
+		add_action( 'cmb2_admin_init', array( $this, 'register_metaboxes' ) );
 		add_filter( 'use_block_editor_for_post_type', array( $this, 'disable_block_editor' ), 10, 2 );
 		add_filter( 'dashboard_recent_posts_query_args', array( $this, 'add_to_dashboard' ) );
 	}
@@ -105,144 +101,106 @@ class ExamplePostType {
 	}
 
 	/**
-	 * Registers Redux metaboxes for the example post type.
+	 * Registers CMB2 metaboxes for the example post type.
 	 *
 	 * @return void
 	 */
-	public function register_redux_metaboxes(): void {
-		if ( ! class_exists( 'Redux_Metaboxes' ) ) {
+	public function register_metaboxes(): void {
+		if ( ! function_exists( 'new_cmb2_box' ) ) {
 			return;
 		}
 
-		$opt_name = ThemeOptions::get_options_name();
-
-		\Redux_Metaboxes::set_box(
-			$opt_name,
+		$cmb = new_cmb2_box(
 			array(
-				'id'         => 'example-item-metabox',
-				'title'      => esc_html__( 'Beispiel-Felder', 'boilerplate-theme' ),
-				'post_types' => array( self::POST_TYPE ),
-				'position'   => 'normal',
-				'priority'   => 'high',
-				'sections'   => array(
-					array(
-						'title'  => esc_html__( 'Inhalt', 'boilerplate-theme' ),
-						'id'     => 'example-item-content',
-						'icon'   => 'el el-edit',
-						'fields' => array(
-							array(
-								'id'       => 'example_subtitle',
-								'type'     => 'text',
-								'title'    => esc_html__( 'Untertitel', 'boilerplate-theme' ),
-								'subtitle' => esc_html__( 'Beispiel-Textfeld für diesen Post Type.', 'boilerplate-theme' ),
-								'default'  => '',
-							),
-							array(
-								'id'       => 'example_layout',
-								'type'     => 'radio',
-								'title'    => esc_html__( 'Layout', 'boilerplate-theme' ),
-								'subtitle' => esc_html__( 'Beispiel-Radio-Buttons für die Layout-Auswahl.', 'boilerplate-theme' ),
-								'options'  => array(
-									'default' => esc_html__( 'Standard', 'boilerplate-theme' ),
-									'wide'    => esc_html__( 'Breit', 'boilerplate-theme' ),
-									'narrow'  => esc_html__( 'Schmal', 'boilerplate-theme' ),
-								),
-								'default'  => 'default',
-							),
-							array(
-								'id'         => 'example_items',
-								'type'       => 'repeater',
-								'title'      => esc_html__( 'Elemente', 'boilerplate-theme' ),
-								'subtitle'   => esc_html__( 'Beispiel-Repeater mit Titel und Text pro Zeile.', 'boilerplate-theme' ),
-								'item_name'  => esc_html__( 'Element', 'boilerplate-theme' ),
-								'bind_title' => 'example_item_title',
-								'sortable'   => true,
-								'fields'     => array(
-									array(
-										'id'          => 'example_item_title',
-										'type'        => 'text',
-										'title'       => esc_html__( 'Titel', 'boilerplate-theme' ),
-										'placeholder' => esc_html__( 'Titel', 'boilerplate-theme' ),
-									),
-									array(
-										'id'          => 'example_item_text',
-										'type'        => 'text',
-										'title'       => esc_html__( 'Text', 'boilerplate-theme' ),
-										'placeholder' => esc_html__( 'Text', 'boilerplate-theme' ),
-									),
-								),
-							),
-						),
-					),
+				'id'           => 'example_item_metabox',
+				'title'        => esc_html__( 'Beispiel-Felder', 'boilerplate-theme' ),
+				'object_types' => array( self::POST_TYPE ),
+				'context'      => 'normal',
+				'priority'     => 'high',
+			)
+		);
+
+		$cmb->add_field(
+			array(
+				'name' => esc_html__( 'Untertitel', 'boilerplate-theme' ),
+				'desc' => esc_html__( 'Beispiel-Textfeld für diesen Post Type.', 'boilerplate-theme' ),
+				'id'   => 'example_subtitle',
+				'type' => 'text',
+			)
+		);
+
+		$cmb->add_field(
+			array(
+				'name'    => esc_html__( 'Layout', 'boilerplate-theme' ),
+				'desc'    => esc_html__( 'Beispiel-Radio-Buttons für die Layout-Auswahl.', 'boilerplate-theme' ),
+				'id'      => 'example_layout',
+				'type'    => 'radio_inline',
+				'options' => array(
+					'default' => esc_html__( 'Standard', 'boilerplate-theme' ),
+					'wide'    => esc_html__( 'Breit', 'boilerplate-theme' ),
+					'narrow'  => esc_html__( 'Schmal', 'boilerplate-theme' ),
 				),
+				'default' => 'default',
+			)
+		);
+
+		$group_id = $cmb->add_field(
+			array(
+				'id'          => 'example_items',
+				'type'        => 'group',
+				'description' => esc_html__( 'Beispiel-Repeater mit Titel und Text pro Zeile.', 'boilerplate-theme' ),
+				'options'     => array(
+					'group_title'   => esc_html__( 'Element {#}', 'boilerplate-theme' ),
+					'add_button'    => esc_html__( 'Element hinzufügen', 'boilerplate-theme' ),
+					'remove_button' => esc_html__( 'Element entfernen', 'boilerplate-theme' ),
+					'sortable'      => true,
+				),
+			)
+		);
+
+		$cmb->add_group_field(
+			$group_id,
+			array(
+				'name' => esc_html__( 'Titel', 'boilerplate-theme' ),
+				'id'   => 'example_item_title',
+				'type' => 'text',
+			)
+		);
+
+		$cmb->add_group_field(
+			$group_id,
+			array(
+				'name' => esc_html__( 'Text', 'boilerplate-theme' ),
+				'id'   => 'example_item_text',
+				'type' => 'text',
 			)
 		);
 	}
 
 	/**
-	 * Patches Redux metabox init so repeater fields can resolve optName.
+	 * Gets a CMB2 meta value for an example post.
 	 *
-	 * Redux taxonomy/user metaboxes call $.redux.getOptName() before initFields(),
-	 * but post metaboxes do not. Without that, redux.optName stays undefined and
-	 * redux-repeater.js throws: Cannot read properties of undefined (reading 'repeater').
-	 *
-	 * @return void
-	 */
-	public function enqueue_redux_repeater_metabox_fix(): void {
-		if ( ! wp_script_is( 'redux-extension-metaboxes', 'enqueued' ) ) {
-			return;
-		}
-
-		$handle  = 'boilerplate-theme-redux-repeater-metabox-fix';
-		$version = \defined( 'BOILERPLATE_THEME_VERSION' ) ? BOILERPLATE_THEME_VERSION : '1.0.0';
-		$script  = <<<'JS'
-(function ($) {
-	'use strict';
-
-	if (!$ || !$.reduxMetaBoxes || typeof $.reduxMetaBoxes.init !== 'function') {
-		return;
-	}
-
-	var originalInit = $.reduxMetaBoxes.init;
-
-	$.reduxMetaBoxes.init = function () {
-		if ($.redux && typeof $.redux.getOptName === 'function') {
-			var $container = $('.redux-container').first();
-			$.redux.getOptName($container.length ? $container : undefined);
-		}
-
-		return originalInit.apply(this, arguments);
-	};
-})(jQuery);
-JS;
-
-		wp_register_script( $handle, false, array( 'redux-extension-metaboxes' ), $version, true );
-		wp_enqueue_script( $handle );
-		wp_add_inline_script( $handle, $script );
-	}
-
-	/**
-	 * Gets a Redux metabox value for an example post.
+	 * Group field `example_items` returns an array of rows, each with
+	 * `example_item_title` and `example_item_text` keys.
 	 *
 	 * @param int         $post_id       Post ID.
-	 * @param string|null $key           Meta key, or null for all meta.
+	 * @param string|null $key           Meta key, or null for all registered keys.
 	 * @param mixed       $default_value Default when the value is empty.
 	 * @return mixed Meta value, all meta as array, or default.
 	 */
 	public static function get_meta( int $post_id, ?string $key = null, $default_value = null ) {
-		if ( ! function_exists( 'redux_post_meta' ) ) {
-			return $default_value;
-		}
-
-		$opt_name = ThemeOptions::get_options_name();
+		$keys = array( 'example_subtitle', 'example_layout', 'example_items' );
 
 		if ( null === $key ) {
-			$value = redux_post_meta( $opt_name, $post_id );
+			$all = array();
+			foreach ( $keys as $meta_key ) {
+				$all[ $meta_key ] = get_post_meta( $post_id, $meta_key, true );
+			}
 
-			return is_array( $value ) ? $value : $default_value;
+			return $all;
 		}
 
-		$value = redux_post_meta( $opt_name, $post_id, $key );
+		$value = get_post_meta( $post_id, $key, true );
 
 		if ( '' === $value || null === $value ) {
 			return $default_value;

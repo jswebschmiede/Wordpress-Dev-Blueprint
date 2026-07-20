@@ -7,7 +7,7 @@ namespace CompanyName\BoilerplateTheme\Theme;
 \defined( 'ABSPATH' ) || exit;
 
 /**
- * Blocks lost-password flows when the Redux option is enabled.
+ * Blocks lost-password flows when the theme option is enabled.
  */
 class ThemeLoginSecurity {
 	/**
@@ -143,12 +143,11 @@ class ThemeLoginSecurity {
 	 * @return bool True when the lost-password flow should be blocked.
 	 */
 	private function is_password_reset_disabled(): bool {
-		if ( ! class_exists( 'Redux' ) ) {
+		if ( ! function_exists( 'cmb2_get_option' ) ) {
 			return (bool) apply_filters( 'boilerplate_theme_password_reset_disabled', false );
 		}
 
-		$value   = ThemeOptions::get_option( 'disable_password_reset', false );
-		$enabled = ( true === $value || 1 === $value || '1' === $value );
+		$enabled = (bool) ThemeOptions::get_option( 'disable_password_reset', false );
 
 		return (bool) apply_filters( 'boilerplate_theme_password_reset_disabled', $enabled );
 	}
