@@ -81,18 +81,68 @@ cd _wp-content-dev
 mv boilerplate-theme sw-soltau
 cd sw-soltau
 pnpm install
-pnpm run composer:install:dev
-```
-
-Install all Composer roots (package root, theme, plugins) — or use the convenience script above.
-
-Or manually:
-
-```bash
 composer install
 composer install --working-dir=theme
 composer install --working-dir=plugins/boilerplate-plugin
 ```
+
+## Rename theme placeholders
+
+Rename the package folder **before** `pnpm install`, then run the rename scripts to replace placeholder strings in file contents.
+
+```bash
+cd _wp-content-dev
+mv boilerplate-theme sw-soltau
+cd sw-soltau
+pnpm install
+pnpm run composer:install:dev
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
+```
+
+On Windows (PowerShell), replace `mv boilerplate-theme sw-soltau` with `Rename-Item boilerplate-theme sw-soltau`.
+
+For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
+
+The script replaces placeholders in this package and in `_wp-content-dev/cursor/` (rules and skills). It only replaces file contents and does not rename folders.
+
+### Rename plugin
+
+Run **`rename-theme.js` first**, then **`rename-plugin.js`** (both after `pnpm install`):
+
+```bash
+node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
+node node_scripts/rename-plugin.js mvg-aktuell \
+  --plugin boilerplate-plugin \
+  --old-slug boilerplate-plugin \
+  --company SmartMedia24 \
+  --namespace MvgAktuell \
+  --dry-run
+node node_scripts/rename-plugin.js mvg-aktuell \
+  --plugin boilerplate-plugin \
+  --old-slug boilerplate-plugin \
+  --company SmartMedia24 \
+  --namespace MvgAktuell
+```
+
+For the Redux alternative, use `--plugin redux-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
+
+This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace).
+
+## Manual rename checklist
+
+If you rename manually, replace:
+
+- `boilerplate-theme` -> your theme slug and text domain.
+- `boilerplate_theme` -> your hook/function prefix.
+- `CompanyName` -> your company namespace prefix (PascalCase, e.g. `SmartMedia24`).
+- `companyname` -> your Composer vendor and author slug (lowercase, e.g. `smartmedia24`).
+- `https://companyname.example` -> your company URL placeholder (update the domain after rename).
+- `CompanyName\\BoilerplateTheme\\` -> your full PSR-4 namespace root.
+- `BoilerplateTheme` -> your PHP namespace segment (replaced by `rename-theme.js`).
+- `Boilerplate Theme` -> your display name.
+- `BOILERPLATE_THEME_` -> your constant prefix.
+- `boilerplate/example-block` -> your block namespace.
 
 ## Development workflow
 
@@ -203,64 +253,6 @@ Runtime Composer packages are **prefixed with [Strauss](https://github.com/Brian
 pnpm run composer:install:dev
 composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
 ```
-
-## Rename theme placeholders
-
-Rename the package folder **before** `pnpm install`, then run the rename scripts to replace placeholder strings in file contents.
-
-```bash
-cd _wp-content-dev
-mv boilerplate-theme sw-soltau
-cd sw-soltau
-pnpm install
-pnpm run composer:install:dev
-node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
-node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
-```
-
-On Windows (PowerShell), replace `mv boilerplate-theme sw-soltau` with `Rename-Item boilerplate-theme sw-soltau`.
-
-For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
-
-The script replaces placeholders in this package and in `_wp-content-dev/cursor/` (rules and skills). It only replaces file contents and does not rename folders.
-
-### Rename plugin
-
-Run **`rename-theme.js` first**, then **`rename-plugin.js`** (both after `pnpm install`):
-
-```bash
-node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
-node node_scripts/rename-plugin.js mvg-aktuell \
-  --plugin boilerplate-plugin \
-  --old-slug boilerplate-plugin \
-  --company SmartMedia24 \
-  --namespace MvgAktuell \
-  --dry-run
-node node_scripts/rename-plugin.js mvg-aktuell \
-  --plugin boilerplate-plugin \
-  --old-slug boilerplate-plugin \
-  --company SmartMedia24 \
-  --namespace MvgAktuell
-```
-
-For the Redux alternative, use `--plugin redux-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
-
-This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace).
-
-## Manual rename checklist
-
-If you rename manually, replace:
-
-- `boilerplate-theme` -> your theme slug and text domain.
-- `boilerplate_theme` -> your hook/function prefix.
-- `CompanyName` -> your company namespace prefix (PascalCase, e.g. `SmartMedia24`).
-- `companyname` -> your Composer vendor and author slug (lowercase, e.g. `smartmedia24`).
-- `https://companyname.example` -> your company URL placeholder (update the domain after rename).
-- `CompanyName\\BoilerplateTheme\\` -> your full PSR-4 namespace root.
-- `BoilerplateTheme` -> your PHP namespace segment (replaced by `rename-theme.js`).
-- `Boilerplate Theme` -> your display name.
-- `BOILERPLATE_THEME_` -> your constant prefix.
-- `boilerplate/example-block` -> your block namespace.
 
 ## Cursor AI configuration
 

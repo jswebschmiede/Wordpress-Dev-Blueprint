@@ -32,6 +32,8 @@ class ExamplePostType {
 	public function init(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'init', array( $this, 'register_redux_metaboxes' ), 5 );
+		// Priority > 20: Redux metaboxes enqueue their script at priority 20.
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_redux_repeater_metabox_fix' ), 25 );
 		add_filter( 'use_block_editor_for_post_type', array( $this, 'disable_block_editor' ), 10, 2 );
 		add_filter( 'dashboard_recent_posts_query_args', array( $this, 'add_to_dashboard' ) );
 	}
@@ -175,6 +177,48 @@ class ExamplePostType {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Patches Redux metabox init so repeater fields can resolve optName.
+	 *
+	 * Redux taxonomy/user metaboxes call $.redux.getOptName() before initFields(),
+	 * but post metaboxes do not. Without that, redux.optName stays undefined and
+	 * redux-repeater.js throws: Cannot read properties of undefined (reading 'repeater').
+	 *
+	 * @return void
+	 */
+	public function enqueue_redux_repeater_metabox_fix(): void {
+		if ( ! wp_script_is( 'redux-extension-metaboxes', 'enqueued' ) ) {
+			return;
+		}
+
+		$handle  = 'boilerplate-theme-redux-repeater-metabox-fix';
+		$version = \defined( 'BOILERPLATE_THEME_VERSION' ) ? BOILERPLATE_THEME_VERSION : '1.0.0';
+		$script  = <<<'JS'
+(function ($) {
+	'use strict';
+
+	if (!$ || !$.reduxMetaBoxes || typeof $.reduxMetaBoxes.init !== 'function') {
+		return;
+	}
+
+	var originalInit = $.reduxMetaBoxes.init;
+
+	$.reduxMetaBoxes.init = function () {
+		if ($.redux && typeof $.redux.getOptName === 'function') {
+			var $container = $('.redux-container').first();
+			$.redux.getOptName($container.length ? $container : undefined);
+		}
+
+		return originalInit.apply(this, arguments);
+	};
+})(jQuery);
+JS;
+
+		wp_register_script( $handle, false, array( 'redux-extension-metaboxes' ), $version, true );
+		wp_enqueue_script( $handle );
+		wp_add_inline_script( $handle, $script );
 	}
 
 	/**

@@ -169,12 +169,6 @@ class PluginOptions {
 						'title'   => esc_html__( 'Shortcode', 'boilerplate-plugin' ),
 						'content' => $this->get_shortcode_usage_html(),
 					),
-					array(
-						'id'      => 'shortcode_preview',
-						'type'    => 'raw',
-						'title'   => esc_html__( 'Preview', 'boilerplate-plugin' ),
-						'content' => $this->get_shortcode_preview_html(),
-					),
 				),
 			)
 		);
@@ -227,26 +221,7 @@ class PluginOptions {
 	}
 
 	/**
-	 * Builds HTML for a live preview of the demo shortcode.
-	 *
-	 * @return string Markup for the Redux raw field.
-	 */
-	private function get_shortcode_preview_html(): string {
-		ob_start();
-		?>
-		<div class="boilerplate-plugin-shortcode-preview" style="max-width: 32rem; padding: 1rem; border: 1px solid #c3c4c7; background: #fff;">
-			<?php echo do_shortcode( $this->get_example_shortcode() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shortcode template escapes output. ?>
-		</div>
-		<p class="description">
-			<?php esc_html_e( 'This is how the shortcode renders on the frontend.', 'boilerplate-plugin' ); ?>
-		</p>
-		<?php
-
-		return (string) ob_get_clean();
-	}
-
-	/**
-	 * Gets the example shortcode tag for copy and preview.
+	 * Gets the example shortcode tag for copy.
 	 *
 	 * @return string Shortcode tag wrapped in brackets.
 	 */
