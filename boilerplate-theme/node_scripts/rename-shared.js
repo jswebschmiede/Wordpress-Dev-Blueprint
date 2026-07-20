@@ -55,13 +55,23 @@ export function slugToNamespace(value) {
 }
 
 /**
- * Converts a slug to an uppercase constant prefix.
+ * Converts a slug to an uppercase constant prefix (hyphens removed).
  *
  * @param {string} value - Slug value.
  * @returns {string} Constant prefix with trailing underscore.
  */
 export function slugToConstantPrefix(value) {
     return `${value.replaceAll('-', '').toUpperCase()}_`;
+}
+
+/**
+ * Converts a slug to the uppercase constant prefix used in boilerplate placeholders (hyphens become underscores).
+ *
+ * @param {string} value - Slug value.
+ * @returns {string} Placeholder constant prefix with trailing underscore.
+ */
+export function slugToPlaceholderConstantPrefix(value) {
+    return `${value.replaceAll('-', '_').toUpperCase()}_`;
 }
 
 /**

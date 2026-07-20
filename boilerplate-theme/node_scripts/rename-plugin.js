@@ -13,6 +13,7 @@ import {
     defaultSkippedDirectories,
     slugToConstantPrefix,
     slugToNamespace,
+    slugToPlaceholderConstantPrefix,
     slugToTitle,
     validateCompany,
     validateSlug,
@@ -128,7 +129,7 @@ function validateNamespace(value) {
 function getReplacements(slugValue, oldSlugValue, companyValue, namespaceValue, pluginDirValue) {
     const oldTitle = slugToTitle(oldSlugValue);
     const oldNamespace = slugToNamespace(oldSlugValue);
-    const oldConstantPrefix = slugToConstantPrefix(oldSlugValue);
+    const oldConstantPrefix = slugToPlaceholderConstantPrefix(oldSlugValue);
     const title = slugToTitle(slugValue);
     const constantPrefix = slugToConstantPrefix(slugValue);
     const companyNamespace = companyToNamespace(companyValue);
@@ -177,14 +178,14 @@ function getRootReferenceFiles() {
  *
  * @param {string} oldPluginDir - Current plugin directory.
  * @param {string} newPluginDir - Target plugin directory.
- * @param {string} pluginDirName - Current plugin directory basename.
+ * @param {string} oldSlugValue - Placeholder slug used for the bootstrap PHP filename.
  * @param {string} slugValue - New plugin slug.
  * @param {string} oldNamespace - Previous main class basename.
  * @param {string} newNamespace - New main class basename.
  * @returns {void}
  */
-function renamePluginPaths(oldPluginDir, newPluginDir, pluginDirName, slugValue, oldNamespace, newNamespace) {
-    const oldMainFile = join(oldPluginDir, `${pluginDirName}.php`);
+function renamePluginPaths(oldPluginDir, newPluginDir, oldSlugValue, slugValue, oldNamespace, newNamespace) {
+    const oldMainFile = join(oldPluginDir, `${oldSlugValue}.php`);
     const newMainFile = join(oldPluginDir, `${slugValue}.php`);
     const oldMainClassFile = join(oldPluginDir, 'includes', `${oldNamespace}.php`);
     const newMainClassFile = join(oldPluginDir, 'includes', `${newNamespace}.php`);
@@ -303,7 +304,7 @@ applyReplacementsToFiles(pluginFiles, pluginReplacements);
 applyReplacementsToFiles(rootFiles, rootReplacements);
 
 if (!isDryRun) {
-    renamePluginPaths(oldPluginDir, newPluginDir, pluginDirName, slug, oldNamespace, namespace);
+    renamePluginPaths(oldPluginDir, newPluginDir, oldSlug, slug, oldNamespace, namespace);
 } else {
     console.log('Dry run only. Directory and bootstrap files were not renamed.');
 }
