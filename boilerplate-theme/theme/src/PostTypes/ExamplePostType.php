@@ -154,6 +154,7 @@ class ExamplePostType {
 					'add_button'    => esc_html__( 'Element hinzufügen', 'boilerplate-theme' ),
 					'remove_button' => esc_html__( 'Element entfernen', 'boilerplate-theme' ),
 					'sortable'      => true,
+					'closed'        => true,
 				),
 			)
 		);

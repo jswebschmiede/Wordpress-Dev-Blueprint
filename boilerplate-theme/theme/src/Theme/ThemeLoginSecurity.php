@@ -33,8 +33,7 @@ class ThemeLoginSecurity {
 	 * @return void
 	 */
 	public function init(): void {
-		$this->register();
-		add_action( 'after_setup_theme', array( $this, 'register' ), 0 );
+		add_action( 'init', array( $this, 'register' ), 0 );
 	}
 
 	/**
@@ -143,10 +142,6 @@ class ThemeLoginSecurity {
 	 * @return bool True when the lost-password flow should be blocked.
 	 */
 	private function is_password_reset_disabled(): bool {
-		if ( ! function_exists( 'cmb2_get_option' ) ) {
-			return (bool) apply_filters( 'boilerplate_theme_password_reset_disabled', false );
-		}
-
 		$enabled = (bool) ThemeOptions::get_option( 'disable_password_reset', false );
 
 		return (bool) apply_filters( 'boilerplate_theme_password_reset_disabled', $enabled );

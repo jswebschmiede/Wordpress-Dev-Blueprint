@@ -61,6 +61,21 @@ class ThemeManager {
 		$theme_setup = new ThemeSetup();
 		$theme_setup->init();
 
+		// Theme options before features that read those options.
+		if ( defined( 'CMB2_LOADED' ) ) {
+			$theme_options = new ThemeOptions();
+			$theme_options->init();
+		} else {
+			add_action(
+				'admin_notices',
+				static function (): void {
+					echo '<div class="notice notice-error"><p>'
+						. esc_html__( 'CMB2 ist nicht installiert. Bitte installieren Sie es, um die Theme-Optionen zu nutzen.', 'boilerplate-theme' )
+						. ' <a href="https://wordpress.org/plugins/cmb2/" target="_blank" rel="noopener noreferrer">CMB2</a></p></div>';
+				},
+			);
+		}
+
 		$comments_disabled = new CommentsDisabled();
 		$comments_disabled->init();
 
@@ -78,20 +93,6 @@ class ThemeManager {
 
 		$block_manager = new BlockManager();
 		$block_manager->init();
-
-		if ( function_exists( 'new_cmb2_box' ) ) {
-			$theme_options = new ThemeOptions();
-			$theme_options->init();
-		} else {
-			add_action(
-				'admin_notices',
-				static function (): void {
-					echo '<div class="notice notice-error"><p>'
-						. esc_html__( 'CMB2 ist nicht installiert. Bitte installieren Sie es, um die Theme-Optionen zu nutzen.', 'boilerplate-theme' )
-						. ' <a href="https://wordpress.org/plugins/cmb2/" target="_blank" rel="noopener noreferrer">CMB2</a></p></div>';
-				},
-			);
-		}
 
 		$theme_login_security = new ThemeLoginSecurity();
 		$theme_login_security->init();

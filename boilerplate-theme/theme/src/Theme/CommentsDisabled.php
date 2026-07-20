@@ -25,8 +25,7 @@ class CommentsDisabled {
 	 * @return void
 	 */
 	public function init(): void {
-		$this->register();
-		add_action( 'after_setup_theme', array( $this, 'register' ), 0 );
+		add_action( 'init', array( $this, 'register' ), 0 );
 	}
 
 	/**
@@ -43,7 +42,7 @@ class CommentsDisabled {
 
 		add_action( 'admin_menu', array( $this, 'remove_comments_admin_menu' ) );
 		add_action( 'admin_bar_menu', array( $this, 'remove_comments_admin_bar_node' ), 999 );
-		add_action( 'init', array( $this, 'remove_comments_support' ) );
+		add_action( 'init', array( $this, 'remove_comments_support' ), 1 );
 		add_action( 'admin_init', array( $this, 'redirect_comments_admin_screen' ) );
 		add_action( 'pre_comment_on_post', array( $this, 'block_comment_post' ), 0 );
 	}
@@ -114,10 +113,6 @@ class CommentsDisabled {
 	 * @return bool True when comment UI and submissions should be blocked.
 	 */
 	private function is_comments_disabled(): bool {
-		if ( ! function_exists( 'cmb2_get_option' ) ) {
-			return (bool) apply_filters( 'boilerplate_theme_comments_disabled', false );
-		}
-
 		$enabled = (bool) ThemeOptions::get_option( 'disable_comments', false );
 
 		return (bool) apply_filters( 'boilerplate_theme_comments_disabled', $enabled );

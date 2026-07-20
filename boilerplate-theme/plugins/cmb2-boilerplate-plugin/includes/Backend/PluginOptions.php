@@ -25,7 +25,8 @@ class PluginOptions {
 	 * @return void
 	 */
 	public function init(): void {
-		if ( ! function_exists( 'new_cmb2_box' ) ) {
+		// CMB2 defines CMB2_LOADED when the plugin boots; new_cmb2_box() only exists after late init.
+		if ( ! defined( 'CMB2_LOADED' ) ) {
 			add_action( 'admin_notices', array( $this, 'render_missing_cmb2_notice' ) );
 			return;
 		}
