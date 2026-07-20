@@ -48,7 +48,6 @@ class Shortcode {
 				'boilerplate-plugin'
 			)
 		);
-		$gallery  = PluginOptions::get_gallery_items();
 
 		$headline = is_scalar( $headline ) ? (string) $headline : '';
 		$intro    = is_scalar( $intro ) ? (string) $intro : '';

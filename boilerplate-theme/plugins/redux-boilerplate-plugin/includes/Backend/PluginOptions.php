@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace CompanyName\BoilerplatePlugin\Backend;
 
+use CompanyName\BoilerplatePlugin\Shortcodes\Shortcode;
+
 \defined( 'ABSPATH' ) || exit;
 
 /**
@@ -18,11 +20,6 @@ class PluginOptions {
 	public const string OPTIONS_NAME = 'boilerplate_plugin_options';
 
 	/**
-	 * Plugin text domain.
-	 */
-	private const string TEXT_DOMAIN = 'boilerplate-plugin';
-
-	/**
 	 * Redux arguments.
 	 *
 	 * @var array<string, mixed>
@@ -30,19 +27,10 @@ class PluginOptions {
 	private array $args = array();
 
 	/**
-	 * Constructor — prepare Redux args when the framework is available.
-	 */
-	public function __construct() {
-		if ( ! class_exists( 'Redux' ) ) {
-			return;
-		}
-
-		$this->setup_redux_args();
-		$this->init_redux();
-	}
-
-	/**
 	 * Initializes plugin options hooks.
+	 *
+	 * Translations and Redux setup run on init so the text domain is not
+	 * loaded before WordPress 6.7 allows it.
 	 *
 	 * @return void
 	 */
@@ -52,8 +40,22 @@ class PluginOptions {
 			return;
 		}
 
-		add_action( 'redux/loaded', array( $this, 'register_settings' ) );
-		add_action( 'init', array( $this, 'register_settings' ), 1 );
+		add_action( 'init', array( $this, 'bootstrap_redux' ), 1 );
+	}
+
+	/**
+	 * Sets Redux args and registers sections after translations are available.
+	 *
+	 * @return void
+	 */
+	public function bootstrap_redux(): void {
+		if ( ! class_exists( 'Redux' ) ) {
+			return;
+		}
+
+		$this->setup_redux_args();
+		$this->init_redux();
+		$this->register_settings();
 	}
 
 	/**
@@ -69,7 +71,7 @@ class PluginOptions {
 		echo '<div class="notice notice-error"><p>';
 		echo esc_html__(
 			'Redux Framework is not installed. Please install it to use Boilerplate Plugin options.',
-			self::TEXT_DOMAIN
+			'boilerplate-plugin'
 		);
 		echo ' <a href="https://wordpress.org/plugins/redux-framework/" target="_blank" rel="noopener noreferrer">Redux Framework</a>';
 		echo '</p></div>';
@@ -83,15 +85,15 @@ class PluginOptions {
 	private function setup_redux_args(): void {
 		$this->args = array(
 			'opt_name'            => self::OPTIONS_NAME,
-			'display_name'        => esc_html__( 'Boilerplate Plugin', self::TEXT_DOMAIN ),
+			'display_name'        => esc_html__( 'Boilerplate Plugin', 'boilerplate-plugin' ),
 			'display_version'     => \defined( 'BOILERPLATE_PLUGIN_VERSION' ) ? BOILERPLATE_PLUGIN_VERSION : '1.0.0',
 			'display_description' => esc_html__(
-				'Demo options panel powered by Redux Framework (text fields and image repeater).',
-				self::TEXT_DOMAIN
+				'Demo options panel powered by Redux Framework (text fields with shortcode output).',
+				'boilerplate-plugin'
 			),
-			'menu_icon'           => 'dashicons-images-alt2',
-			'menu_title'          => esc_html__( 'Boilerplate Plugin', self::TEXT_DOMAIN ),
-			'page_title'          => esc_html__( 'Boilerplate Plugin', self::TEXT_DOMAIN ),
+			'menu_icon'           => 'dashicons-admin-generic',
+			'menu_title'          => esc_html__( 'Boilerplate Plugin', 'boilerplate-plugin' ),
+			'page_title'          => esc_html__( 'Boilerplate Plugin', 'boilerplate-plugin' ),
 			'page_slug'           => 'boilerplate-plugin',
 			'page_icon'           => 'icon-themes',
 			'page_parent'         => '',
@@ -127,26 +129,26 @@ class PluginOptions {
 		\Redux::set_section(
 			self::OPTIONS_NAME,
 			array(
-				'title'  => esc_html__( 'Content', self::TEXT_DOMAIN ),
+				'title'  => esc_html__( 'Content', 'boilerplate-plugin' ),
 				'id'     => 'content',
-				'desc'   => esc_html__( 'Text fields used by the demo shortcode output.', self::TEXT_DOMAIN ),
+				'desc'   => esc_html__( 'Text fields used by the demo shortcode output.', 'boilerplate-plugin' ),
 				'icon'   => 'el el-edit',
 				'fields' => array(
 					array(
 						'id'       => 'demo_headline',
 						'type'     => 'text',
-						'title'    => esc_html__( 'Headline', self::TEXT_DOMAIN ),
-						'subtitle' => esc_html__( 'Main headline shown by the shortcode.', self::TEXT_DOMAIN ),
-						'default'  => esc_html__( 'Boilerplate Plugin Demo', self::TEXT_DOMAIN ),
+						'title'    => esc_html__( 'Headline', 'boilerplate-plugin' ),
+						'subtitle' => esc_html__( 'Main headline shown by the shortcode.', 'boilerplate-plugin' ),
+						'default'  => esc_html__( 'Boilerplate Plugin Demo', 'boilerplate-plugin' ),
 					),
 					array(
 						'id'       => 'demo_intro',
 						'type'     => 'textarea',
-						'title'    => esc_html__( 'Intro text', self::TEXT_DOMAIN ),
-						'subtitle' => esc_html__( 'Supporting text shown below the headline.', self::TEXT_DOMAIN ),
+						'title'    => esc_html__( 'Intro text', 'boilerplate-plugin' ),
+						'subtitle' => esc_html__( 'Supporting text shown below the headline.', 'boilerplate-plugin' ),
 						'default'  => esc_html__(
 							'This content comes from Redux plugin options. Edit it under Boilerplate Plugin in the admin menu.',
-							self::TEXT_DOMAIN
+							'boilerplate-plugin'
 						),
 					),
 				),
@@ -156,36 +158,22 @@ class PluginOptions {
 		\Redux::set_section(
 			self::OPTIONS_NAME,
 			array(
-				'title'  => esc_html__( 'Gallery', self::TEXT_DOMAIN ),
-				'id'     => 'gallery',
-				'desc'   => esc_html__( 'Repeater of images with optional captions.', self::TEXT_DOMAIN ),
-				'icon'   => 'el el-picture',
+				'title'  => esc_html__( 'Example Shortcode', 'boilerplate-plugin' ),
+				'id'     => 'shortcode',
+				'desc'   => esc_html__( 'Insert this shortcode into a page or post to render the example output.', 'boilerplate-plugin' ),
+				'icon'   => 'el el-info-circle',
 				'fields' => array(
 					array(
-						'id'           => 'demo_gallery',
-						'type'         => 'repeater',
-						'title'        => esc_html__( 'Images', self::TEXT_DOMAIN ),
-						'subtitle'     => esc_html__( 'Add, sort, and remove gallery items.', self::TEXT_DOMAIN ),
-						'group_values' => true,
-						'item_name'    => esc_html__( 'Image', self::TEXT_DOMAIN ),
-						'bind_title'   => 'caption',
-						'sortable'     => true,
-						'limit'        => 12,
-						'fields'       => array(
-							array(
-								'id'          => 'image',
-								'type'        => 'media',
-								'url'         => true,
-								'title'       => esc_html__( 'Image', self::TEXT_DOMAIN ),
-								'placeholder' => esc_html__( 'No media selected', self::TEXT_DOMAIN ),
-							),
-							array(
-								'id'          => 'caption',
-								'type'        => 'text',
-								'title'       => esc_html__( 'Caption', self::TEXT_DOMAIN ),
-								'placeholder' => esc_html__( 'Optional caption', self::TEXT_DOMAIN ),
-							),
-						),
+						'id'      => 'shortcode_usage',
+						'type'    => 'raw',
+						'title'   => esc_html__( 'Shortcode', 'boilerplate-plugin' ),
+						'content' => $this->get_shortcode_usage_html(),
+					),
+					array(
+						'id'      => 'shortcode_preview',
+						'type'    => 'raw',
+						'title'   => esc_html__( 'Preview', 'boilerplate-plugin' ),
+						'content' => $this->get_shortcode_preview_html(),
 					),
 				),
 			)
@@ -196,7 +184,7 @@ class PluginOptions {
 	 * Gets a plugin option value from Redux.
 	 *
 	 * @param string $key           Option key.
-	 * @param mixed  $default_value Default value if the option is empty or Redux is missing.
+	 * @param mixed  $default_value Default value if the option is empty or "Redux Framework" is missing.
 	 * @return mixed Option value or default.
 	 */
 	public static function get_option( string $key, $default_value = null ) {
@@ -214,39 +202,55 @@ class PluginOptions {
 	}
 
 	/**
-	 * Normalizes the grouped gallery repeater into a list of items.
+	 * Builds HTML explaining how to use the demo shortcode.
 	 *
-	 * @return array<int, array{attachment_id: int, url: string, caption: string}>
+	 * @return string Escaped markup for the Redux raw field.
 	 */
-	public static function get_gallery_items(): array {
-		$gallery = self::get_option( 'demo_gallery', array() );
+	private function get_shortcode_usage_html(): string {
+		$shortcode = $this->get_example_shortcode();
 
-		if ( ! is_array( $gallery ) ) {
-			return array();
-		}
+		ob_start();
+		?>
+		<input
+			type="text"
+			value="<?php echo esc_attr( $shortcode ); ?>"
+			class="regular-text code"
+			readonly
+			onclick="this.select();"
+		/>
+		<p class="description">
+			<?php esc_html_e( 'Copy and paste this shortcode into any page or post.', 'boilerplate-plugin' ); ?>
+		</p>
+		<?php
 
-		$images   = isset( $gallery['image'] ) && is_array( $gallery['image'] ) ? $gallery['image'] : array();
-		$captions = isset( $gallery['caption'] ) && is_array( $gallery['caption'] ) ? $gallery['caption'] : array();
-		$count    = max( count( $images ), count( $captions ) );
-		$items    = array();
+		return (string) ob_get_clean();
+	}
 
-		for ( $i = 0; $i < $count; $i++ ) {
-			$media   = isset( $images[ $i ] ) && is_array( $images[ $i ] ) ? $images[ $i ] : array();
-			$url     = isset( $media['url'] ) && is_string( $media['url'] ) ? $media['url'] : '';
-			$id      = isset( $media['id'] ) ? absint( $media['id'] ) : 0;
-			$caption = isset( $captions[ $i ] ) && is_scalar( $captions[ $i ] ) ? (string) $captions[ $i ] : '';
+	/**
+	 * Builds HTML for a live preview of the demo shortcode.
+	 *
+	 * @return string Markup for the Redux raw field.
+	 */
+	private function get_shortcode_preview_html(): string {
+		ob_start();
+		?>
+		<div class="boilerplate-plugin-shortcode-preview" style="max-width: 32rem; padding: 1rem; border: 1px solid #c3c4c7; background: #fff;">
+			<?php echo do_shortcode( $this->get_example_shortcode() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Shortcode template escapes output. ?>
+		</div>
+		<p class="description">
+			<?php esc_html_e( 'This is how the shortcode renders on the frontend.', 'boilerplate-plugin' ); ?>
+		</p>
+		<?php
 
-			if ( '' === $url && 0 === $id ) {
-				continue;
-			}
+		return (string) ob_get_clean();
+	}
 
-			$items[] = array(
-				'attachment_id' => $id,
-				'url'           => $url,
-				'caption'       => $caption,
-			);
-		}
-
-		return $items;
+	/**
+	 * Gets the example shortcode tag for copy and preview.
+	 *
+	 * @return string Shortcode tag wrapped in brackets.
+	 */
+	private function get_example_shortcode(): string {
+		return sprintf( '[%s]', Shortcode::TAG );
 	}
 }

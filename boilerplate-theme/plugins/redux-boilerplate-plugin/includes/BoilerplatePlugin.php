@@ -56,16 +56,27 @@ class BoilerplatePlugin {
 	 * @return void
 	 */
 	public function run(): void {
-		if ( \defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
-			load_plugin_textdomain(
-				'boilerplate-plugin',
-				false,
-				dirname( plugin_basename( BOILERPLATE_PLUGIN_FILE ) ) . '/languages'
-			);
-		}
+		add_action( 'init', array( $this, 'load_textdomain' ), 0 );
 
 		( new PluginOptions() )->init();
 		( new Assets() )->init();
 		( new Shortcode() )->init();
+	}
+
+	/**
+	 * Loads the plugin text domain on init (required since WordPress 6.7).
+	 *
+	 * @return void
+	 */
+	public function load_textdomain(): void {
+		if ( ! \defined( 'BOILERPLATE_PLUGIN_FILE' ) ) {
+			return;
+		}
+
+		load_plugin_textdomain(
+			'boilerplate-plugin',
+			false,
+			dirname( plugin_basename( BOILERPLATE_PLUGIN_FILE ) ) . '/languages'
+		);
 	}
 }
