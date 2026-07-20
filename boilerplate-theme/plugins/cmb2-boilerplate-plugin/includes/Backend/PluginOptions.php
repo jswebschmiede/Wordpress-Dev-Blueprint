@@ -63,9 +63,11 @@ class PluginOptions {
 			return;
 		}
 
-		$cmb = new_cmb2_box(
+		$tab_group = self::OPTIONS_NAME;
+
+		$content = new_cmb2_box(
 			array(
-				'id'           => self::OPTIONS_NAME . '_page',
+				'id'           => self::OPTIONS_NAME . '_content',
 				'title'        => esc_html__( 'Boilerplate Plugin', 'boilerplate-plugin' ),
 				'object_types' => array( 'options-page' ),
 				'option_key'   => self::OPTIONS_NAME,
@@ -73,10 +75,12 @@ class PluginOptions {
 				'capability'   => 'manage_options',
 				'icon_url'     => 'dashicons-admin-generic',
 				'position'     => 90,
+				'tab_group'    => $tab_group,
+				'tab_title'    => esc_html__( 'Content', 'boilerplate-plugin' ),
 			)
 		);
 
-		$cmb->add_field(
+		$content->add_field(
 			array(
 				'name' => esc_html__( 'Content', 'boilerplate-plugin' ),
 				'desc' => esc_html__( 'Text fields used by the demo shortcode output.', 'boilerplate-plugin' ),
@@ -85,7 +89,7 @@ class PluginOptions {
 			)
 		);
 
-		$cmb->add_field(
+		$content->add_field(
 			array(
 				'name'    => esc_html__( 'Headline', 'boilerplate-plugin' ),
 				'desc'    => esc_html__( 'Main headline shown by the shortcode.', 'boilerplate-plugin' ),
@@ -95,7 +99,7 @@ class PluginOptions {
 			)
 		);
 
-		$cmb->add_field(
+		$content->add_field(
 			array(
 				'name'    => esc_html__( 'Intro text', 'boilerplate-plugin' ),
 				'desc'    => esc_html__( 'Supporting text shown below the headline.', 'boilerplate-plugin' ),
@@ -108,7 +112,19 @@ class PluginOptions {
 			)
 		);
 
-		$cmb->add_field(
+		$shortcode = new_cmb2_box(
+			array(
+				'id'           => self::OPTIONS_NAME . '_shortcode',
+				'title'        => esc_html__( 'Example Shortcode', 'boilerplate-plugin' ),
+				'object_types' => array( 'options-page' ),
+				'option_key'   => self::OPTIONS_NAME . '_shortcode',
+				'parent_slug'  => self::OPTIONS_NAME,
+				'tab_group'    => $tab_group,
+				'tab_title'    => esc_html__( 'Shortcode', 'boilerplate-plugin' ),
+			)
+		);
+
+		$shortcode->add_field(
 			array(
 				'name' => esc_html__( 'Example Shortcode', 'boilerplate-plugin' ),
 				'desc' => esc_html__( 'Insert this shortcode into a page or post to render the example output.', 'boilerplate-plugin' ),
@@ -117,7 +133,7 @@ class PluginOptions {
 			)
 		);
 
-		$cmb->add_field(
+		$shortcode->add_field(
 			array(
 				'name'       => esc_html__( 'Shortcode', 'boilerplate-plugin' ),
 				'desc'       => esc_html__( 'Copy and paste this shortcode into any page or post.', 'boilerplate-plugin' ),
