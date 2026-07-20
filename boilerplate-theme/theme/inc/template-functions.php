@@ -336,6 +336,16 @@ function boilerplate_theme_modify_heading_levels( array $args, string $block_typ
 }
 add_filter( 'register_block_type_args', 'boilerplate_theme_modify_heading_levels', 10, 2 );
 
+/**
+ * Hide the entire Secure Custom Fields admin menu (fields are code-registered).
+ *
+ * @return bool Always false to disable the SCF admin UI.
+ */
+function boilerplate_theme_hide_acf_admin(): bool {
+	return false;
+}
+add_filter( 'acf/settings/show_admin', 'boilerplate_theme_hide_acf_admin' );
+
 /*
  * -------------------------------------------------------------------------
  * Project-specific examples (uncomment and adapt when needed)
