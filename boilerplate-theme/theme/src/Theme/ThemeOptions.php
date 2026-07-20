@@ -218,7 +218,7 @@ class ThemeOptions {
 			array(
 				'id'     => 'security',
 				'title'  => esc_html__( 'Sicherheit', 'boilerplate-theme' ),
-				'desc'   => esc_html__( 'Einstellungen zur Anmeldung und zum Schutz vor Missbrauch', 'boilerplate-theme' ),
+				'desc'   => esc_html__( 'Einstellungen zur Anmeldung, Kommentaren und zum Schutz vor Missbrauch', 'boilerplate-theme' ),
 				'icon'   => 'el el-lock',
 				'fields' => array(
 					array(
@@ -227,6 +227,18 @@ class ThemeOptions {
 						'title'    => esc_html__( 'Passwort-Zurücksetzen deaktivieren', 'boilerplate-theme' ),
 						'subtitle' => esc_html__(
 							'Blendet „Passwort vergessen“ aus und blockiert den WordPress-Passwort-Reset (Links und E-Mails). Verringert Missbrauch.',
+							'boilerplate-theme'
+						),
+						'default'  => false,
+						'on'       => esc_html__( 'Aktivieren', 'boilerplate-theme' ),
+						'off'      => esc_html__( 'Deaktivieren', 'boilerplate-theme' ),
+					),
+					array(
+						'id'       => 'disable_comments',
+						'type'     => 'switch',
+						'title'    => esc_html__( 'Kommentare deaktivieren', 'boilerplate-theme' ),
+						'subtitle' => esc_html__(
+							'Entfernt Kommentar-UI im Backend und der Admin-Bar, deaktiviert Kommentar-Support bei allen Beitragstypen und blockiert neue Kommentar-Einreichungen.',
 							'boilerplate-theme'
 						),
 						'default'  => false,
@@ -360,6 +372,19 @@ class ThemeOptions {
 	}
 
 	/**
+	 * Gets the Redux options name for this theme.
+	 *
+	 * @return string Options name (opt_name).
+	 */
+	public static function get_options_name(): string {
+		if ( isset( self::$options_name ) ) {
+			return self::$options_name;
+		}
+
+		return wp_get_theme()->get( 'TextDomain' ) . '_options';
+	}
+
+	/**
 	 * Get theme option value.
 	 *
 	 * @param string $key           Option key.
@@ -371,7 +396,7 @@ class ThemeOptions {
 			return $default_value;
 		}
 
-		$value = \Redux::get_option( self::$options_name, $key, $default_value );
+		$value = \Redux::get_option( self::get_options_name(), $key, $default_value );
 
 		if ( empty( $value ) ) {
 			return $default_value;

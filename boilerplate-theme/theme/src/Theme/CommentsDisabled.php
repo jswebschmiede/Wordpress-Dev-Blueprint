@@ -9,14 +9,38 @@ namespace CompanyName\BoilerplateTheme\Theme;
 /**
  * Central place for no-comments UI and legacy comment submission blocking.
  * Does not unregister REST comment routes (editor compatibility).
+ * Active only when the Redux option is enabled.
  */
 class CommentsDisabled {
 	/**
-	 * Registers hooks.
+	 * Prevents duplicate hook registration.
+	 *
+	 * @var bool
+	 */
+	private static bool $hooks_registered = false;
+
+	/**
+	 * Registers hooks when the option is enabled.
 	 *
 	 * @return void
 	 */
 	public function init(): void {
+		$this->register();
+		add_action( 'after_setup_theme', array( $this, 'register' ), 0 );
+	}
+
+	/**
+	 * Registers comment-disabling hooks when enabled in theme options.
+	 *
+	 * @return void
+	 */
+	public function register(): void {
+		if ( self::$hooks_registered || ! $this->is_comments_disabled() ) {
+			return;
+		}
+
+		self::$hooks_registered = true;
+
 		add_action( 'admin_menu', array( $this, 'remove_comments_admin_menu' ) );
 		add_action( 'admin_bar_menu', array( $this, 'remove_comments_admin_bar_node' ), 999 );
 		add_action( 'init', array( $this, 'remove_comments_support' ) );
@@ -82,5 +106,21 @@ class CommentsDisabled {
 			esc_html__( 'Verboten', 'boilerplate-theme' ),
 			array( 'response' => 403 )
 		);
+	}
+
+	/**
+	 * Whether comments should be fully disabled.
+	 *
+	 * @return bool True when comment UI and submissions should be blocked.
+	 */
+	private function is_comments_disabled(): bool {
+		if ( ! class_exists( 'Redux' ) ) {
+			return (bool) apply_filters( 'boilerplate_theme_comments_disabled', false );
+		}
+
+		$value   = ThemeOptions::get_option( 'disable_comments', false );
+		$enabled = ( true === $value || 1 === $value || '1' === $value );
+
+		return (bool) apply_filters( 'boilerplate_theme_comments_disabled', $enabled );
 	}
 }
