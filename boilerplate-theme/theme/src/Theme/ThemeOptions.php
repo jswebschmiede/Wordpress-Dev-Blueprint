@@ -311,9 +311,15 @@ class ThemeOptions {
 		) as $field_id => $label ) {
 			$social->add_field(
 				array(
-					'name' => $label,
-					'id'   => $field_id,
-					'type' => 'text_url',
+					'name'       => $label,
+					'id'         => $field_id,
+					'type'       => 'text_url',
+					'protocols'  => array( 'http', 'https' ),
+					'attributes' => array(
+						'autocomplete' => 'off',
+						'style'        => 'width: 60%;',
+						'placeholder'  => 'https://example.com',
+					),
 				)
 			);
 		}
