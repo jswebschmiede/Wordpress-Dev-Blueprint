@@ -58,6 +58,9 @@ class ThemeManager {
 	public function init(): void {
 		$this->set_constants();
 
+		// Hide the entire Secure Custom Fields admin menu (fields are code-registered).
+		add_filter( 'acf/settings/show_admin', '__return_false' );
+
 		$theme_setup = new ThemeSetup();
 		$theme_setup->init();
 

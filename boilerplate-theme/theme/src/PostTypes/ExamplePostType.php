@@ -4,14 +4,12 @@ declare( strict_types=1 );
 
 namespace CompanyName\BoilerplateTheme\PostTypes;
 
-use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
-
 \defined( 'ABSPATH' ) || exit;
 
 /**
  * Registers an example custom post type as a scaffold for new projects.
  *
- * Uses Redux metaboxes for custom fields and the classic editor (Gutenberg off).
+ * Uses Secure Custom Fields (SCF) field groups and the classic editor (Gutenberg off).
  */
 class ExamplePostType {
 	/**
@@ -25,15 +23,25 @@ class ExamplePostType {
 	private const string TAXONOMY = 'example_category';
 
 	/**
+	 * Known SCF field names for this post type.
+	 *
+	 * @var list<string>
+	 */
+	private const array META_KEYS = array(
+		'example_subtitle',
+		'example_layout',
+		'example_items',
+	);
+
+	/**
 	 * Initializes post type hooks.
 	 *
 	 * @return void
 	 */
 	public function init(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
-		add_action( 'init', array( $this, 'register_redux_metaboxes' ), 5 );
-		// Priority > 20: Redux metaboxes enqueue their script at priority 20.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_redux_repeater_metabox_fix' ), 25 );
+		add_action( 'acf/init', array( $this, 'register_scf_fields' ) );
+		add_action( 'admin_notices', array( $this, 'render_missing_scf_notice' ) );
 		add_filter( 'use_block_editor_for_post_type', array( $this, 'disable_block_editor' ), 10, 2 );
 		add_filter( 'dashboard_recent_posts_query_args', array( $this, 'add_to_dashboard' ) );
 	}
@@ -105,146 +113,136 @@ class ExamplePostType {
 	}
 
 	/**
-	 * Registers Redux metaboxes for the example post type.
+	 * Registers SCF field groups for the example post type.
 	 *
 	 * @return void
 	 */
-	public function register_redux_metaboxes(): void {
-		if ( ! class_exists( 'Redux_Metaboxes' ) ) {
+	public function register_scf_fields(): void {
+		if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 			return;
 		}
 
-		$opt_name = ThemeOptions::get_options_name();
-
-		\Redux_Metaboxes::set_box(
-			$opt_name,
+		acf_add_local_field_group(
 			array(
-				'id'         => 'example-item-metabox',
+				'key'        => 'group_example_item_fields',
 				'title'      => esc_html__( 'Beispiel-Felder', 'boilerplate-theme' ),
-				'post_types' => array( self::POST_TYPE ),
-				'position'   => 'normal',
-				'priority'   => 'high',
-				'sections'   => array(
+				'fields'     => array(
 					array(
-						'title'  => esc_html__( 'Inhalt', 'boilerplate-theme' ),
-						'id'     => 'example-item-content',
-						'icon'   => 'el el-edit',
-						'fields' => array(
+						'key'           => 'field_example_subtitle',
+						'label'         => esc_html__( 'Untertitel', 'boilerplate-theme' ),
+						'name'          => 'example_subtitle',
+						'type'          => 'text',
+						'instructions'  => esc_html__( 'Beispiel-Textfeld für diesen Post Type.', 'boilerplate-theme' ),
+						'required'      => 0,
+						'default_value' => '',
+					),
+					array(
+						'key'           => 'field_example_layout',
+						'label'         => esc_html__( 'Layout', 'boilerplate-theme' ),
+						'name'          => 'example_layout',
+						'type'          => 'radio',
+						'instructions'  => esc_html__( 'Beispiel-Radio-Buttons für die Layout-Auswahl.', 'boilerplate-theme' ),
+						'choices'       => array(
+							'default' => esc_html__( 'Standard', 'boilerplate-theme' ),
+							'wide'    => esc_html__( 'Breit', 'boilerplate-theme' ),
+							'narrow'  => esc_html__( 'Schmal', 'boilerplate-theme' ),
+						),
+						'default_value' => 'default',
+						'layout'        => 'vertical',
+					),
+					array(
+						'key'          => 'field_example_items',
+						'label'        => esc_html__( 'Elemente', 'boilerplate-theme' ),
+						'name'         => 'example_items',
+						'type'         => 'repeater',
+						'instructions' => esc_html__( 'Beispiel-Repeater mit Titel und Text pro Zeile.', 'boilerplate-theme' ),
+						'layout'       => 'table',
+						'button_label' => esc_html__( 'Element hinzufügen', 'boilerplate-theme' ),
+						'sub_fields'   => array(
 							array(
-								'id'       => 'example_subtitle',
-								'type'     => 'text',
-								'title'    => esc_html__( 'Untertitel', 'boilerplate-theme' ),
-								'subtitle' => esc_html__( 'Beispiel-Textfeld für diesen Post Type.', 'boilerplate-theme' ),
-								'default'  => '',
+								'key'           => 'field_example_item_title',
+								'label'         => esc_html__( 'Titel', 'boilerplate-theme' ),
+								'name'          => 'example_item_title',
+								'type'          => 'text',
+								'placeholder'   => esc_html__( 'Titel', 'boilerplate-theme' ),
+								'default_value' => '',
 							),
 							array(
-								'id'       => 'example_layout',
-								'type'     => 'radio',
-								'title'    => esc_html__( 'Layout', 'boilerplate-theme' ),
-								'subtitle' => esc_html__( 'Beispiel-Radio-Buttons für die Layout-Auswahl.', 'boilerplate-theme' ),
-								'options'  => array(
-									'default' => esc_html__( 'Standard', 'boilerplate-theme' ),
-									'wide'    => esc_html__( 'Breit', 'boilerplate-theme' ),
-									'narrow'  => esc_html__( 'Schmal', 'boilerplate-theme' ),
-								),
-								'default'  => 'default',
-							),
-							array(
-								'id'         => 'example_items',
-								'type'       => 'repeater',
-								'title'      => esc_html__( 'Elemente', 'boilerplate-theme' ),
-								'subtitle'   => esc_html__( 'Beispiel-Repeater mit Titel und Text pro Zeile.', 'boilerplate-theme' ),
-								'item_name'  => esc_html__( 'Element', 'boilerplate-theme' ),
-								'bind_title' => 'example_item_title',
-								'sortable'   => true,
-								'fields'     => array(
-									array(
-										'id'          => 'example_item_title',
-										'type'        => 'text',
-										'title'       => esc_html__( 'Titel', 'boilerplate-theme' ),
-										'placeholder' => esc_html__( 'Titel', 'boilerplate-theme' ),
-									),
-									array(
-										'id'          => 'example_item_text',
-										'type'        => 'text',
-										'title'       => esc_html__( 'Text', 'boilerplate-theme' ),
-										'placeholder' => esc_html__( 'Text', 'boilerplate-theme' ),
-									),
-								),
+								'key'           => 'field_example_item_text',
+								'label'         => esc_html__( 'Text', 'boilerplate-theme' ),
+								'name'          => 'example_item_text',
+								'type'          => 'text',
+								'placeholder'   => esc_html__( 'Text', 'boilerplate-theme' ),
+								'default_value' => '',
 							),
 						),
 					),
 				),
+				'location'   => array(
+					array(
+						array(
+							'param'    => 'post_type',
+							'operator' => '==',
+							'value'    => self::POST_TYPE,
+						),
+					),
+				),
+				'menu_order' => 0,
+				'position'   => 'normal',
+				'style'      => 'default',
 			)
 		);
 	}
 
 	/**
-	 * Patches Redux metabox init so repeater fields can resolve optName.
-	 *
-	 * Redux taxonomy/user metaboxes call $.redux.getOptName() before initFields(),
-	 * but post metaboxes do not. Without that, redux.optName stays undefined and
-	 * redux-repeater.js throws: Cannot read properties of undefined (reading 'repeater').
+	 * Renders an admin notice when Secure Custom Fields is missing.
 	 *
 	 * @return void
 	 */
-	public function enqueue_redux_repeater_metabox_fix(): void {
-		if ( ! wp_script_is( 'redux-extension-metaboxes', 'enqueued' ) ) {
+	public function render_missing_scf_notice(): void {
+		if ( function_exists( 'acf_add_local_field_group' ) ) {
 			return;
 		}
 
-		$handle  = 'boilerplate-theme-redux-repeater-metabox-fix';
-		$version = \defined( 'BOILERPLATE_THEME_VERSION' ) ? BOILERPLATE_THEME_VERSION : '1.0.0';
-		$script  = <<<'JS'
-(function ($) {
-	'use strict';
-
-	if (!$ || !$.reduxMetaBoxes || typeof $.reduxMetaBoxes.init !== 'function') {
-		return;
-	}
-
-	var originalInit = $.reduxMetaBoxes.init;
-
-	$.reduxMetaBoxes.init = function () {
-		if ($.redux && typeof $.redux.getOptName === 'function') {
-			var $container = $('.redux-container').first();
-			$.redux.getOptName($container.length ? $container : undefined);
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return;
 		}
 
-		return originalInit.apply(this, arguments);
-	};
-})(jQuery);
-JS;
-
-		wp_register_script( $handle, false, array( 'redux-extension-metaboxes' ), $version, true );
-		wp_enqueue_script( $handle );
-		wp_add_inline_script( $handle, $script );
+		echo '<div class="notice notice-error"><p>';
+		echo esc_html__(
+			'Secure Custom Fields is not installed. Please install it to use example post type fields.',
+			'boilerplate-theme'
+		);
+		echo ' <a href="https://wordpress.org/plugins/secure-custom-fields/" target="_blank" rel="noopener noreferrer">Secure Custom Fields</a>';
+		echo '</p></div>';
 	}
 
 	/**
-	 * Gets a Redux metabox value for an example post.
+	 * Gets an SCF field value for an example post.
 	 *
 	 * @param int         $post_id       Post ID.
-	 * @param string|null $key           Meta key, or null for all meta.
+	 * @param string|null $key           Meta key, or null for all known meta.
 	 * @param mixed       $default_value Default when the value is empty.
 	 * @return mixed Meta value, all meta as array, or default.
 	 */
 	public static function get_meta( int $post_id, ?string $key = null, $default_value = null ) {
-		if ( ! function_exists( 'redux_post_meta' ) ) {
+		if ( ! function_exists( 'get_field' ) ) {
 			return $default_value;
 		}
 
-		$opt_name = ThemeOptions::get_options_name();
-
 		if ( null === $key ) {
-			$value = redux_post_meta( $opt_name, $post_id );
+			$values = array();
 
-			return is_array( $value ) ? $value : $default_value;
+			foreach ( self::META_KEYS as $meta_key ) {
+				$values[ $meta_key ] = get_field( $meta_key, $post_id );
+			}
+
+			return $values;
 		}
 
-		$value = redux_post_meta( $opt_name, $post_id, $key );
+		$value = get_field( $key, $post_id );
 
-		if ( '' === $value || null === $value ) {
+		if ( '' === $value || null === $value || false === $value ) {
 			return $default_value;
 		}
 

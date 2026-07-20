@@ -3,10 +3,10 @@
 declare( strict_types=1 );
 
 /**
- * Template for the Redux demo shortcode.
+ * Template for the SCF demo shortcode.
  *
- * @var string $headline Headline from Redux options.
- * @var string $intro    Intro text from Redux options.
+ * @var string $headline Headline from SCF options.
+ * @var string $intro    Intro text from SCF options.
  *
  * @package BoilerplatePlugin
  */
