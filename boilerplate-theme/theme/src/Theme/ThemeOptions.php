@@ -82,7 +82,7 @@ class ThemeOptions {
 			'admin_bar'           => false,
 			'dev_mode'            => false,
 			'page_priority'       => 90,
-			'search'              => true,
+			'search'              => false,
 		);
 	}
 
