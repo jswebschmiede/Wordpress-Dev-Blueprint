@@ -10,7 +10,7 @@ use CompanyName\BoilerplatePlugin\Backend\PluginOptions;
 \defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers the demo shortcode that outputs Redux options.
+ * Registers the demo shortcode that outputs SCF options.
  */
 class Shortcode {
 	public const string TAG = 'boilerplate_plugin';
@@ -25,7 +25,7 @@ class Shortcode {
 	}
 
 	/**
-	 * Renders shortcode markup from Redux options.
+	 * Renders shortcode markup from SCF options.
 	 *
 	 * @param array<string, mixed> $atts    Shortcode attributes.
 	 * @param string|null          $content Shortcode content.
@@ -44,7 +44,7 @@ class Shortcode {
 		$intro    = PluginOptions::get_option(
 			'demo_intro',
 			__(
-				'This content comes from Redux plugin options. Edit it under Boilerplate Plugin in the admin menu.',
+				'This content comes from Secure Custom Fields plugin options. Edit it under Boilerplate Plugin in the admin menu.',
 				'boilerplate-plugin'
 			)
 		);

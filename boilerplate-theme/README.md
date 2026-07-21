@@ -43,7 +43,7 @@ _wp-content-dev/
     │   └── script.js
     ├── blocks/example-block/
     ├── plugins/boilerplate-plugin/
-    ├── plugins/redux-boilerplate-plugin/
+    ├── plugins/scf-boilerplate-plugin/
     ├── tailwind/custom/components/example-block.css
     └── theme/
         ├── functions.php
@@ -125,7 +125,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
   --namespace MvgAktuell
 ```
 
-For the Redux alternative, use `--plugin redux-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
+For the SCF alternative, use `--plugin scf-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
 
 This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace).
 
@@ -274,12 +274,12 @@ Create a symlink or copy the deployable theme directory to WordPress:
 ```bash
 ln -s "_wp-content-dev/boilerplate-theme/theme" "wp-content/themes/boilerplate-theme"
 ln -s "_wp-content-dev/boilerplate-theme/plugins/boilerplate-plugin" "wp-content/plugins/boilerplate-plugin"
-ln -s "_wp-content-dev/boilerplate-theme/plugins/redux-boilerplate-plugin" "wp-content/plugins/redux-boilerplate-plugin"
+ln -s "_wp-content-dev/boilerplate-theme/plugins/scf-boilerplate-plugin" "wp-content/plugins/scf-boilerplate-plugin"
 ```
 
 On Windows, configure and run `_wp-content-dev/ps/create-blueprint-theme-link.ps1` and `create-blueprint-plugin-link.ps1` (adapt the script paths for additional plugins as needed).
 
-Activate the theme and plugin(s) in WordPress after linking. For the Redux demo plugin, also activate **Redux Framework**. Install Composer dependencies before activating if you have not run `pnpm run composer:install:dev` yet.
+Activate the theme and plugin(s) in WordPress after linking. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**. Install Composer dependencies before activating if you have not run `pnpm run composer:install:dev` yet.
 
 Root-level tooling:
 
@@ -314,6 +314,7 @@ Root-level tooling:
 The theme includes general infrastructure migrated from a production reference (navigation, Redux options, templates, admin hygiene):
 
 - **Redux Framework** (recommended): powers Theme Options (logo, search page, breadcrumbs, 404 text, social links, custom CSS/JS). Without Redux, options fall back to defaults and an admin notice is shown.
+- **Secure Custom Fields** (recommended): powers example CPT fields (`ExamplePostType`) and the SCF plugin boilerplate. The SCF admin menu is hidden; fields are registered in PHP.
 - **Font Awesome** (recommended): icons in header search, footer social links, and back-to-top button.
 - **Example CPT** (`example_item` + `example_category`): scaffold in `theme/src/PostTypes/ExamplePostType.php` — copy and adapt for project-specific post types.
 - **Breadcrumb CPT mapping**: extend via the `boilerplate_theme_breadcrumb_cpt_page_map` filter.
@@ -323,9 +324,9 @@ The theme includes general infrastructure migrated from a production reference (
 | Plugin | Options stack | Notes |
 |--------|---------------|--------|
 | `plugins/boilerplate-plugin/` | WordPress Settings API | Shortcode, AJAX skeleton, Strauss demo |
-| `plugins/redux-boilerplate-plugin/` | Redux Framework | Text fields + image repeater; shortcode `[boilerplate_plugin]`; requires the Redux Framework WP plugin |
+| `plugins/scf-boilerplate-plugin/` | Secure Custom Fields | Text fields + shortcode `[boilerplate_plugin]`; requires the SCF WP plugin |
 
-Redux works the same for themes and plugins: each panel needs its own `opt_name`. See `plugins/redux-boilerplate-plugin/README.md` for setup and local linking.
+Theme Options still use Redux (`ThemeOptions`); CPT meta and the SCF plugin alternative use Secure Custom Fields. See `plugins/scf-boilerplate-plugin/README.md` for setup and local linking.
 
 ## Adding blocks
 

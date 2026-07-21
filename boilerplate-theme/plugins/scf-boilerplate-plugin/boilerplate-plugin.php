@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Boilerplate Plugin
- * Description: Demo WordPress plugin using Redux Framework for options (text fields) with shortcode output.
+ * Description: Demo WordPress plugin using Secure Custom Fields for options (text fields) with shortcode output.
  * Version: 1.0.0
  * Author: companyname
  * Author URI: https://companyname.example
