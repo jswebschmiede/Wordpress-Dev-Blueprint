@@ -1,0 +1,333 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Redux Framework\n"
+"POT-Creation-Date: 2025-11-29 13:42+0100\n"
+"PO-Revision-Date: 2026-07-21 22:28+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.4\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: redux-framework.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: redux-core/assets/css/vendor\n"
+"X-Poedit-SearchPathExcluded-2: redux-core/assets/js/vendor\n"
+"X-Poedit-SearchPathExcluded-3: redux-core/assets/scss/vendor\n"
+"X-Poedit-SearchPathExcluded-4: redux-core/inc/extensions/datetime/datetime/vendor\n"
+"X-Poedit-SearchPathExcluded-5: redux-core/inc/fields/spinner/vendor\n"
+
+#. translators: %1$s: template path.
+#: ReduxCore/core/dashboard.php:11
+#, php-format
+msgid ""
+"The Redux 3 file ReduxCore/core/dashboard.php is still in use by %1$s. Please contact the author of this theme (NOT Redux support, we have no control over this issue). They need to update their project to use Redux 4 and discontinue use of this file. It will soon be removed "
+"from Redux."
+msgstr ""
+"Die Redux 3 Datei ReduxCore/core/dashboard.php wird noch von %1$s verwendet. Bitte kontaktieren Sie den Autor dieses Themes (NICHT den Redux-Support, wir haben keine Kontrolle über dieses Problem). Das Projekt muss auf Redux 4 aktualisiert werden und die Nutzung dieser Datei "
+"einstellen. Sie wird bald aus Redux entfernt."
+
+#. translators: %1$s: template path.
+#: ReduxCore/core/enqueue.php:11
+#, php-format
+msgid ""
+"The Redux 3 file ReduxCore/core/enqueue.php is still in use by %1$s. Please contact the author of this theme (NOT Redux support, we have no control over this issue). They need to update their project to use Redux 4 and discontinue use of this file. It will soon be removed from "
+"Redux."
+msgstr ""
+"Die Redux 3 Datei ReduxCore/core/enqueue.php wird noch von %1$s verwendet. Bitte kontaktieren Sie den Autor dieses Themes (NICHT den Redux-Support, wir haben keine Kontrolle über dieses Problem). Das Projekt muss auf Redux 4 aktualisiert werden und die Nutzung dieser Datei "
+"einstellen. Sie wird bald aus Redux entfernt."
+
+#. translators: %1$s: template path.
+#: ReduxCore/core/newsflash.php:11
+#, php-format
+msgid ""
+"The Redux 3 file ReduxCore/core/newsflash.php is still in use by %1$s. Please contact the author of this theme (NOT Redux support, we have no control over this issue). They need to update their project to use Redux 4 and discontinue use of this file. It will soon be removed "
+"from Redux."
+msgstr ""
+"Die Redux 3 Datei ReduxCore/core/newsflash.php wird noch von %1$s verwendet. Bitte kontaktieren Sie den Autor dieses Themes (NICHT den Redux-Support, wir haben keine Kontrolle über dieses Problem). Das Projekt muss auf Redux 4 aktualisiert werden und die Nutzung dieser Datei "
+"einstellen. Sie wird bald aus Redux entfernt."
+
+#. translators: %1$s: template path.
+#: ReduxCore/core/panel.php:11
+#, php-format
+msgid ""
+"The Redux 3 file ReduxCore/core/panel.php is still in use by %1$s. Please contact the author of this theme (NOT Redux support, we have no control over this issue). They need to update their project to use Redux 4 and discontinue use of this file. It will soon be removed from "
+"Redux."
+msgstr ""
+"Die Redux 3 Datei ReduxCore/core/panel.php wird noch von %1$s verwendet. Bitte kontaktieren Sie den Autor dieses Themes (NICHT den Redux-Support, wir haben keine Kontrolle über dieses Problem). Das Projekt muss auf Redux 4 aktualisiert werden und die Nutzung dieser Datei "
+"einstellen. Sie wird bald aus Redux entfernt."
+
+#. translators: %1$s: template path.
+#: ReduxCore/core/required.php:11
+#, php-format
+msgid ""
+"The Redux 3 file ReduxCore/core/required.php is still in use by %1$s. Please contact the author of this theme (NOT Redux support, we have no control over this issue). They need to update their project to use Redux 4 and discontinue use of this file. It will soon be removed "
+"from Redux."
+msgstr ""
+"Die Redux 3 Datei ReduxCore/core/required.php wird noch von %1$s verwendet. Bitte kontaktieren Sie den Autor dieses Themes (NICHT den Redux-Support, wir haben keine Kontrolle über dieses Problem). Das Projekt muss auf Redux 4 aktualisiert werden und die Nutzung dieser Datei "
+"einstellen. Sie wird bald aus Redux entfernt."
+
+#. translators: %1$s: template path.
+#: ReduxCore/inc/fields/typography/field_typography.php:11
+#, php-format
+msgid ""
+"The Redux 3 file ReduxCore/inc/fields/typography/typography.php is still in use by %1$s. Please contact the author of this theme (NOT Redux support, we have no control over this issue). They need to update their project to use Redux 4 and discontinue use of this file. It will "
+"soon be removed from Redux."
+msgstr ""
+"Die Redux 3 Datei ReduxCore/inc/fields/typography/typography.php wird noch von %1$s verwendet. Bitte kontaktieren Sie den Autor dieses Themes (NICHT den Redux-Support, wir haben keine Kontrolle über dieses Problem). Das Projekt muss auf Redux 4 aktualisiert werden und die "
+"Nutzung dieser Datei einstellen. Sie wird bald aus Redux entfernt."
+
+#: class-redux-framework-plugin.php:89
+msgid "Redux Framework version 4 is activated but not loaded. Redux Framework version 3 is still installed and activated.  Please deactivate Redux Framework version 3."
+msgstr "Redux Framework Version 4 ist aktiviert, aber nicht geladen. Redux Framework Version 3 ist noch installiert und aktiviert. Bitte deaktivieren Sie Redux Framework Version 3."
+
+#: class-redux-framework-plugin.php:345
+msgid "Redux Framework has an embedded demo."
+msgstr "Redux Framework hat eine eingebettete Demo."
+
+#: class-redux-framework-plugin.php:345
+msgid "Click here to activate the sample config file."
+msgstr "Klicken Sie hier, um die Beispiel-Konfigurationsdatei zu aktivieren."
+
+#: class-redux-framework-plugin.php:439
+msgid "What is this?"
+msgstr "Was ist das?"
+
+#: redux-core/class-redux-core.php:331
+msgid "Redux has detected the Redux Pro plugin is enabled. All featured of Redux Pro are now part of the entire Redux plugin and is no longer required. Please disable the Redux Pro plugin to avoid potential conflicts."
+msgstr "Redux hat festgestellt, dass das Redux Pro Plugin aktiviert ist. Alle Funktionen von Redux Pro sind nun Teil des gesamten Redux Plugins und werden nicht mehr benötigt. Bitte deaktivieren Sie das Redux Pro Plugin, um mögliche Konflikte zu vermeiden."
+
+#: redux-core/class-redux-core.php:376
+msgid "The Redux upload directory"
+msgstr "Das Redux Upload-Verzeichnis"
+
+#. Plugin Name of the plugin/theme
+#: redux-core/class-redux-core.php:382
+msgid "Redux Framework"
+msgstr "Redux Framework"
+
+#: redux-core/class-redux-core.php:383
+msgid "Debug information specific to Redux Framework."
+msgstr "Debug-Informationen speziell für Redux Framework."
+
+#: redux-core/class-redux-core.php:386 redux-core/inc/welcome/views/about.php:25 redux-core/inc/welcome/views/about.php:130
+msgid "Version"
+msgstr "Version"
+
+#: redux-core/inc/welcome/views/about.php:92
+msgid "Theme"
+msgstr "Theme"
+
+#: redux-core/inc/welcome/views/about.php:144
+msgid "Plugin"
+msgstr "Plugin"
+
+#: redux-core/templates/panel/footer.tpl.php:58 redux-core/templates/panel/header-stickybar.tpl.php:24
+msgid "Save Changes"
+msgstr "Änderungen speichern"
+
+#: redux-core/templates/panel/footer.tpl.php:62 redux-core/templates/panel/header-stickybar.tpl.php:28
+msgid "Reset Section"
+msgstr "Sektion zurücksetzen"
+
+#: redux-core/templates/panel/footer.tpl.php:63 redux-core/templates/panel/header-stickybar.tpl.php:29
+msgid "Reset All"
+msgstr "Alle zurücksetzen"
+
+#: redux-core/templates/panel/header.tpl.php:13 redux-core/templates/panel/header.tpl.php:50
+msgid "Developer Mode Enabled"
+msgstr "Entwicklermodus aktiviert"
+
+#: redux-core/templates/panel/header.tpl.php:22
+msgid "WP_DEBUG is enabled"
+msgstr "WP_DEBUG ist aktiviert"
+
+#: redux-core/templates/panel/header.tpl.php:28
+msgid "you are working in a localhost environment"
+msgstr "Sie arbeiten in einer localhost-Umgebung"
+
+#: redux-core/class-redux-core.php:390
+msgid "Installation"
+msgstr "Installation"
+
+#: redux-core/class-redux-core.php:394
+msgid "Data directory"
+msgstr "Datenverzeichnis"
+
+#: redux-core/class-redux-core.php:398
+msgid "Browser"
+msgstr "Browser"
+
+#. translators: %s = Instance name.
+#: redux-core/class-redux-core.php:431
+#, php-format
+msgid "Redux Instance: %s"
+msgstr "Redux Instanz: %s"
+
+#. translators: %s = Instance name w/ HTML.
+#: redux-core/class-redux-core.php:433
+#, php-format
+msgid "Debug information for the %s Redux instance."
+msgstr "Debug-Informationen für die %s Redux Instanz."
+
+#: redux-core/framework.php:405 redux-core/framework.php:414
+msgid "Cheatin&#8217; eh?"
+msgstr "Schummeln, was?"
+
+#: redux-core/inc/classes/class-redux-admin-notices.php:136
+msgid "Dismiss"
+msgstr "Verwerfen"
+
+#: redux-core/inc/classes/class-redux-ajax-save.php:45 redux-core/inc/classes/class-redux-ajax-select2.php:39
+msgid "Invalid security credential.  Please reload the page and try again."
+msgstr "Ungültige Sicherheitsanmeldeinformationen. Bitte laden Sie die Seite neu und versuchen Sie es erneut."
+
+#: redux-core/inc/classes/class-redux-ajax-save.php:55 redux-core/inc/classes/class-redux-ajax-select2.php:43
+msgid "Invalid user capability.  Please reload the page and try again."
+msgstr "Ungültige Benutzerberechtigung. Bitte laden Sie die Seite neu und versuchen Sie es erneut."
+
+#: redux-core/inc/classes/class-redux-ajax-save.php:117
+msgid "Your panel has no fields. Nothing to save."
+msgstr "Ihr Panel hat keine Felder. Nichts zu speichern."
+
+#: redux-core/inc/classes/class-redux-api.php:147
+msgid "Warning, Premature Initialization"
+msgstr "Warnung, vorzeitige Initialisierung"
+
+#: redux-core/inc/classes/class-redux-panel.php:87
+msgid "Warning- This options panel will not work properly without javascript!"
+msgstr "Warnung - Dieses Options-Panel funktioniert nicht ordnungsgemäß ohne JavaScript!"
+
+#: redux-core/inc/classes/class-redux-panel.php:156 redux-core/inc/extensions/metaboxes/class-redux-extension-metaboxes.php:1211 redux-core/inc/extensions/taxonomy/class-redux-extension-taxonomy.php:851 redux-core/inc/extensions/users/class-redux-extension-users.php:843
+msgid "Settings Imported!"
+msgstr "Einstellungen importiert!"
+
+#: redux-core/inc/classes/class-redux-panel.php:177
+msgid "All Defaults Restored!"
+msgstr "Alle Standardeinstellungen wiederhergestellt!"
+
+#: redux-core/inc/classes/class-redux-panel.php:198
+msgid "Section Defaults Restored!"
+msgstr "Standardeinstellungen der Sektion wiederhergestellt!"
+
+#: redux-core/inc/classes/class-redux-panel.php:219
+msgid "Settings Saved!"
+msgstr "Einstellungen gespeichert!"
+
+#: redux-core/inc/classes/class-redux-panel.php:246 redux-core/inc/extensions/metaboxes/class-redux-extension-metaboxes.php:1215 redux-core/inc/extensions/taxonomy/class-redux-extension-taxonomy.php:855 redux-core/inc/extensions/users/class-redux-extension-users.php:847
+msgid "Settings have changed, you should save them!"
+msgstr "Die Einstellungen wurden geändert. Sie sollten sie speichern!"
+
+#: redux-core/inc/classes/class-redux-enqueue.php:535
+msgid "Search for field(s)"
+msgstr "Suche nach Feld(ern)"
+
+#: redux-core/inc/classes/class-redux-enqueue.php:596
+msgid "You have changes that are not saved. Would you like to save them now?"
+msgstr "Sie haben Änderungen, die nicht gespeichert wurden. Möchten Sie sie jetzt speichern?"
+
+#: redux-core/inc/classes/class-redux-enqueue.php:612
+msgid "Are you sure? Resetting will lose all custom values."
+msgstr "Sind Sie sicher? Das Zurücksetzen wird alle benutzerdefinierten Werte verlieren."
+
+#: redux-core/inc/classes/class-redux-enqueue.php:628
+msgid "Are you sure? Resetting will lose all custom values in this section."
+msgstr "Sind Sie sicher? Das Zurücksetzen wird alle benutzerdefinierten Werte in dieser Sektion verlieren."
+
+#: redux-core/inc/classes/class-redux-enqueue.php:644
+msgid "Your current options will be replaced with the values of this preset. Would you like to proceed?"
+msgstr "Ihre aktuellen Optionen werden durch die Werte dieses Presets ersetzt. Möchten Sie fortfahren?"
+
+#: redux-core/inc/classes/class-redux-enqueue.php:660
+msgid "Your current options will be replaced with the values of this import. Would you like to proceed?"
+msgstr "Ihre aktuellen Optionen werden durch die Werte dieses Imports ersetzt. Möchten Sie fortfahren?"
+
+#: redux-core/inc/classes/class-redux-enqueue.php:674
+msgid "Please Wait"
+msgstr "Bitte warten"
+
+#: redux-core/inc/classes/class-redux-enqueue.php:688
+msgid "There was an error saving. Here is the result of your action:"
+msgstr "Es ist ein Fehler aufgetreten. Hier ist das Ergebnis Ihrer Aktion:"
+
+#: redux-core/inc/extensions/import_export/class-redux-extension-import-export.php:85
+msgid "Import / Export"
+msgstr "Import / Export"
+
+#: redux-core/inc/extensions/import_export/class-redux-extension-import-export.php:104
+msgid "You do not have permission to export options."
+msgstr "Sie haben keine Berechtigung, Optionen zu exportieren."
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:80
+msgid "Import Options"
+msgstr "Optionen importieren"
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:86
+msgid "Import from Clipboard"
+msgstr "Aus der Zwischenablage importieren"
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:92
+msgid "Upload file"
+msgstr "Datei hochladen"
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:99
+msgid "Paste your clipboard data here."
+msgstr "Fügen Sie Ihre Zwischenablage-Daten hier ein."
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:115
+msgid "WARNING! This will overwrite all existing option values, please proceed with caution!"
+msgstr "WARNUNG! Dadurch werden alle bestehenden Optionen überschrieben, bitte seien Sie achtsam!"
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:123
+msgid "Export Options"
+msgstr "Optionen exportieren"
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:127
+msgid "Here you can copy/download your current option settings. Keep this safe as you can use it as a backup should anything go wrong, or you can use it to restore your settings on this site (or any other site)."
+msgstr ""
+"Hier können Sie Ihre aktuellen Optionseinstellungen kopieren/herunterladen. Diese Einstellungen sollten Sie sicher aufbewahren, da Sie sie als Backup verwenden können, falls etwas schief geht, oder Sie sie auf dieser Website (oder einer anderen Website) wiederherstellen können."
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:134 redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:136
+msgid "Copy to Clipboard"
+msgstr "In die Zwischenablage kopieren"
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:135
+msgid "Copied!"
+msgstr "Kopiert!"
+
+#: redux-core/inc/extensions/import_export/import_export/class-redux-import-export.php:139
+msgid "Export File"
+msgstr "Export-Datei"
+
+#: redux-core/inc/fields/background/class-redux-background.php:284 redux-core/inc/fields/media/class-redux-media.php:89
+msgid "No media selected"
+msgstr "Keine Medien ausgewählt"
+
+#: redux-core/inc/fields/background/class-redux-background.php:329 redux-core/inc/fields/media/class-redux-media.php:241 redux-core/inc/fields/slides/class-redux-slides.php:105 redux-core/inc/fields/slides/class-redux-slides.php:249
+msgid "Upload"
+msgstr "Hochladen"
+
+#: redux-core/inc/extensions/multi_media/multi_media/class-redux-multi-media.php:32
+msgid "Add or Upload File(s)"
+msgstr "Datei(en) hinzufügen oder hochladen"
+
+#: redux-core/inc/extensions/multi_media/multi_media/class-redux-multi-media.php:122 redux-core/inc/extensions/multi_media/multi_media/class-redux-multi-media.php:228
+msgid "Remove Image"
+msgstr "Bild entfernen"
+
+#: redux-core/inc/extensions/multi_media/multi_media/class-redux-multi-media.php:147 redux-core/inc/extensions/multi_media/multi_media/class-redux-multi-media.php:229 redux-core/inc/fields/background/class-redux-background.php:336
+#: redux-core/inc/fields/media/class-redux-media.php:248 redux-core/inc/fields/multi_text/class-redux-multi-text.php:60 redux-core/inc/fields/multi_text/class-redux-multi-text.php:77 redux-core/inc/fields/multi_text/class-redux-multi-text.php:99
+#: redux-core/inc/fields/slides/class-redux-slides.php:116 redux-core/inc/fields/slides/class-redux-slides.php:251
+msgid "Remove"
+msgstr "Entfernen"
+
+#: redux-core/inc/extensions/multi_media/multi_media/class-redux-multi-media.php:227
+msgid "Select File(s)"
+msgstr "Datei(en) auswählen"
