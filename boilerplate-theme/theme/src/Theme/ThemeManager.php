@@ -64,9 +64,6 @@ class ThemeManager {
 		$comments_disabled = new CommentsDisabled();
 		$comments_disabled->init();
 
-		$posts_admin_hidden = new PostsAdminHidden();
-		$posts_admin_hidden->init();
-
 		$example_post_type = new ExamplePostType();
 		$example_post_type->init();
 
