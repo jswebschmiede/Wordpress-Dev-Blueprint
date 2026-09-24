@@ -1,0 +1,32 @@
+{#
+ # Page number links, mirrors paginate_links() markup.
+ # Expects `pagination` (Timber\Pagination), `prev_text`, `next_text`; `type` is 'plain' (default) or 'list'.
+ # Timber already runs esc_url() on all pagination links.
+ #}
+{% set is_list = (type ?? 'plain') == 'list' %}
+
+{% if pagination and pagination.pages is not empty %}
+	{% if is_list %}<ul class="page-numbers">{% endif %}
+
+	{% if pagination.prev and pagination.prev.link %}
+		{% if is_list %}<li>{% endif %}<a class="prev page-numbers" href="{{ pagination.prev.link }}">{{ prev_text }}</a>{% if is_list %}</li>{% endif %}
+	{% endif %}
+
+	{% for page in pagination.pages %}
+		{% if is_list %}<li>{% endif %}
+		{%- if page.current -%}
+			<span aria-current="page" class="page-numbers current">{{ page.title }}</span>
+		{%- elseif page.link -%}
+			<a class="page-numbers" href="{{ page.link }}">{{ page.title }}</a>
+		{%- else -%}
+			<span class="page-numbers dots">{{ page.title }}</span>
+		{%- endif -%}
+		{% if is_list %}</li>{% endif %}
+	{% endfor %}
+
+	{% if pagination.next and pagination.next.link %}
+		{% if is_list %}<li>{% endif %}<a class="next page-numbers" href="{{ pagination.next.link }}">{{ next_text }}</a>{% if is_list %}</li>{% endif %}
+	{% endif %}
+
+	{% if is_list %}</ul>{% endif %}
+{% endif %}

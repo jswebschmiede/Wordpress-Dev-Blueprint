@@ -1,0 +1,20 @@
+{#
+ # Excerpt teaser for archives. Expects `post` (Timber\Post).
+ #}
+<article id="post-{{ post.id }}" class="{{ post.class|esc_attr }}">
+	<div class="entry-content {{ typography_classes }}">
+		<header>
+			{% if function('is_sticky', post.id) and function('is_home') and not function('is_paged') %}
+				{{ _x('Hervorgehoben', 'post', 'boilerplate-theme')|esc_html }}
+			{% endif %}
+			<h2><a href="{{ post.link|esc_url }}" rel="bookmark">{{ function('get_the_title', post.id) }}</a></h2>
+		</header>
+		{% include 'partials/post-thumbnail.twig' %}
+		{{ function('get_the_excerpt', post.id)|apply_filters('the_excerpt') }}
+	</div>
+
+	<footer class="entry-footer">
+		{% include 'partials/entry-meta.twig' %}
+	</footer>
+
+</article>

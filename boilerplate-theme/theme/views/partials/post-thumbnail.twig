@@ -1,0 +1,8 @@
+{#
+ # Optional featured image. Expects `post` (Timber\Post) set up as the global post.
+ #}
+{% if function('boilerplate_theme_can_show_post_thumbnail') %}
+	<figure>
+		{{ function('get_the_post_thumbnail', post.id) }}
+	</figure><!-- .post-thumbnail -->
+{% endif %}

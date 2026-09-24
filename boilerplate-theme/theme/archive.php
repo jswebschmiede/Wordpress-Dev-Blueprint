@@ -7,51 +7,16 @@
  * @package BoilerplateTheme
  */
 
-use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
+declare( strict_types=1 );
 
-$show_breadcrumb          = ThemeOptions::get_option( 'show_breadcrumb', false );
-$breadcrumb_visible_class = ! $show_breadcrumb ? 'mb-12' : '';
+use CompanyName\BoilerplateTheme\Timber\Timber;
 
-get_header();
+$context   = Timber::context();
+$templates = array( 'templates/archive.twig', 'templates/index.twig' );
+$queried   = get_queried_object();
 
-?>
+if ( $queried instanceof \WP_Post_Type ) {
+	array_unshift( $templates, 'templates/archive-' . $queried->name . '.twig' );
+}
 
-	<section id="primary">
-		<main id="main">
-
-			<div class="entry-header <?php echo esc_attr( $breadcrumb_visible_class ); ?>">
-				<h1 class="entry-title">
-					<?php
-					if ( is_category() ) {
-						echo esc_html( single_cat_title( '', false ) );
-					} else {
-						the_archive_title();
-					}
-					?>
-				</h1>
-			</div>
-
-			<?php if ( $show_breadcrumb ) : ?>
-				<?php boilerplate_theme_breadcrumb(); ?>
-			<?php endif; ?>
-
-			<?php if ( have_posts() ) : ?>
-
-				<?php while ( have_posts() ) : ?>
-					<?php the_post(); ?>
-					<?php get_template_part( 'template-parts/content/content', 'excerpt' ); ?>
-				<?php endwhile; ?>
-
-				<?php boilerplate_theme_the_posts_navigation(); ?>
-
-			<?php else : ?>
-
-				<?php get_template_part( 'template-parts/content/content', 'none' ); ?>
-
-			<?php endif; ?>
-
-		</main><!-- #main -->
-	</section><!-- #primary -->
-
-<?php
-get_footer();
+Timber::render( $templates, $context );

@@ -1,5 +1,27 @@
-{# Phase 3 — classic archive.php remains active until migration. #}
 {% extends 'layouts/base.twig' %}
 
 {% block content %}
+	<section id="primary">
+		<main id="main">
+
+			{% include 'partials/entry-header.twig' with {
+				title: function('is_category') ? function('single_cat_title', '', false)|esc_html : function('get_the_archive_title'),
+			} %}
+
+			{% if posts is not empty %}
+
+				{% for post in posts %}
+					{% include ['partials/tease-excerpt-' ~ post.post_type ~ '.twig', 'partials/tease-excerpt.twig'] %}
+				{% endfor %}
+
+				{% include 'partials/pagination.twig' %}
+
+			{% else %}
+
+				{% include 'partials/content-none.twig' %}
+
+			{% endif %}
+
+		</main><!-- #main -->
+	</section><!-- #primary -->
 {% endblock %}

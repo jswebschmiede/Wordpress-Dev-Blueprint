@@ -1,0 +1,36 @@
+{#
+ # Message when no posts were found.
+ #}
+{% set is_search = function('is_search') %}
+
+<section>
+
+	<header class="page-header">
+		{% if is_search %}
+			<h1 class="page-title">
+				{{ __('Suchergebnisse für: %s', 'boilerplate-theme')|format(function('get_search_query')|esc_html) }}
+			</h1>
+		{% else %}
+			<h1 class="page-title">{{ __('Nichts gefunden', 'boilerplate-theme')|esc_html }}</h1>
+		{% endif %}
+	</header>
+
+	<div class="page-content {{ typography_classes }}">
+		{% if function('is_home') and function('current_user_can', 'publish_posts') %}
+			<p>
+				{{ __('Ihre Website ist so eingestellt, dass die neuesten Beiträge auf der Startseite angezeigt werden, aber es wurden noch keine Beiträge veröffentlicht.', 'boilerplate-theme')|esc_html }}
+			</p>
+		{% elseif is_search %}
+			<p>
+				{{ __('Ihre Suche ergab keine Ergebnisse. Bitte versuchen Sie es mit einem anderen Suchbegriff.', 'boilerplate-theme')|esc_html }}
+			</p>
+			{{ function('get_search_form', { echo: false }) }}
+		{% else %}
+			<p>
+				{{ __('Es wurden keine passenden Inhalte gefunden.', 'boilerplate-theme')|esc_html }}
+			</p>
+			{{ function('get_search_form', { echo: false }) }}
+		{% endif %}
+	</div>
+
+</section>
