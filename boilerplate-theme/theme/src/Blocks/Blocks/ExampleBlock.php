@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace CompanyName\BoilerplateTheme\Blocks\Blocks;
 
 use CompanyName\BoilerplateTheme\Blocks\BlockInterface;
+use CompanyName\BoilerplateTheme\Timber\Timber;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -33,16 +34,48 @@ class ExampleBlock implements BlockInterface {
 			)
 		);
 
-		$template_path = get_template_directory() . '/template-parts/blocks/example-block.php';
-		$template_path = apply_filters( 'boilerplate_theme_example_block_template', $template_path, $attributes );
+		$wrapper_classes = array( 'example-block not-prose' );
+		$class_name      = $this->get_string_attribute( $attributes, 'className' );
 
-		if ( ! is_string( $template_path ) || ! file_exists( $template_path ) ) {
+		if ( '' !== $class_name ) {
+			$wrapper_classes[] = $class_name;
+		}
+
+		$context = array(
+			'attributes'         => $attributes,
+			'title'              => $this->get_string_attribute( $attributes, 'title' ),
+			'description'        => $this->get_string_attribute( $attributes, 'description' ),
+			'url'                => trim( $this->get_string_attribute( $attributes, 'url' ) ),
+			'wrapper_attributes' => get_block_wrapper_attributes(
+				array(
+					'class' => implode( ' ', $wrapper_classes ),
+				)
+			),
+		);
+
+		/**
+		 * Filters the Twig template(s) used to render the example block (relative to `views/`).
+		 *
+		 * @param string|string[]      $template   Twig template name or fallback list.
+		 * @param array<string, mixed> $attributes Parsed block attributes.
+		 */
+		$template = apply_filters( 'boilerplate_theme_example_block_template', 'blocks/example-block.twig', $attributes );
+
+		if ( ! is_string( $template ) && ! is_array( $template ) ) {
 			return '';
 		}
 
-		ob_start();
-		include $template_path;
+		return (string) Timber::compile( $template, $context );
+	}
 
-		return (string) ob_get_clean();
+	/**
+	 * Returns a scalar block attribute as string.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @param string               $key        Attribute key.
+	 * @return string Attribute value, or an empty string for missing/non-scalar values.
+	 */
+	private function get_string_attribute( array $attributes, string $key ): string {
+		return isset( $attributes[ $key ] ) && is_scalar( $attributes[ $key ] ) ? (string) $attributes[ $key ] : '';
 	}
 }

@@ -52,7 +52,7 @@ _wp-content-dev/
         ├── composer.json
         ├── blocks/example-block/block.json
         ├── src/
-        └── template-parts/blocks/example-block.php
+        └── views/blocks/example-block.twig
 ```
 
 The root directory is the development package. The deployable WordPress theme lives in `theme/`; plugin boilerplates live in `plugins/`. The Cursor AI template lives in `_wp-content-dev/cursor/`.
@@ -332,9 +332,9 @@ Theme Options still use Redux (`ThemeOptions`); CPT meta and the SCF plugin alte
 
 1. Copy `blocks/example-block/` to a new block directory.
 2. Update the block name, title, attributes, and editor UI.
-3. Add a PHP renderer class in `theme/src/Blocks/Blocks/`.
+3. Add a PHP renderer class in `theme/src/Blocks/Blocks/` that prepares the view data and calls `Timber::compile( 'blocks/<slug>.twig', $context )`.
 4. Register the block in `theme/src/Blocks/BlockManager.php`.
-5. Add a template in `theme/template-parts/blocks/`.
+5. Add a Twig template in `theme/views/blocks/<slug>.twig`.
 6. Add styles under `tailwind/custom/components/`.
 7. Run `pnpm run development:copy-blocks` and rebuild block assets when ready.
 

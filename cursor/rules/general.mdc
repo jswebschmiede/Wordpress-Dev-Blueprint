@@ -37,7 +37,7 @@ alwaysApply: true
 - Blocks are developed in the `_wp-content-dev/boilerplate-theme/blocks/` directory
 - Blocks are developed using `_wp-content-dev/boilerplate-theme/node_scripts/build-blocks.js`
 - Blocks are registered in `_wp-content-dev/boilerplate-theme/theme/src/Blocks/*.php`
-- Blocks are rendered in `_wp-content-dev/boilerplate-theme/theme/template-parts/blocks/*.php`
+- Blocks are rendered with Timber in `_wp-content-dev/boilerplate-theme/theme/views/blocks/*.twig` (data prepared in the block class)
 - Blocks are styled in `_wp-content-dev/boilerplate-theme/tailwind/custom/components/*.css` with Tailwind CSS
 
 ## Boilerplate / Cursor Setup
