@@ -23,7 +23,7 @@ if ( ! file_exists( $boilerplate_theme_autoload ) ) {
 
 			echo '<div class="notice notice-error"><p><strong>Boilerplate Theme:</strong> ';
 			echo esc_html__(
-				'vendor-prefixed fehlt. Bitte führen Sie „composer install“ im Theme-Verzeichnis aus, um die Abhängigkeiten zu generieren.',
+				'vendor-prefixed fehlt. Bitte führen Sie „composer install“ im Theme-Verzeichnis aus, um die Abhängigkeiten (inkl. Timber) zu generieren.',
 				'boilerplate-theme'
 			);
 			echo '</p></div>';

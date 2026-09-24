@@ -27,6 +27,15 @@ class TimberIntegration {
 	);
 
 	/**
+	 * Checks whether the Strauss-prefixed Timber class can be autoloaded.
+	 *
+	 * @return bool True if Timber is available in vendor-prefixed, false otherwise.
+	 */
+	public static function is_available(): bool {
+		return class_exists( Timber::class );
+	}
+
+	/**
 	 * Initializes Timber and registers context filters.
 	 *
 	 * @return void
