@@ -19,6 +19,7 @@
         "prefix-namespaces": [
             "@php ../bin/download-strauss.php",
             "@php ../bin/strauss.phar",
+            "@php ../bin/fix-prefixed-twig.php",
             "@composer dump-autoload"
         ],
         "prefix-namespaces:dry-run": [
