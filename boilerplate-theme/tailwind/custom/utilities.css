@@ -35,16 +35,8 @@
 	@apply px-3! rounded-full! aspect-square!;
 }
 
-@utility wave-header-svg {
-	clip-path: url(#wave-bottom-clip);
-}
-
 @utility badge {
 	@apply inline-flex w-fit items-center justify-center px-2 py-1 rounded-2xl text-sm bg-primary border-2 border-primary text-white leading-snug;
-}
-
-@utility headline-border {
-	@apply block bg-secondary lg:h-5 xs:h-3.5 h-2.5 w-38.5 lg:w-82 xs:w-64 [clip-path:polygon(0%_0%,97%_0%,100%_100%,0%_100%)];
 }
 
 @utility list-style {
