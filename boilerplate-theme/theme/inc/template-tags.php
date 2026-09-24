@@ -7,7 +7,6 @@
  */
 
 use CompanyName\BoilerplateTheme\Theme\Breadcrumb;
-use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
 
 if ( ! function_exists( 'boilerplate_theme_breadcrumb' ) ) :
 	/**
@@ -162,115 +161,5 @@ if ( ! function_exists( 'boilerplate_theme_content_class' ) ) :
 		$combined_classes = array_map( esc_attr( ... ), $combined_classes );
 
 		echo 'class="' . esc_attr( implode( ' ', $combined_classes ) ) . '"';
-	}
-endif;
-
-if ( ! function_exists( 'boilerplate_theme_render_site_branding' ) ) :
-	/**
-	 * Renders the site branding (logo or title) with improved accessibility.
-	 *
-	 * @return void
-	 */
-	function boilerplate_theme_render_site_branding(): void {
-		$logo          = ThemeOptions::get_option( 'logo' );
-		$website_title = ThemeOptions::get_option( 'website_title', get_bloginfo( 'name' ) );
-		$site_name     = get_bloginfo( 'name' );
-		$home_url      = esc_url( home_url( '/' ) );
-		$is_front_page = is_front_page();
-
-		$strip_links = (bool) apply_filters( 'boilerplate_theme_strip_header_footer_links', false );
-
-		$sr_home_text = __( 'Zur Startseite', 'boilerplate-theme' );
-		$sr_logo_text = sprintf(
-			/* translators: %s: Site name */
-			__( '%s Logo', 'boilerplate-theme' ),
-			$site_name
-		);
-		?>
-
-		<div class="site-branding -ml-8 xs:ml-0" role="banner" aria-label="<?php esc_attr_e( 'Website Slogan', 'boilerplate-theme' ); ?>">
-			<?php if ( ! empty( $logo['url'] ) ) : ?>
-				<?php
-				$logo_img = sprintf(
-					'<img src="%s" alt="%s" width="%s" height="%s" class="w-auto max-h-full site-logo" role="img">',
-					esc_url( $logo['url'] ),
-					esc_attr( $sr_logo_text ),
-					esc_attr( $logo['width'] ),
-					esc_attr( $logo['height'] ),
-				);
-				?>
-
-				<?php if ( $strip_links || $is_front_page ) : ?>
-					<div class="f-header__logo" aria-current="page">
-						<?php echo $logo_img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-						<span class="sr-only"><?php esc_html_e( 'Aktuelle Seite: Startseite', 'boilerplate-theme' ); ?></span>
-					</div>
-				<?php else : ?>
-					<a href="<?php echo $home_url; ?>" rel="home" class="f-header__logo"
-						aria-label="<?php echo esc_attr( $sr_home_text ); ?>" title="<?php echo esc_attr( $sr_home_text ); ?>">
-						<?php echo $logo_img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					</a>
-				<?php endif; ?>
-			<?php else : ?>
-				<?php if ( $strip_links ) : ?>
-					<p class="site-title">
-						<span class="site-title-text"><?php echo esc_html( $website_title ); ?></span>
-					</p>
-				<?php elseif ( $is_front_page ) : ?>
-					<h1 class="site-title" aria-current="page">
-						<span class="site-title-text"><?php echo esc_html( $website_title ); ?></span>
-						<span class="sr-only"><?php esc_html_e( ' - Aktuelle Seite: Startseite', 'boilerplate-theme' ); ?></span>
-					</h1>
-				<?php else : ?>
-					<p class="site-title">
-						<a href="<?php echo $home_url; ?>" rel="home" class="site-title-link"
-							aria-label="<?php echo esc_attr( $sr_home_text ); ?>" title="<?php echo esc_attr( $sr_home_text ); ?>">
-							<span class="site-title-text"><?php echo esc_html( $website_title ); ?></span>
-						</a>
-					</p>
-				<?php endif; ?>
-			<?php endif; ?>
-		</div>
-
-		<?php
-	}
-endif;
-
-if ( ! function_exists( 'boilerplate_theme_skip_link' ) ) :
-	/**
-	 * Displays a skip link for the content.
-	 *
-	 * @return void
-	 */
-	function boilerplate_theme_skip_link(): void {
-		?>
-		<a href="#content"
-			class="sr-only focus:not-sr-only focus:top-0 focus:left-0 focus:z-50 focus:absolute focus:bg-white focus:shadow-lg focus:p-4 focus:rounded-b-lg focus:text-black"><?php esc_html_e( 'Inhalte überspringen', 'boilerplate-theme' ); ?></a>
-		<?php
-	}
-endif;
-
-if ( ! function_exists( 'boilerplate_theme_get_website_logo' ) ) :
-	/**
-	 * Get the website logo.
-	 *
-	 * @return string
-	 */
-	function boilerplate_theme_get_website_logo(): string {
-		$logo = ThemeOptions::get_option( 'logo' );
-
-		$sr_logo_text = sprintf(
-			/* translators: %s: Site name */
-			__( '%s Logo', 'boilerplate-theme' ),
-			get_bloginfo( 'name' )
-		);
-
-		return sprintf(
-			'<img src="%s" alt="%s" width="%s" height="%s" class="w-auto max-h-full site-logo" role="img">',
-			esc_url( $logo['url'] ),
-			esc_attr( $sr_logo_text ),
-			esc_attr( $logo['width'] ),
-			esc_attr( $logo['height'] ),
-		);
 	}
 endif;
