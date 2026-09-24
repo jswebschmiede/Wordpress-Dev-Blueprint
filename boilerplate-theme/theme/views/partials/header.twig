@@ -1,4 +1,38 @@
-{# Phase 0 stub — markup migrates from template-parts/layout/header-content.php in Phase 1/5. #}
-<header class="f-header" role="banner">
-	{# {% include 'partials/menu.twig' with { menu: header_menu } %} #}
+<header id="masthead" class="bg-white">
+	<div class="f-header relative z-5 flex items-center js-f-header w-full h-(--f-header-height)"
+		data-element="header">
+
+		<div class="mx-auto w-p-1 max-w-7xl f-header__mobile-content">
+
+			{% include 'partials/site-branding.twig' %}
+
+			{% if not strip_header_footer_links %}
+				<button
+					class="anim-menu-btn js-anim-menu-btn f-header__nav-control js-tab-focus text-primary lg:hidden"
+					aria-label="{{ __('Menü umschalten', 'boilerplate-theme')|esc_attr }}">
+					<i class="anim-menu-btn__icon anim-menu-btn__icon--close" aria-hidden="true"></i>
+				</button>
+			{% endif %}
+		</div>
+
+		<div class="f-header__nav" role="navigation">
+			<div
+				class="justify-between f-header__nav-grid mx-auto xl:w-[calc(100%-12rem)] w-p-1">
+				<div class="f-header__nav-logo-wrapper grow">
+					{% include 'partials/site-branding.twig' %}
+				</div>
+
+				{% if not strip_header_footer_links and header_menu %}
+					<nav id="site-navigation"
+						aria-label="{{ __('Hauptnavigation', 'boilerplate-theme')|esc_attr }}">
+						{% include 'partials/menu.twig' with { menu: header_menu } %}
+					</nav>
+				{% endif %}
+
+				<div class="f-header__social-media-wrapper lg:hidden block w-full">
+					{% include 'partials/social-media.twig' %}
+				</div>
+			</div>
+		</div>
+	</div>
 </header>

@@ -1,3 +1,11 @@
-{# Phase 5 — Timber menu loop with BEM f-header__* (replaces NavWalker). #}
-{% if menu %}
+{#
+ # Header navigation (BEM f-header__*), replaces the former PHP NavWalker.
+ # Expects `menu` (Timber\Menu). Nested levels are rendered by partials/menu-item.twig.
+ #}
+{% if menu and menu.items %}
+	<ul id="primary-menu" class="flex lg:flex-row flex-col justify-end gap-1 lg:gap-8 xl:gap-20 menu f-header__list grow" aria-label="submenu">
+		{% for item in menu.items %}
+			{% include 'partials/menu-item.twig' with { item: item, depth: 0 } only %}
+		{% endfor %}
+	</ul>
 {% endif %}

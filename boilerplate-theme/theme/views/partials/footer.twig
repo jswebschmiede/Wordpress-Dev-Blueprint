@@ -1,3 +1,30 @@
-{# Phase 0 stub — markup migrates from template-parts/layout/footer-content.php in Phase 1/5. #}
-<footer class="f-footer" role="contentinfo">
+<footer id="colophon" class="footer bg-primary text-white py-20 mt-14">
+	<div
+		class="flex flex-col md:gap-16 gap-8 justify-center items-center max-w-wide mx-auto w-p-1 lg:w-p-2">
+
+		<div class="flex flex-col gap-12 items-center">
+
+			{% if options.logo_footer.url %}
+				<img class="xs:w-[240px] w-[120px] h-auto" src="{{ options.logo_footer.url|esc_url }}"
+					alt="{{ __('%s Logo', 'boilerplate-theme')|format(site.name)|esc_attr }}">
+			{% endif %}
+
+			{% if not strip_header_footer_links %}
+				{% include 'partials/footer-menu.twig' with { menu: footer_menu_1 } %}
+			{% endif %}
+		</div>
+
+		<div class="flex flex-col gap-3">
+			{% if not strip_header_footer_links %}
+				{% include 'partials/footer-menu.twig' with { menu: footer_menu_2 } %}
+				{% include 'partials/footer-menu.twig' with { menu: footer_menu_3 } %}
+			{% endif %}
+
+			{% include 'partials/social-media.twig' %}
+		</div>
+
+		{% if options.show_backtotop %}
+			{% include 'partials/backtotop.twig' %}
+		{% endif %}
+	</div>
 </footer>

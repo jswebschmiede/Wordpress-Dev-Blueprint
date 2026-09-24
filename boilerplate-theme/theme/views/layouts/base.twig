@@ -5,26 +5,32 @@
 		{% include 'partials/head.twig' %}
 	{% endblock %}
 </head>
+
 <body class="{{ body_class }}">
-	{{ function('wp_body_open') }}
-	<div id="page" class="flex flex-col grow">
-		{% block header %}
-			{% include 'partials/header.twig' %}
-		{% endblock %}
 
-		<div id="content" class="grow">
-			{% block content %}
-				{# Child templates override this #}
-			{% endblock %}
-		</div>
+{{ function('wp_body_open') }}
 
-		{% block footer %}
-			{% include 'partials/footer.twig' %}
-			{% if options.show_preloader %}
-				{% include 'partials/preloader.twig' %}
-			{% endif %}
-		{% endblock %}
-	</div>
-	{{ function('wp_footer') }}
+<div id="page" class="flex flex-col grow">
+	{% include 'partials/skip-link.twig' %}
+
+	{% block header %}
+		{% include 'partials/header.twig' %}
+	{% endblock %}
+
+	<div id="content" class="grow">
+		{% block content %}{% endblock %}
+	</div><!-- #content -->
+
+	{% block footer %}
+		{% include 'partials/footer.twig' %}
+	{% endblock %}
+</div><!-- #page -->
+
+{% if options.show_preloader %}
+	{% include 'partials/preloader.twig' %}
+{% endif %}
+
+{{ function('wp_footer') }}
+
 </body>
 </html>

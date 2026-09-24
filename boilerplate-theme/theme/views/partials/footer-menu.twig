@@ -1,0 +1,20 @@
+{#
+ # Flat footer navigation (depth 1), mirrors the former wp_nav_menu() output.
+ # Expects `menu` (Timber\Menu|null).
+ #}
+{% if menu %}
+	<nav aria-label="{{ __('Footer-Menü', 'boilerplate-theme')|esc_attr }}">
+		<div class="menu-{{ menu.slug|esc_attr }}-container">
+			<ul id="menu-{{ menu.slug|esc_attr }}" class="footer-menu">
+				{% for item in menu.items %}
+					<li id="menu-item-{{ item.id }}" class="{{ item.class|esc_attr }}">
+						<a
+							{%- if item.is_target_blank %} target="_blank"{% endif -%}
+							{%- if item.xfn %} rel="{{ item.xfn|esc_attr }}"{% endif %} href="{{ item.link|esc_url }}"
+							{%- if item.current %} aria-current="page"{% endif %}>{{ item.title }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</nav>
+{% endif %}

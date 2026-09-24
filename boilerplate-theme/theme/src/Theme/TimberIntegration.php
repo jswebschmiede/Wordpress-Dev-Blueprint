@@ -13,15 +13,15 @@ use CompanyName\BoilerplateTheme\Timber\Timber;
  */
 class TimberIntegration {
 	/**
-	 * Menu location slugs registered in ThemeSetup.
+	 * Menu locations registered in ThemeSetup mapped to their max depth (0 = unlimited).
 	 *
-	 * @var list<string>
+	 * @var array<string, int>
 	 */
 	private const MENU_LOCATIONS = array(
-		'header-menu',
-		'footer-menu-1',
-		'footer-menu-2',
-		'footer-menu-3',
+		'header-menu'   => 0,
+		'footer-menu-1' => 1,
+		'footer-menu-2' => 1,
+		'footer-menu-3' => 1,
 	);
 
 	/**
@@ -44,12 +44,16 @@ class TimberIntegration {
 	 * @return array<string, mixed>
 	 */
 	public function add_to_context( array $context ): array {
-		$context['options']    = $this->get_theme_options_for_context();
-		$context['search_url'] = $this->get_search_url();
+		$context['options']                   = $this->get_theme_options_for_context();
+		$context['search_url']                = $this->get_search_url();
+		$context['typography_classes']        = \defined( 'BOILERPLATE_THEME_TYPOGRAPHY_CLASSES' ) ? BOILERPLATE_THEME_TYPOGRAPHY_CLASSES : '';
+		$context['strip_header_footer_links'] = (bool) apply_filters( 'boilerplate_theme_strip_header_footer_links', false );
 
-		foreach ( self::MENU_LOCATIONS as $location ) {
-			$context_key             = str_replace( '-', '_', $location );
-			$context[ $context_key ] = Timber::get_menu( $location );
+		foreach ( self::MENU_LOCATIONS as $location => $depth ) {
+			$context_key = str_replace( '-', '_', $location );
+
+			// get_menu_by() avoids Timber::get_menu()'s slug/name fallback for unassigned locations.
+			$context[ $context_key ] = Timber::get_menu_by( 'location', $location, array( 'depth' => $depth ) );
 		}
 
 		return $context;

@@ -1,0 +1,41 @@
+{% set is_front_page = function('is_front_page') %}
+{% set sr_home_text = __('Zur Startseite', 'boilerplate-theme') %}
+{% set sr_logo_text = __('%s Logo', 'boilerplate-theme')|format(site.name) %}
+
+<div class="site-branding -ml-8 xs:ml-0" role="banner" aria-label="{{ __('Website Slogan', 'boilerplate-theme')|esc_attr }}">
+	{% if options.logo.url %}
+		{% set logo_img %}
+			<img src="{{ options.logo.url|esc_url }}" alt="{{ sr_logo_text|esc_attr }}" width="{{ options.logo.width|default('')|esc_attr }}" height="{{ options.logo.height|default('')|esc_attr }}" class="w-auto max-h-full site-logo" role="img">
+		{% endset %}
+
+		{% if strip_header_footer_links or is_front_page %}
+			<div class="f-header__logo" aria-current="page">
+				{{ logo_img }}
+				<span class="sr-only">{{ __('Aktuelle Seite: Startseite', 'boilerplate-theme')|esc_html }}</span>
+			</div>
+		{% else %}
+			<a href="{{ function('home_url', '/')|esc_url }}" rel="home" class="f-header__logo"
+				aria-label="{{ sr_home_text|esc_attr }}" title="{{ sr_home_text|esc_attr }}">
+				{{ logo_img }}
+			</a>
+		{% endif %}
+	{% else %}
+		{% if strip_header_footer_links %}
+			<p class="site-title">
+				<span class="site-title-text">{{ options.website_title|esc_html }}</span>
+			</p>
+		{% elseif is_front_page %}
+			<h1 class="site-title" aria-current="page">
+				<span class="site-title-text">{{ options.website_title|esc_html }}</span>
+				<span class="sr-only">{{ __(' - Aktuelle Seite: Startseite', 'boilerplate-theme')|esc_html }}</span>
+			</h1>
+		{% else %}
+			<p class="site-title">
+				<a href="{{ function('home_url', '/')|esc_url }}" rel="home" class="site-title-link"
+					aria-label="{{ sr_home_text|esc_attr }}" title="{{ sr_home_text|esc_attr }}">
+					<span class="site-title-text">{{ options.website_title|esc_html }}</span>
+				</a>
+			</p>
+		{% endif %}
+	{% endif %}
+</div>
