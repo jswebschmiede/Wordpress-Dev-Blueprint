@@ -28,7 +28,7 @@ All paths are relative to `_wp-content-dev/boilerplate-theme/`:
 | Block registration            | `theme/src/Blocks/BlockManager.php`                       |
 | Styles                        | `tailwind/custom/components/<slug>.css`                   |
 
-**Build flow:** `blocks/<slug>/block.json` is copied to `theme/blocks/<slug>/` by `development:copy-blocks`. All block JS is bundled into `theme/js/blocks.min.js` via `development:esbuild:blocks`. Do not run npm scripts; the user manages builds.
+**Build flow:** `blocks/<slug>/block.json` is copied to `theme/blocks/<slug>/` by `development:copy-blocks`. All block JS is bundled into `theme/js/blocks.min.js` via `development:esbuild:blocks`. Do not run pnpm scripts; the user manages builds.
 
 ## Checklist: New block
 
@@ -111,3 +111,4 @@ If the block uses a package not yet in the bundle, add it to `wpGlobals` in `nod
 ## Additional resources
 
 -   Minimal skeletons and templates: [reference.md](reference.md)
+-   [Timber v2](https://timber.github.io/docs/v2/) — theme views are Twig; import the Strauss-prefixed `CompanyName\BoilerplateTheme\Timber\Timber`. See also [template inheritance](https://timber.github.io/docs/v2/getting-started/template-inheritance-and-includes/) and [escaping](https://timber.github.io/docs/v2/guides/escaping/)

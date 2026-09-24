@@ -149,6 +149,7 @@ $this->register_block( '<slug>', new Blocks\<Name>Block() );
 
 ## Official documentation
 
+- [Timber v2](https://timber.github.io/docs/v2/) (compile a block view with the prefixed `Timber` class; [escaping](https://timber.github.io/docs/v2/guides/escaping/))
 - [Block metadata (block.json)](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/)
 - [Block API versions / Iframe migration](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-api-versions/)
 - [Nested blocks (Inner Blocks)](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/nested-blocks-inner-blocks/)

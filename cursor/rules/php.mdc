@@ -74,3 +74,14 @@ class ThemeSetup {
 - Use WordPress functions and hooks correctly
 - Text domain: `boilerplate-theme` for all translation functions
 - Use WordPress security functions (escaping, sanitization, nonces)
+
+## Timber in PHP
+
+Theme views are Twig. PHP prepares data and renders it. See [Timber v2](https://timber.github.io/docs/v2/), [context](https://timber.github.io/docs/v2/guides/context/), and [menus](https://timber.github.io/docs/v2/guides/menus/).
+
+- Import the Strauss-prefixed class: `use CompanyName\BoilerplateTheme\Timber\Timber;`. Under `theme/src/`, Strauss may rewrite an unprefixed `Timber\…` / `Twig\…` import on `composer install`. Root templates and `theme/inc/` are outside that scope; keep the prefixed import there by hand
+- Pages: `$context = Timber::context();` then `Timber::render( $templates, $context )`. When the caller needs a string (blocks, the search form), use `Timber::compile()`
+- Add data shared by every view in `Theme\TimberIntegration` via the `timber/context` filter. Do not read `ThemeOptions` from Twig
+- Twig extensions use `CompanyName\BoilerplateTheme\Twig\Environment` and `TwigFunction` on the `timber/twig` filter
+- Theme menus: `Timber::get_menu_by( 'location', $location, array( 'depth' => $depth ) )`. Do not add a nav walker or `wp_nav_menu()` for those menus
+- Stubs stay free of markup. `declare(strict_types=1);`, PHPDoc, and WPCS still apply
