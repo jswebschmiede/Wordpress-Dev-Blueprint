@@ -30,7 +30,7 @@ alwaysApply: true
     - JavaScript: `_wp-content-dev/boilerplate-theme/theme/js/*.min.js`
     - CSS: `_wp-content-dev/boilerplate-theme/theme/style.css` and `style-editor.css`
 - PHP classes in `_wp-content-dev/boilerplate-theme/theme/src/`
-- Template parts in `_wp-content-dev/boilerplate-theme/theme/template-parts/`
+- Twig views (Timber) in `_wp-content-dev/boilerplate-theme/theme/views/` (`layouts/`, `partials/`, `templates/`, `blocks/`); root PHP templates are thin Timber stubs
 
 ## Blocks Development
 

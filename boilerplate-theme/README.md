@@ -50,9 +50,16 @@ _wp-content-dev/
         ├── style.css
         ├── style-editor.css
         ├── composer.json
+        ├── index.php, page.php, single.php, archive.php, 404.php   # thin Timber stubs
+        ├── templates/template-search.php                          # WP page template (stub)
         ├── blocks/example-block/block.json
+        ├── inc/template-functions.php
         ├── src/
-        └── views/blocks/example-block.twig
+        └── views/                                                  # Twig (Timber)
+            ├── layouts/base.twig
+            ├── partials/
+            ├── templates/
+            └── blocks/example-block.twig
 ```
 
 The root directory is the development package. The deployable WordPress theme lives in `theme/`; plugin boilerplates live in `plugins/`. The Cursor AI template lives in `_wp-content-dev/cursor/`.
@@ -248,6 +255,9 @@ Runtime Composer packages are **prefixed with [Strauss](https://github.com/Brian
 - Strauss PHAR: downloaded via `bin/download-strauss.php` (cURL with `file_get_contents` fallback; avoids empty files from shell curl under WAMP)
 - `require-dev` packages are **not** prefixed
 - After renaming a plugin, run `composer install --working-dir=plugins/<slug>` to regenerate `vendor-prefixed/`
+- The theme ships **Timber 2** (`timber/timber`, incl. Twig) as its only runtime dependency, prefixed to `CompanyName\BoilerplateTheme\Timber\…` / `CompanyName\BoilerplateTheme\Twig\…`
+- `bin/fix-prefixed-twig.php` runs after Strauss (`prefix-namespaces`): Strauss does not rewrite the class names Twig writes into compiled templates (`use Twig\Template;` etc.), which would otherwise break every render with `Class "Twig\Template" not found`
+- `delete_vendor_packages` removes the unprefixed sources after prefixing, so re-run `composer install --working-dir=theme` (not `prefix-namespaces` alone) to regenerate `vendor-prefixed/`
 
 ```bash
 pnpm run composer:install:dev
@@ -318,6 +328,39 @@ The theme includes general infrastructure migrated from a production reference (
 - **Font Awesome** (recommended): icons in header search, footer social links, and back-to-top button.
 - **Example CPT** (`example_item` + `example_category`): scaffold in `theme/src/PostTypes/ExamplePostType.php` — copy and adapt for project-specific post types.
 - **Breadcrumb CPT mapping**: extend via the `boilerplate_theme_breadcrumb_cpt_page_map` filter.
+
+## Timber views
+
+The theme renders all frontend markup with [Timber 2](https://timber.github.io/docs/v2/) and Twig. The view structure follows the [Timber Starter Theme 2.x](https://github.com/timber/starter-theme/tree/2.x/views):
+
+| Path | Purpose |
+| ---- | ------- |
+| `views/layouts/base.twig` | HTML skeleton (`wp_head`, `wp_body_open`, `wp_footer`) with the blocks `head`, `header`, `content`, `footer` |
+| `views/templates/*.twig` | Page templates; each `{% extends 'layouts/base.twig' %}` and fills `{% block content %}` |
+| `views/partials/*.twig` | Reusable includes (header, footer, menus, teasers, pagination, breadcrumb, search, preloader) |
+| `views/blocks/*.twig` | Frontend markup of dynamic Gutenberg blocks |
+
+Root templates (`index.php`, `page.php`, `single.php`, `archive.php`, `404.php`, `templates/template-search.php`) contain no markup: they build the context and call `Timber::render()`. More specific Twig files are picked up automatically where the stub lists fallbacks (e.g. `templates/single-{post_type}.twig`, `templates/page-{slug}.twig`, `templates/archive-{post_type}.twig`).
+
+**Imports:** Root templates and `inc/` are outside the Strauss autoload scope, so their call sites are not rewritten. Always import the prefixed class: `use CompanyName\BoilerplateTheme\Timber\Timber;`.
+
+**Global context** (`Theme\TimberIntegration`, filter `timber/context`):
+
+| Key | Content |
+| --- | ------- |
+| `options` | Curated Redux theme options with defaults (works without Redux): `logo`, `logo_footer` (media arrays, use `.url`), `website_title`, `show_breadcrumb`, `show_preloader`, `preloader_style`, `show_backtotop`, `social.*`, `error_title`, `error_text`, `error_btn` |
+| `header_menu`, `footer_menu_1` … `footer_menu_3` | `Timber\Menu` per location (`null` if unassigned); footer menus are limited to depth 1 |
+| `search_url` | URL of the search page (`search_page` option or first page using the search template) |
+| `typography_classes` | Tailwind Typography classes for content wrappers |
+| `strip_header_footer_links` | Result of the `boilerplate_theme_strip_header_footer_links` filter |
+
+Twig never calls `ThemeOptions` directly; security and asset options (`disable_*`, `custom_css`, `custom_js`) stay in PHP.
+
+**Theme Twig functions:** `breadcrumb_items()` returns the crumbs from `Theme\Breadcrumb`; `the_content()` returns the filtered content of the current post like WordPress' `the_content()` (Timber's `post.content` ignores `<!--more-->`).
+
+**Menus:** There is no PHP walker. `partials/menu.twig` / `menu-item.twig` render the header menu with the `f-header__*` BEM classes used by `flexi-header.css` and the header JavaScript; `partials/footer-menu.twig` renders the footer menus.
+
+**Escaping and i18n:** Timber disables Twig autoescaping, so escape explicitly with `|esc_html`, `|esc_attr`, `|esc_url` or `|wp_kses_post`. Translate with `{{ __('Text', 'boilerplate-theme') }}`, `_x()`, `_n()`. Note that `wp i18n make-pot` does not scan `.twig` files; strings used only in Twig are not extracted into the POT file.
 
 ## Plugin boilerplates
 
