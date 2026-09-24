@@ -28,6 +28,9 @@ _wp-content-dev/
     ├── tailwind.css
     ├── docs/
     │   └── DEVELOPMENT.md
+    ├── bin/
+    │   ├── download-strauss.php
+    │   └── fix-prefixed-twig.php
     ├── node_scripts/
     │   ├── build-blocks.js
     │   ├── build-block-views.js
@@ -69,17 +72,19 @@ For architecture, build pipeline details, and Node script behaviour, see [`docs/
 ## Recommended project setup order
 
 1. Set up a local WordPress site and clone the blueprint into its web root as `_wp-content-dev` (see [`../README.md`](../README.md#wordpress-development-environment)).
-2. Rename this folder to your slug, run `pnpm install` and `pnpm run composer:install:dev`, then run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)).
-3. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-4. Link or copy theme and plugin into WordPress (see [Local usage](#local-usage)).
-5. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/` (see [Cursor AI configuration](#cursor-ai-configuration)).
+2. Rename this folder to your slug, then run `pnpm install` (see [Prerequisites](#prerequisites)).
+3. Run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)). Theme first, then plugin.
+4. Run `pnpm run composer:install:dev`. Strauss prefixes Timber and plugin dependencies with the namespaces the rename scripts wrote into each `composer.json`. Do this after the rename scripts, not before.
+5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
+6. Link or copy theme and plugin into WordPress, then activate (see [Local usage](#local-usage)). Activation requires step 4.
+7. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/` after the rename scripts (see [Cursor AI configuration](#cursor-ai-configuration)).
 
 ## Prerequisites
 
 From this directory after renaming (e.g. `_wp-content-dev/sw-soltau/`):
 
 - **Node.js** and **pnpm** for CSS/JS builds and linting.
-- **PHP** and **Composer** for autoloading, Strauss prefixing, and PHPCS.
+- **PHP 8.3+** and **Composer** for autoloading, Strauss prefixing, and PHPCS. The theme requires PHP 8.3 (`theme/composer.json`); Timber 2 itself allows PHP 8.2.
 
 Rename the package folder **before** `pnpm install`. pnpm creates symlinks in `node_modules` that break when the parent directory path changes.
 
@@ -88,10 +93,9 @@ cd _wp-content-dev
 mv boilerplate-theme sw-soltau
 cd sw-soltau
 pnpm install
-composer install
-composer install --working-dir=theme
-composer install --working-dir=plugins/boilerplate-plugin
 ```
+
+Run Composer only after the rename scripts. `pnpm run composer:install:dev` installs the package root (PHPCS), the theme (Timber), and both plugins. A manual install of only `plugins/boilerplate-plugin` skips `plugins/scf-boilerplate-plugin`.
 
 ## Rename theme placeholders
 
@@ -102,10 +106,11 @@ cd _wp-content-dev
 mv boilerplate-theme sw-soltau
 cd sw-soltau
 pnpm install
-pnpm run composer:install:dev
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 ```
+
+`rename-theme.js` rewrites `extra.strauss.namespace_prefix` in `theme/composer.json` and the prefixed `use` lines in PHP and Twig. It skips `vendor/` and `vendor-prefixed/`. If Composer already ran, those directories still contain `CompanyName\BoilerplateTheme\…`. Run `pnpm run composer:install:dev` once, after the theme rename and any plugin rename. Do not run it before those scripts or between them.
 
 On Windows (PowerShell), replace `mv boilerplate-theme sw-soltau` with `Rename-Item boilerplate-theme sw-soltau`.
 
@@ -134,7 +139,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 For the SCF alternative, use `--plugin scf-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
 
-This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace).
+This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace). Then run `pnpm run composer:install:dev` so each `vendor-prefixed/` autoloader matches the new namespaces.
 
 ## Manual rename checklist
 
@@ -150,6 +155,8 @@ If you rename manually, replace:
 - `Boilerplate Theme` -> your display name.
 - `BOILERPLATE_THEME_` -> your constant prefix.
 - `boilerplate/example-block` -> your block namespace.
+
+After a manual rename, run `pnpm run composer:install:dev`. Replacing strings in `composer.json` does not rebuild `vendor-prefixed/`.
 
 ## Development workflow
 
@@ -254,10 +261,11 @@ Runtime Composer packages are **prefixed with [Strauss](https://github.com/Brian
 - Prefixed output: `vendor-prefixed/` (generated on `composer install`, gitignored)
 - Strauss PHAR: downloaded via `bin/download-strauss.php` (cURL with `file_get_contents` fallback; avoids empty files from shell curl under WAMP)
 - `require-dev` packages are **not** prefixed
-- After renaming a plugin, run `composer install --working-dir=plugins/<slug>` to regenerate `vendor-prefixed/`
-- The theme ships **Timber 2** (`timber/timber`, incl. Twig) as its only runtime dependency, prefixed to `CompanyName\BoilerplateTheme\Timber\…` / `CompanyName\BoilerplateTheme\Twig\…`
-- `bin/fix-prefixed-twig.php` runs after Strauss (`prefix-namespaces`): Strauss does not rewrite the class names Twig writes into compiled templates (`use Twig\Template;` etc.), which would otherwise break every render with `Class "Twig\Template" not found`
-- `delete_vendor_packages` removes the unprefixed sources after prefixing, so re-run `composer install --working-dir=theme` (not `prefix-namespaces` alone) to regenerate `vendor-prefixed/`
+- After `rename-theme.js` or `rename-plugin.js`, run `pnpm run composer:install:dev` (or `composer install --working-dir=theme` and `composer install --working-dir=plugins/<slug>`). The rename scripts skip `vendor-prefixed/`, so an install from before the rename leaves Timber and other packages on the placeholder namespace.
+- The theme ships **Timber 2** (`timber/timber` `^2.0`, including Twig) as its only runtime dependency, listed in `extra.strauss.packages`, prefixed to `CompanyName\BoilerplateTheme\Timber\…` / `CompanyName\BoilerplateTheme\Twig\…`
+- `update_call_sites: true` rewrites call sites only under the Composer autoload directory (`theme/src/`, plugin `includes/`). Root templates and `inc/` are not rewritten.
+- `bin/fix-prefixed-twig.php` runs in the theme `prefix-namespaces` script after `strauss.phar` (not on `prefix-namespaces:dry-run`, and not in the plugins). Strauss does not rewrite the class names Twig writes into compiled templates (`use Twig\Template;` etc.), which would otherwise break every render with `Class "Twig\Template" not found`
+- `delete_vendor_packages` removes the unprefixed sources after prefixing, so regenerate `vendor-prefixed/` with `composer install` in that package. `composer prefix-namespaces` alone cannot refetch deleted packages.
 
 ```bash
 pnpm run composer:install:dev
@@ -289,7 +297,9 @@ ln -s "_wp-content-dev/boilerplate-theme/plugins/scf-boilerplate-plugin" "wp-con
 
 On Windows, configure and run `_wp-content-dev/ps/create-blueprint-theme-link.ps1` and `create-blueprint-plugin-link.ps1` (adapt the script paths for additional plugins as needed).
 
-Activate the theme and plugin(s) in WordPress after linking. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**. Install Composer dependencies before activating if you have not run `pnpm run composer:install:dev` yet.
+Activate the theme and plugin(s) in WordPress after linking. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**.
+
+The theme must load `theme/vendor-prefixed/autoload.php` from a Composer install that ran **after** the rename scripts. Otherwise `functions.php` shows an admin error that `vendor-prefixed` is missing, or `ThemeManager` shows that prefixed Timber was not found. Frontend templates, the example block, and the search form call Timber directly, so the front end fatals in both cases. The admin notice does not replace those calls.
 
 Root-level tooling:
 
@@ -305,7 +315,7 @@ Root-level tooling:
 - Use **`apiVersion`: 3** for new blocks (iframe editor compatibility).
 - For dynamic blocks, implement PHP `render` and keep `save` minimal (`null` or inner blocks content only).
 - Align **`editorScript`** with the theme's registered handle; avoid raw file paths in `block.json` where the theme expects a handle.
-- Run **`rename-theme.js`** then **`rename-plugin.js`** before copying `_wp-content-dev/cursor/` to `.cursor/` when starting a new project.
+- Run **`rename-theme.js`**, then **`rename-plugin.js`**, then **`pnpm run composer:install:dev`**, before copying `_wp-content-dev/cursor/` to `.cursor/` when starting a new project.
 
 ## Common pitfalls
 
@@ -313,7 +323,10 @@ Root-level tooling:
 | ------- | ------- | ---------- |
 | Forgot `copy-blocks` after `block.json` edit | WordPress loads stale metadata | Run `development:copy-blocks` |
 | New `@wordpress/*` import in blocks bundle | Resolve/bundle errors | Extend `wpGlobals` in `build-blocks.js` |
-| Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP/templates in `theme/`; bundle JS via `javascript/` and `blocks/` |
+| Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP classes in `theme/src/` and Twig in `theme/views/blocks/`; bundle JS via `javascript/` and `blocks/` |
+| `composer install` in `theme/` before `rename-theme.js` | Admin notice that Timber is missing from `vendor-prefixed`; front end fatals | Run `pnpm run composer:install:dev` again after the rename scripts |
+| Theme activated without `theme/vendor-prefixed/` | Admin notice that `vendor-prefixed` is missing; front end fatals | `composer install --working-dir=theme` before activation |
+| `pnpm run zip:theme` before the theme Composer install | ZIP has no prefixed Timber | `pnpm run bundle` runs production Composer installs, then zips. `zip:theme` alone archives `theme/` as it is |
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
 | Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
 | `pnpm install` before folder rename | Broken symlinks in `node_modules` | Rename package folder first, then run `pnpm install` |
@@ -358,7 +371,7 @@ Twig never calls `ThemeOptions` directly; security and asset options (`disable_*
 
 **Theme Twig functions:** `breadcrumb_items()` returns the crumbs from `Theme\Breadcrumb`; `the_content()` returns the filtered content of the current post like WordPress' `the_content()` (Timber's `post.content` ignores `<!--more-->`).
 
-**Menus:** There is no PHP walker. `partials/menu.twig` / `menu-item.twig` render the header menu with the `f-header__*` BEM classes used by `flexi-header.css` and the header JavaScript; `partials/footer-menu.twig` renders the footer menus.
+**Menus:** There is no PHP walker. `partials/menu.twig` / `menu-item.twig` render the header menu with the `f-header__*` BEM classes used by `flexi-header.css` and the header JavaScript; `partials/footer-menu.twig` renders the footer menus. Filters such as `nav_menu_link_attributes` and `walker_nav_menu_start_el` no longer run, because the markup is Twig rather than `wp_nav_menu()`.
 
 **Escaping and i18n:** Timber disables Twig autoescaping, so escape explicitly with `|esc_html`, `|esc_attr`, `|esc_url` or `|wp_kses_post`. Translate with `{{ __('Text', 'boilerplate-theme') }}`, `_x()`, `_n()`. Note that `wp i18n make-pot` does not scan `.twig` files; strings used only in Twig are not extracted into the POT file.
 

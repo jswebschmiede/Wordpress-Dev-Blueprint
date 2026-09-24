@@ -58,4 +58,4 @@ Remove `.git` and run `git init` only when starting a new project from the bluep
 ## Getting started
 
 1. Set up a local WordPress site and clone [Wordpress-Dev-Blueprint](https://github.com/jswebschmiede/Wordpress-Dev-Blueprint.git) into its web root as `_wp-content-dev` (see [WordPress development environment](#wordpress-development-environment)).
-2. Follow the [recommended project setup order](boilerplate-theme/README.md#recommended-project-setup-order) in `boilerplate-theme/README.md` — rename the package folder, install dependencies, run the rename scripts, build assets, link theme/plugin, then copy `cursor/` to `.cursor/`.
+2. Follow the [recommended project setup order](boilerplate-theme/README.md#recommended-project-setup-order) in `boilerplate-theme/README.md` — rename the package folder, install pnpm dependencies, run the rename scripts, install Composer dependencies, build assets, link theme/plugin, then copy `cursor/` to `.cursor/`.

@@ -83,7 +83,7 @@ flowchart LR
 - Directories under `blocks/` without `block.json` are skipped with a warning.
 - Directories starting with `_` are ignored.
 - Creates `theme/blocks/<name>/` when missing.
-- Only `block.json` is copied — PHP templates and classes stay in `theme/`.
+- Only `block.json` is copied — PHP block classes stay in `theme/src/`; frontend markup stays in `theme/views/blocks/*.twig`.
 
 ### 3.2 `node_scripts/build-blocks.js`
 
@@ -148,6 +148,7 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 - Only file contents are updated; folders are not renamed.
 - Scans `.php`, `.json`, `.js`, `.css`, `.md`, `.mdc`, and `.twig` files.
 - Skips `vendor/`, `vendor-prefixed/`, `build/`, and `zip/` (important after Strauss: never rewrite prefixed dependencies).
+- Rewrites `theme/composer.json` (`namespace_prefix`, `classmap_prefix`, PSR-4) and prefixed `use` lines, but leaves an existing `theme/vendor-prefixed/` on the old prefix. Run `composer install --working-dir=theme` afterwards (or `pnpm run composer:install:dev` once all rename scripts have finished) so Strauss and `bin/fix-prefixed-twig.php` rebuild it.
 
 ### 3.6 `node_scripts/rename-plugin.js`
 
@@ -202,7 +203,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 Also updates the `--plugin` directory name in root references (`package.json`, docs, …) without rewriting the sibling plugin’s `boilerplate-plugin` placeholders.
 
-After renaming, run `composer install --working-dir=plugins/<slug>` to regenerate Strauss `vendor-prefixed/`.
+After renaming, run `composer install --working-dir=plugins/<slug>` to regenerate Strauss `vendor-prefixed/`. If `rename-theme.js` ran as well, regenerate the theme in the same pass with `pnpm run composer:install:dev` (theme Timber prefix plus both plugins).
 
 ### 3.7 `node_scripts/clean-js-sourcemaps.js`
 
@@ -218,7 +219,7 @@ After renaming, run `composer install --working-dir=plugins/<slug>` to regenerat
 
 **Usage:** `node node_scripts/zip.js <theme|plugin> <slug>`
 
-**What it does:** Creates a deployable ZIP under `zip/<slug>.zip`. For themes, archives `theme/` with the slug as the root folder name inside the archive (e.g. `boilerplate-theme/`). For plugins, archives `plugins/<slug>/`.
+**What it does:** Creates a deployable ZIP under `zip/<slug>.zip`. For themes, archives `theme/` with the slug as the root folder name inside the archive (e.g. `boilerplate-theme/`). For plugins, archives `plugins/<slug>/`. The archive includes `vendor-prefixed/` when that directory exists. `zip:theme` does not run Composer; `pnpm run bundle` runs the production Composer installs first.
 
 **Theme version injection:** After creating a theme ZIP, writes a base36 Unix timestamp into `BOILERPLATE_THEME_VERSION` inside `src/Theme/ThemeManager.php` so asset cache busting uses the build time.
 
@@ -247,6 +248,11 @@ Runtime Composer packages are **prefixed with [Strauss](https://github.com/Brian
 - Prefixed output: `vendor-prefixed/` (gitignored, generated on `composer install`)
 - Bootstrap loads `vendor-prefixed/autoload.php` (includes project PSR-4 via `include_root_autoload`)
 - `require-dev` packages (e.g. `symfony/var-dumper`) are **not** prefixed
+- Theme runtime dependency: `timber/timber` (`^2.0`) in `theme/composer.json` `require` and `extra.strauss.packages`. Prefixed to `CompanyName\BoilerplateTheme\Timber\…` and `CompanyName\BoilerplateTheme\Twig\…` (placeholders until `rename-theme.js`)
+- `update_call_sites: true` rewrites PHP only in the autoload directory (`theme/src/`, plugin `includes/`). Root templates and `theme/inc/` keep hand-written prefixed imports: `use CompanyName\BoilerplateTheme\Timber\Timber;`
+- Theme `prefix-namespaces` runs `bin/fix-prefixed-twig.php` after `strauss.phar`. Strauss does not rewrite class names inside Twig code-generation strings (`use Twig\Template;`). Without that script every Twig render fatals with `Class "Twig\Template" not found`. The dry-run script and the plugin `prefix-namespaces` scripts do not run it.
+- `delete_vendor_packages: true` deletes the unprefixed package from `vendor/` after copying. Rebuild with `composer install` in that package. `prefix-namespaces` alone does not download the packages again.
+- `functions.php` admin notice when `vendor-prefixed/autoload.php` is missing; `ThemeManager` admin notice when the prefixed `Timber` class is missing. Frontend templates still call Timber and fatal in both cases.
 
 **Adding a runtime dependency (plugin example):**
 
@@ -254,7 +260,7 @@ Runtime Composer packages are **prefixed with [Strauss](https://github.com/Brian
 2. List it in `"extra"."strauss"."packages"` (or leave empty to prefix all `require` entries)
 3. Run `composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin`
 4. Run `composer update --working-dir=plugins/boilerplate-plugin`
-5. Use normal `use Vendor\Class` imports in plugin code; Strauss rewrites call sites on install
+5. Use normal `use Vendor\Class` imports in plugin code under `includes/`; Strauss rewrites those call sites on install. Files outside the autoload directory (theme root templates, `theme/inc/`) are not rewritten and must import the prefixed class.
 
 The plugin includes a **Strauss demo** on Settings → Boilerplate Plugin (`ramsey/uuid`).
 

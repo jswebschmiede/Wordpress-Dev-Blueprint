@@ -54,7 +54,7 @@ Install Composer dependencies in the plugin directory before activating the plug
 composer install --working-dir=plugins/boilerplate-plugin
 ```
 
-This runs [Strauss](https://github.com/BrianHenryIE/strauss) automatically and generates `vendor-prefixed/` with prefixed runtime dependencies. WordPress loads `vendor-prefixed/autoload.php` at runtime.
+This runs [Strauss](https://github.com/BrianHenryIE/strauss) automatically and generates `vendor-prefixed/` with prefixed runtime dependencies. WordPress loads `vendor-prefixed/autoload.php` at runtime. If `rename-plugin.js` already ran, run this install afterwards: the rename script skips `vendor-prefixed/`.
 
 Preview prefixing without changes:
 

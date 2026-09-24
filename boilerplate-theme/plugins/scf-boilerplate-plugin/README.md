@@ -52,7 +52,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 ## Usage
 
 1. Symlink or copy this folder to `wp-content/plugins/scf-boilerplate-plugin`.
-2. Install Composer dependencies:
+2. Install Composer dependencies (again after `rename-plugin.js`; that script skips `vendor-prefixed/`, including the prefixed project autoload):
 
 ```bash
 composer install --working-dir=plugins/scf-boilerplate-plugin
