@@ -36,7 +36,7 @@ require_once $boilerplate_theme_autoload;
 
 /**
  * ThemeManager bootstraps Timber (via TimberIntegration) and the rest of the theme
- * on after_setup_theme. Existing classic PHP templates keep working unchanged in Phase 0.
+ * on after_setup_theme. Templates render Twig views from views/.
  */
 if ( class_exists( ThemeManager::class ) ) {
 	add_action(
@@ -47,11 +47,6 @@ if ( class_exists( ThemeManager::class ) ) {
 		1
 	);
 }
-
-/**
- * Custom template tags for this theme.
- */
-require get_template_directory() . '/inc/template-tags.php';
 
 /**
  * Functions which enhance the theme by hooking into WordPress.

@@ -19,7 +19,7 @@ class TimberIntegration {
 	 *
 	 * @var array<string, int>
 	 */
-	private const MENU_LOCATIONS = array(
+	private const array MENU_LOCATIONS = array(
 		'header-menu'   => 0,
 		'footer-menu-1' => 1,
 		'footer-menu-2' => 1,

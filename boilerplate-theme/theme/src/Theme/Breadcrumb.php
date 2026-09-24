@@ -7,13 +7,13 @@ namespace CompanyName\BoilerplateTheme\Theme;
 \defined( 'ABSPATH' ) || exit;
 
 /**
- * Generates accessible breadcrumb navigation.
+ * Builds breadcrumb items for the current request (markup lives in views/partials/breadcrumb.twig).
  * Supports all standard WordPress page types: singular posts/pages, categories,
  * tags, taxonomies, archives, search, author and 404 pages.
  */
 class Breadcrumb {
 	/**
-	 * @param bool $show_on_home Whether to render breadcrumbs on the front page.
+	 * @param bool $show_on_home Whether to return breadcrumbs on the front page.
 	 * @param bool $show_current Whether to include the current page title as the last crumb.
 	 */
 	public function __construct(
@@ -70,69 +70,6 @@ class Breadcrumb {
 		}
 
 		return $this->build_crumbs();
-	}
-
-	/**
-	 * Renders the breadcrumb navigation to the output buffer.
-	 *
-	 * @return void
-	 */
-	public function render(): void {
-		$crumbs = $this->get_crumbs();
-
-		if ( empty( $crumbs ) ) {
-			return;
-		}
-
-		$last_index = array_key_last( $crumbs );
-		$position   = 1;
-
-		echo '<nav class="breadcrumbs max-w-wide w-p-1 xs:w-p-2 mx-auto text-sm lg:text-base md:mb-5 mb-2.5" aria-label="' . esc_attr__( 'Brotkrumen-Navigation', 'boilerplate-theme' ) . '" itemscope itemtype="https://schema.org/BreadcrumbList">';
-		echo '<ol class="breadcrumbs__list flex flex-nowrap lg:flex-wrap overflow-auto">';
-
-		foreach ( $crumbs as $index => $crumb ) {
-			$this->render_crumb( $crumb, $position, $index === $last_index );
-			++$position;
-		}
-
-		echo '</ol>';
-		echo '</nav>';
-	}
-
-	/**
-	 * Renders a single breadcrumb list item with Schema.org microdata.
-	 *
-	 * @param array<string, string|null> $crumb    Crumb data with 'label' and optional 'url'.
-	 * @param int                          $position 1-based position for Schema.org.
-	 * @param bool                         $is_last  Whether this is the final (current) crumb.
-	 * @return void
-	 */
-	private function render_crumb( array $crumb, int $position, bool $is_last ): void {
-		if ( $is_last ) {
-			echo '<li class="breadcrumbs__item" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-			printf( '<span itemprop="name">%s</span>', esc_html( $crumb['label'] ) );
-			printf( '<meta itemprop="position" content="%s">', esc_attr( (string) $position ) );
-			echo '</li>';
-			return;
-		}
-
-		echo '<li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-
-		if ( ! empty( $crumb['url'] ) ) {
-			printf(
-				'<a href="%s" class="text-inherit underline hover:text-primary active:text-primary" itemprop="item"><span itemprop="name">%s</span></a>',
-				esc_url( $crumb['url'] ),
-				esc_html( $crumb['label'] )
-			);
-		} else {
-			printf( '<span itemprop="name">%s</span>', esc_html( $crumb['label'] ) );
-		}
-
-		printf( '<meta itemprop="position" content="%s">', esc_attr( (string) $position ) );
-
-		echo '<span class="breadcrumbs__separator" aria-hidden="true"></span>';
-
-		echo '</li>';
 	}
 
 	/**
