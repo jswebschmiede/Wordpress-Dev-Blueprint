@@ -5,7 +5,7 @@
 import { existsSync, readdirSync, statSync } from 'fs';
 import { extname, join } from 'path';
 
-export const allowedExtensions = new Set(['.php', '.json', '.js', '.css', '.md', '.mdc']);
+export const allowedExtensions = new Set(['.php', '.json', '.js', '.css', '.md', '.mdc', '.twig']);
 
 export const defaultSkippedDirectories = new Set([
     'vendor',

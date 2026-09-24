@@ -146,7 +146,7 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 - Company must be kebab-case (e.g. `smart-media-24`) or PascalCase (e.g. `SmartMedia24`).
 - `--company` is required.
 - Only file contents are updated; folders are not renamed.
-- Scans `.php`, `.json`, `.js`, `.css`, `.md`, and `.mdc` files.
+- Scans `.php`, `.json`, `.js`, `.css`, `.md`, `.mdc`, and `.twig` files.
 - Skips `vendor/`, `vendor-prefixed/`, `build/`, and `zip/` (important after Strauss: never rewrite prefixed dependencies).
 
 ### 3.6 `node_scripts/rename-plugin.js`
