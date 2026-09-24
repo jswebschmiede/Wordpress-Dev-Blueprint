@@ -5,6 +5,8 @@ declare( strict_types=1 );
 namespace CompanyName\BoilerplateTheme\Theme;
 
 use CompanyName\BoilerplateTheme\Timber\Timber;
+use CompanyName\BoilerplateTheme\Twig\Environment;
+use CompanyName\BoilerplateTheme\Twig\TwigFunction;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -35,6 +37,42 @@ class TimberIntegration {
 		Timber::$dirname = array( 'views' );
 
 		add_filter( 'timber/context', array( $this, 'add_to_context' ) );
+		add_filter( 'timber/twig', array( $this, 'add_to_twig' ) );
+	}
+
+	/**
+	 * Registers theme-specific Twig functions.
+	 *
+	 * @param Environment $twig Twig environment provided by Timber.
+	 * @return Environment
+	 */
+	public function add_to_twig( Environment $twig ): Environment {
+		$twig->addFunction(
+			new TwigFunction(
+				'breadcrumb_items',
+				static fn ( bool $show_on_home = false, bool $show_current = true ): array => ( new Breadcrumb( $show_on_home, $show_current ) )->get_crumbs()
+			)
+		);
+
+		$twig->addFunction( new TwigFunction( 'the_content', array( $this, 'get_the_content_html' ) ) );
+
+		return $twig;
+	}
+
+	/**
+	 * Returns the filtered content of the current post, equivalent to WordPress' the_content().
+	 *
+	 * Unlike Timber's `post.content`, this honours `<!--more-->` (teaser + more link in lists,
+	 * `#more-{ID}` anchor on singular views). Relies on the global post that Timber sets up for
+	 * singular contexts and while looping over posts.
+	 *
+	 * @param string|null $more_link_text Optional "read more" link text for teasers.
+	 * @return string Filtered post content HTML.
+	 */
+	public function get_the_content_html( ?string $more_link_text = null ): string {
+		$content = apply_filters( 'the_content', get_the_content( $more_link_text ) );
+
+		return str_replace( ']]>', ']]&gt;', (string) $content );
 	}
 
 	/**

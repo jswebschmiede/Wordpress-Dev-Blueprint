@@ -1,0 +1,13 @@
+{#
+ # Page title + optional breadcrumb.
+ # Expects `title` (HTML allowed); `show_title` defaults to true.
+ #}
+{% if show_title ?? true %}
+	<div class="entry-header{{ options.show_breadcrumb ? '' : ' mb-12' }}">
+		<h1 class="entry-title">{{ title }}</h1>
+	</div>
+{% endif %}
+
+{% if options.show_breadcrumb %}
+	{% include 'partials/breadcrumb.twig' %}
+{% endif %}

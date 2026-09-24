@@ -58,16 +58,32 @@ class Breadcrumb {
 	}
 
 	/**
+	 * Returns the ordered breadcrumb items for the current request.
+	 *
+	 * Each item has a `label` and an optional `url` (null for the current page).
+	 *
+	 * @return array<int, array<string, string|null>> Empty when breadcrumbs are hidden on the front page.
+	 */
+	public function get_crumbs(): array {
+		if ( ( is_home() || is_front_page() ) && ! $this->show_on_home ) {
+			return array();
+		}
+
+		return $this->build_crumbs();
+	}
+
+	/**
 	 * Renders the breadcrumb navigation to the output buffer.
 	 *
 	 * @return void
 	 */
 	public function render(): void {
-		if ( ( is_home() || is_front_page() ) && ! $this->show_on_home ) {
+		$crumbs = $this->get_crumbs();
+
+		if ( empty( $crumbs ) ) {
 			return;
 		}
 
-		$crumbs     = $this->build_crumbs();
 		$last_index = array_key_last( $crumbs );
 		$position   = 1;
 

@@ -1,5 +1,22 @@
-{# Phase 2 — classic page.php remains active until migration. #}
 {% extends 'layouts/base.twig' %}
 
 {% block content %}
+	<section id="primary">
+		<main id="main">
+
+			<article id="post-{{ post.id }}" class="{{ post.class|esc_attr }}">
+
+				{% include 'partials/entry-header.twig' with {
+					title: function('get_the_title', post.id),
+					show_title: not function('is_front_page'),
+				} %}
+
+				<div class="entry-content {{ typography_classes }}">
+					{{ the_content() }}
+				</div>
+
+			</article>
+
+		</main><!-- #main -->
+	</section><!-- #primary -->
 {% endblock %}
