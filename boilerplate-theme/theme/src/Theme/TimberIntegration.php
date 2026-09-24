@@ -1,0 +1,116 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace CompanyName\BoilerplateTheme\Theme;
+
+use CompanyName\BoilerplateTheme\Timber\Timber;
+
+\defined( 'ABSPATH' ) || exit;
+
+/**
+ * Bootstraps Timber and enriches the global Twig context.
+ */
+class TimberIntegration {
+	/**
+	 * Menu location slugs registered in ThemeSetup.
+	 *
+	 * @var list<string>
+	 */
+	private const MENU_LOCATIONS = array(
+		'header-menu',
+		'footer-menu-1',
+		'footer-menu-2',
+		'footer-menu-3',
+	);
+
+	/**
+	 * Initializes Timber and registers context filters.
+	 *
+	 * @return void
+	 */
+	public function init(): void {
+		Timber::init();
+
+		Timber::$dirname = array( 'views' );
+
+		add_filter( 'timber/context', array( $this, 'add_to_context' ) );
+	}
+
+	/**
+	 * Adds curated theme options and menus to the global Timber context.
+	 *
+	 * @param array<string, mixed> $context Global Timber context.
+	 * @return array<string, mixed>
+	 */
+	public function add_to_context( array $context ): array {
+		$context['options']    = $this->get_theme_options_for_context();
+		$context['search_url'] = $this->get_search_url();
+
+		foreach ( self::MENU_LOCATIONS as $location ) {
+			$context_key             = str_replace( '-', '_', $location );
+			$context[ $context_key ] = Timber::get_menu( $location );
+		}
+
+		return $context;
+	}
+
+	/**
+	 * Builds a curated options array for Twig (defaults work without Redux).
+	 *
+	 * Security and asset injection keys stay out of the frontend context.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function get_theme_options_for_context(): array {
+		$empty_media = array(
+			'url' => '',
+		);
+
+		return array(
+			'logo'            => ThemeOptions::get_option( 'logo', $empty_media ),
+			'logo_footer'     => ThemeOptions::get_option( 'logo_footer', $empty_media ),
+			'website_title'   => ThemeOptions::get_option( 'website_title', get_bloginfo( 'name' ) ),
+			'show_breadcrumb' => (bool) ThemeOptions::get_option( 'show_breadcrumb', true ),
+			'show_preloader'  => (bool) ThemeOptions::get_option( 'show_preloader', true ),
+			'preloader_style' => (string) ThemeOptions::get_option( 'preloader_style', 'v1' ),
+			'show_backtotop'  => (bool) ThemeOptions::get_option( 'show_backtotop', true ),
+			'social'          => array(
+				'facebook'  => (string) ThemeOptions::get_option( 'facebook', '' ),
+				'twitter'   => (string) ThemeOptions::get_option( 'twitter', '' ),
+				'instagram' => (string) ThemeOptions::get_option( 'instagram', '' ),
+				'linkedin'  => (string) ThemeOptions::get_option( 'linkedin', '' ),
+				'youtube'   => (string) ThemeOptions::get_option( 'youtube', '' ),
+				'pinterest' => (string) ThemeOptions::get_option( 'pinterest', '' ),
+			),
+			'error_title'     => (string) ThemeOptions::get_option(
+				'error_title',
+				esc_html__( 'Seite nicht gefunden', 'boilerplate-theme' )
+			),
+			'error_text'      => (string) ThemeOptions::get_option(
+				'error_text',
+				esc_html__(
+					'Diese Seite konnte nicht gefunden werden. Sie wurde möglicherweise entfernt oder umbenannt, oder sie hat möglicherweise nie existiert.',
+					'boilerplate-theme'
+				)
+			),
+			'error_btn'       => (string) ThemeOptions::get_option(
+				'error_btn',
+				esc_html__( 'Zur Startseite', 'boilerplate-theme' )
+			),
+		);
+	}
+
+	/**
+	 * Resolves the themed search page URL when the helper is available.
+	 *
+	 * @return string Search form action URL.
+	 */
+	private function get_search_url(): string {
+		if ( \function_exists( 'boilerplate_theme_get_search_page_url' ) ) {
+			return boilerplate_theme_get_search_page_url();
+		}
+
+		return home_url( '/' );
+	}
+}

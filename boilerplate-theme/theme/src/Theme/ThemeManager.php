@@ -58,6 +58,9 @@ class ThemeManager {
 	public function init(): void {
 		$this->set_constants();
 
+		$timber_integration = new TimberIntegration();
+		$timber_integration->init();
+
 		$theme_setup = new ThemeSetup();
 		$theme_setup->init();
 

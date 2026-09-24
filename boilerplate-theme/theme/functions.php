@@ -34,6 +34,10 @@ if ( ! file_exists( $boilerplate_theme_autoload ) ) {
 
 require_once $boilerplate_theme_autoload;
 
+/**
+ * ThemeManager bootstraps Timber (via TimberIntegration) and the rest of the theme
+ * on after_setup_theme. Existing classic PHP templates keep working unchanged in Phase 0.
+ */
 if ( class_exists( ThemeManager::class ) ) {
 	add_action(
 		'after_setup_theme',
