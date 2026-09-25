@@ -456,6 +456,35 @@ function loadConfigLayers() {
 }
 
 /**
+ * Lists env values for keys in priority order.
+ *
+ * Process environment is checked for every key before dotenv files, so a shell
+ * `THEME_SYNC_SLUG` still overrides `THEME_SLUG` in `.env`.
+ *
+ * @param {string[]} keys - Variable names, highest priority first.
+ * @param {Record<string, string>} fileEnv - Values from `.env` and `.env.local`.
+ * @returns {string[]} Trimmed non-empty values.
+ */
+function envCandidates(keys, fileEnv) {
+    const fromProcess = [];
+    const fromFile = [];
+
+    for (const key of keys) {
+        const processValue = process.env[key];
+
+        if (typeof processValue === 'string' && processValue.trim() !== '') {
+            fromProcess.push(processValue.trim());
+        }
+
+        if (typeof fileEnv[key] === 'string' && fileEnv[key].trim() !== '') {
+            fromFile.push(fileEnv[key].trim());
+        }
+    }
+
+    return [...fromProcess, ...fromFile];
+}
+
+/**
  * Reads one variable from the process environment, then from dotenv files.
  *
  * @param {string} key - Variable name.
@@ -481,7 +510,8 @@ function readEnv(key, fileEnv) {
  *
  * `--target` is the folder that receives `theme/` contents. Otherwise the folder is
  * `<wp-content>/themes/<slug>`. A configured full target is used only when no wp-content
- * path is set. `--slug` changes that folder name.
+ * path is set. `--slug` changes that folder name. Slug keys are `THEME_SLUG`, then
+ * `THEME_SYNC_SLUG`, before the JSON configs.
  *
  * @param {{ target?: string, wpContent?: string, slug?: string }} cli - Parsed CLI overrides.
  * @returns {{ destination: string, slug: string, wpContentPath: string }} Resolved destination.
@@ -490,7 +520,7 @@ function resolveDestination(cli) {
     const { fileEnv, example, local } = loadConfigLayers();
     const slug = firstNonEmpty(
         cli.slug,
-        readEnv('THEME_SYNC_SLUG', fileEnv),
+        ...envCandidates(['THEME_SLUG', 'THEME_SYNC_SLUG'], fileEnv),
         local.slug,
         example.slug,
         DEFAULT_THEME_SLUG,

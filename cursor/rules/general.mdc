@@ -58,7 +58,7 @@ Documentation: [Timber v2](https://timber.github.io/docs/v2/). Useful pages: [te
 
 - The Cursor/VS Code workspace is the repository root. On Windows, open it with Remote – WSL
 - Cursor AI configuration template lives in `cursor/` at the repository root
-- For new projects: from the package root run `node node_scripts/rename-theme.js <slug> --company <Company>`, then `pnpm run composer:install:dev` (Strauss must prefix Timber after the rename), then from the repository root copy `cursor/` to `.cursor/`
+- For new projects: from the package root run `node node_scripts/rename-theme.js <slug> --company <Company>` (or set `THEME_SLUG` / `THEME_SYNC_SLUG` and `THEME_COMPANY` and omit those arguments), then `pnpm run composer:install:dev` (Strauss must prefix Timber after the rename), then from the repository root copy `cursor/` to `.cursor/`
 - See `README.md` and `boilerplate-theme/README.md` for the full workflow
 
 ## Important Notes

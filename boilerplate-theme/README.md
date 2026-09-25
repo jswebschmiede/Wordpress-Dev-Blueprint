@@ -114,9 +114,19 @@ node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 ```
 
+Slug and company can also come from `.env` or `.env.local` (`THEME_SLUG` or its alias `THEME_SYNC_SLUG`, and `THEME_COMPANY`). CLI arguments override those values. The process environment is checked for every slug key before the files, so a shell `THEME_SYNC_SLUG` still overrides `THEME_SLUG` in `.env`. Within one key, the process environment wins over `.env.local`, which wins over `.env`. If slug or company is still missing, the script exits with an error.
+
+```bash
+# .env or .env.local:
+# THEME_SLUG=sw-soltau
+# THEME_COMPANY=SmartMedia24
+node node_scripts/rename-theme.js --dry-run
+node node_scripts/rename-theme.js
+```
+
 `rename-theme.js` rewrites `extra.strauss.namespace_prefix` in `theme/composer.json` and the prefixed `use` lines in PHP and Twig. It skips `vendor/` and `vendor-prefixed/`. If Composer already ran, those directories still contain `CompanyName\BoilerplateTheme\…`. Run `pnpm run composer:install:dev` once, after the theme rename and any plugin rename. Do not run it before those scripts or between them.
 
-It also rewrites the theme-sync slug in `sync-theme.example.json`, `.env.example`, and the default in `node_scripts/sync-theme.js`, so the Local folder becomes `wp-content/themes/<new-slug>`. `.env` and `sync-theme.local.json` are not changed. A `THEME_SYNC_SLUG` or `THEME_SYNC_TARGET` set there still wins.
+It also rewrites the theme-sync slug in `sync-theme.example.json`, `.env.example` (commented `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_SYNC_TARGET`), and the default in `node_scripts/sync-theme.js`, so the Local folder becomes `wp-content/themes/<new-slug>`. `.env`, `.env.local`, and `sync-theme.local.json` are not changed. A slug already set there keeps the sync destination.
 
 For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 

@@ -122,7 +122,9 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 ### 3.5 `node_scripts/rename-theme.js`
 
-**Usage:** `node node_scripts/rename-theme.js <slug> --company <company> [--dry-run]`
+**Usage:** `node node_scripts/rename-theme.js [<slug>] [--company <company>] [--dry-run]`
+
+Slug and company are required. Omit `<slug>` when `THEME_SLUG` or `THEME_SYNC_SLUG` is set, and omit `--company` when `THEME_COMPANY` is set. Precedence for the slug: positional `<slug>`, then `THEME_SLUG`, then `THEME_SYNC_SLUG`. Precedence for the company: `--company`, then `THEME_COMPANY`. The process environment is checked before `.env.local` and `.env`. A CLI value overrides the environment.
 
 **What it does:** Replaces boilerplate placeholders in this package, in `cursor/` at the repository root, and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the `boilerplate-theme` segment becomes the new slug.
 
@@ -144,11 +146,11 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 - Slug must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
 - Company must be kebab-case (e.g. `smart-media-24`) or PascalCase (e.g. `SmartMedia24`).
-- `--company` is required.
+- Slug and company are required via CLI or environment. A CLI value overrides `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_COMPANY`.
 - Only file contents are updated; folders are not renamed.
 - Scans `.php`, `.json`, `.js`, `.css`, `.md`, `.mdc`, and `.twig` files, plus `.env.example` (the sync example is not a scanned extension, so it is included explicitly, same idea as `.vscode/settings.json`).
 - Skips `vendor/`, `vendor-prefixed/`, `build/`, and `zip/` (important after Strauss: never rewrite prefixed dependencies).
-- Rewrites the Local theme-sync slug in `sync-theme.example.json` (`slug`), `.env.example` (commented `THEME_SYNC_SLUG` / `THEME_SYNC_TARGET`), and the default in `node_scripts/sync-theme.js`. Does not edit `.env`, `.env.local`, or `sync-theme.local.json`. Those local values win when set.
+- Rewrites the Local theme-sync slug in `sync-theme.example.json` (`slug`), `.env.example` (commented `THEME_SLUG` / `THEME_SYNC_SLUG` / `THEME_SYNC_TARGET` and `THEME_COMPANY`), and the default in `node_scripts/sync-theme.js`. Does not edit `.env`, `.env.local`, or `sync-theme.local.json`. Those local values win when set.
 - Rewrites `theme/composer.json` (`namespace_prefix`, `classmap_prefix`, PSR-4) and prefixed `use` lines, but leaves an existing `theme/vendor-prefixed/` on the old prefix. Run `composer install --working-dir=theme` afterwards (or `pnpm run composer:install:dev` once all rename scripts have finished) so Strauss and `bin/fix-prefixed-twig.php` rebuild it.
 
 ### 3.6 `node_scripts/rename-plugin.js`
@@ -237,7 +239,7 @@ node node_scripts/zip.js plugin boilerplate-plugin
 
 **What it does:** Copies the contents of `theme/` into a Local WP theme directory so `style.css` lands at `<destination>/style.css`. npm scripts: `sync:theme` (full copy), `development` (full copy once after the asset build, `--optional`), `watch:sync:theme` (initial copy, then changed files only; started by `pnpm run watch`).
 
-**Destination:** `--target` is that folder. Otherwise `<WP_CONTENT_PATH>/themes/<slug>`. Slug order: `--slug`, `THEME_SYNC_SLUG`, `sync-theme.local.json`, `sync-theme.example.json` (default `boilerplate-theme`), then the constant in this script. A full `THEME_SYNC_TARGET` is used only when no wp-content path is set. `--slug` with only a full target replaces the last folder name. `.env` overrides the example. `rename-theme.js` updates the example and the script default, not `.env`.
+**Destination:** `--target` is that folder. Otherwise `<WP_CONTENT_PATH>/themes/<slug>`. Slug order: `--slug`, `THEME_SLUG`, `THEME_SYNC_SLUG`, `sync-theme.local.json`, `sync-theme.example.json` (default `boilerplate-theme`), then the constant in this script. Process environment is checked for both slug keys before dotenv files. A full `THEME_SYNC_TARGET` is used only when no wp-content path is set. `--slug` with only a full target replaces the last folder name. `.env` overrides the example. `rename-theme.js` updates the example and the script default, not `.env`.
 
 **Excluded:** `node_modules/`, `.git/`, `vendor/` (unprefixed Composer), `*.map`, `.DS_Store`, `Thumbs.db`. **Included:** PHP, Twig, `style.css`, `style-editor.css`, built JS, block metadata, and `vendor-prefixed/`.
 
