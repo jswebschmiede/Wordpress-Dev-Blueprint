@@ -13,7 +13,7 @@ Technical reference for the asset pipeline, block system, and Node scripts.
 
 - **Dual-path blocks:** Authoritative block _metadata_ is synced into `theme/blocks/` for WordPress; editor code is bundled separately; optional **view** bundles load only when the block is present on the page.
 - **Global `@wordpress/*` in bundles:** Editor and plugin builds use `esbuild-plugin-external-global` so npm imports resolve to `window.wp.*` (and `window.jQuery` where configured) instead of duplicating packages.
-- **Boilerplate placeholders:** Use `rename-theme.js` and `rename-plugin.js` before starting a real project (workflow in [`../README.md`](../README.md#rename-theme-placeholders)).
+- **Boilerplate placeholders:** Run `pnpm run rename:theme`, then `pnpm run rename:plugin`, before starting a real project (workflow in [`../README.md`](../README.md#rename-theme-placeholders)). `rename:theme` reads `THEME_SLUG` and `THEME_COMPANY` from `.env`.
 
 ## 2. Architecture (high level)
 
@@ -122,16 +122,18 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 ### 3.5 `node_scripts/rename-theme.js`
 
-**Usage:** `node node_scripts/rename-theme.js [<slug>] [--company <company>] [--dry-run]`
+**Usage:** `pnpm run rename:theme`
 
-Slug and company are required. Omit `<slug>` when `THEME_SLUG` or `THEME_SYNC_SLUG` is set, and omit `--company` when `THEME_COMPANY` is set. Precedence for the slug: positional `<slug>`, then `THEME_SLUG`, then `THEME_SYNC_SLUG`. Precedence for the company: `--company`, then `THEME_COMPANY`. The process environment is checked before `.env.local` and `.env`. A CLI value overrides the environment.
+Set `THEME_SLUG` (or its alias `THEME_SYNC_SLUG`) and `THEME_COMPANY` in `.env`. The script reads those values and does not need a slug or `--company` argument. `.env.local` overrides `.env`. The process environment overrides both. If either value is missing, the script exits with an error. A positional slug or `--company`, when passed, still overrides `.env`. `--dry-run` previews without writing: `pnpm run rename:theme --dry-run`.
+
+**npm script:** `rename:theme` in `package.json`.
 
 **What it does:** Replaces boilerplate placeholders in this package, in `cursor/` at the repository root, and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the `boilerplate-theme` segment becomes the new slug. Directories under `cursor/skills/` whose names contain `boilerplate-theme` are renamed to the new slug (for example `boilerplate-theme-create-block` becomes `<slug>-create-block`).
 
 **Replacements:**
 
-| Placeholder | Example for `sw-soltau` + `--company SmartMedia24` |
-| ----------- | -------------------------------------------------- |
+| Placeholder | Example for `THEME_SLUG=sw-soltau` and `THEME_COMPANY=SmartMedia24` |
+| ----------- | -------------------------------------------------------------------- |
 | `boilerplate-theme` | `sw-soltau` |
 | `boilerplate_theme` | `sw_soltau` |
 | `CompanyName` | `SmartMedia24` |
@@ -146,7 +148,7 @@ Slug and company are required. Omit `<slug>` when `THEME_SLUG` or `THEME_SYNC_SL
 
 - Slug must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
 - Company must be kebab-case (e.g. `smart-media-24`) or PascalCase (e.g. `SmartMedia24`).
-- Slug and company are required via CLI or environment. A CLI value overrides `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_COMPANY`.
+- Slug and company come from `THEME_SLUG` / `THEME_SYNC_SLUG` and `THEME_COMPANY`. A positional slug or `--company` still overrides those values.
 - Renames directories under `cursor/skills/` whose names contain `boilerplate-theme`. Other folders, including the package directory, are not renamed.
 - Scans `.php`, `.json`, `.js`, `.css`, `.md`, `.mdc`, and `.twig` files, plus `.env.example` (the sync example is not a scanned extension, so it is included explicitly, same idea as `.vscode/settings.json`).
 - Skips `vendor/`, `vendor-prefixed/`, `build/`, and `zip/` (important after Strauss: never rewrite prefixed dependencies).
@@ -155,13 +157,17 @@ Slug and company are required. Omit `<slug>` when `THEME_SLUG` or `THEME_SYNC_SL
 
 ### 3.6 `node_scripts/rename-plugin.js`
 
-**Usage:** `node node_scripts/rename-plugin.js <slug> --company <company> [--plugin <plugin-dir>] [--old-slug <placeholder-slug>] [--namespace <Namespace>] [--dry-run]`
+**Usage:** `pnpm run rename:plugin <slug> --company <company> [--plugin <plugin-dir>] [--old-slug <placeholder-slug>] [--namespace <Namespace>] [--dry-run]`
+
+**npm script:** `rename:plugin` in `package.json`. pnpm forwards the arguments. Do not insert an extra `--` before them.
+
+This script does **not** read the new slug or company from `.env`. `PLUGIN_SLUGS` only selects plugins for build, watch, and sync. Slug and `--company` stay required arguments.
 
 **What it does:** Replaces plugin-specific placeholders (including company), renames `plugins/<plugin>/` to `plugins/<slug>/`, renames the bootstrap PHP file and main plugin class file.
 
 Calling the script **without arguments** (or without required parameters) exits with an error listing what is missing and prints the full usage.
 
-Run **`rename-theme.js` first** (company + theme), then **`rename-plugin.js`**.
+Run **`pnpm run rename:theme` first** (company + theme from `.env`), then **`pnpm run rename:plugin`**.
 
 **Parameters:**
 
@@ -178,14 +184,14 @@ Run **`rename-theme.js` first** (company + theme), then **`rename-plugin.js`**.
 
 ```bash
 # Settings API alternative
-node node_scripts/rename-plugin.js mvg-aktuell \
+pnpm run rename:plugin mvg-aktuell \
   --plugin boilerplate-plugin \
   --old-slug boilerplate-plugin \
   --company SmartMedia24 \
   --namespace MvgAktuell
 
 # SCF Framework alternative (folder differs from content placeholders)
-node node_scripts/rename-plugin.js mvg-aktuell \
+pnpm run rename:plugin mvg-aktuell \
   --plugin scf-boilerplate-plugin \
   --old-slug boilerplate-plugin \
   --company SmartMedia24 \
@@ -206,7 +212,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 Also updates the `--plugin` directory name in root references (`package.json`, docs, …) as a whole token. Renaming `boilerplate-plugin` leaves `scf-boilerplate-plugin` intact in Composer, zip, and sourcemap script names. The commented `PLUGIN_SLUGS` example in `.env.example` is updated one comma-separated field at a time. `.env` and `.env.local` are not edited, and `.env.example` is not part of the substring replacement used for plugin files.
 
-After renaming, run `composer install --working-dir=plugins/<slug>` to regenerate Strauss `vendor-prefixed/`. If `rename-theme.js` ran as well, regenerate the theme in the same pass with `pnpm run composer:install:dev` (theme Timber prefix plus both plugins).
+After renaming, run `composer install --working-dir=plugins/<slug>` to regenerate Strauss `vendor-prefixed/`. If `pnpm run rename:theme` ran as well, regenerate the theme in the same pass with `pnpm run composer:install:dev` (theme Timber prefix plus both plugins).
 
 ### 3.7 `node_scripts/clean-js-sourcemaps.js`
 
@@ -239,7 +245,7 @@ node node_scripts/zip.js plugin boilerplate-plugin
 
 **What it does:** Copies the contents of `theme/` into a Local WP theme directory so `style.css` lands at `<destination>/style.css`. npm scripts: `sync:theme` (full copy), `development` (full copy once after the asset build, `--optional`), `watch:sync:theme` (initial copy, then changed files only; started by `pnpm run watch`).
 
-**Destination:** `--target` is that folder. Otherwise `<WP_CONTENT_PATH>/themes/<slug>`. Slug order: `--slug`, `THEME_SLUG`, `THEME_SYNC_SLUG`, then the constant in this script (`boilerplate-theme`). Process environment is checked for both slug keys before `.env.local` and `.env`. A full `THEME_SYNC_TARGET` is used only when no wp-content path is set. `--slug` with only a full target replaces the last folder name. `rename-theme.js` updates the script default and the commented examples in `.env.example`, not `.env` or `.env.local`.
+**Destination:** `--target` is that folder. Otherwise `<WP_CONTENT_PATH>/themes/<slug>`. Slug order: `--slug`, `THEME_SLUG`, `THEME_SYNC_SLUG`, then the constant in this script (`boilerplate-theme`). Process environment is checked for both slug keys before `.env.local` and `.env`. A full `THEME_SYNC_TARGET` is used only when no wp-content path is set. `--slug` with only a full target replaces the last folder name. `pnpm run rename:theme` updates the script default and the commented examples in `.env.example`, not `.env` or `.env.local`.
 
 **Excluded:** `node_modules/`, `.git/`, `vendor/` (unprefixed Composer), `*.map`, `.DS_Store`, `Thumbs.db`. **Included:** PHP, Twig, `style.css`, `style-editor.css`, built JS, block metadata, and `vendor-prefixed/`.
 
@@ -317,7 +323,7 @@ Runtime Composer packages are **prefixed with [Strauss](https://github.com/Brian
 - Prefixed output: `vendor-prefixed/` (gitignored, generated on `composer install`)
 - Bootstrap loads `vendor-prefixed/autoload.php` (includes project PSR-4 via `include_root_autoload`)
 - `require-dev` packages (e.g. `symfony/var-dumper`) are **not** prefixed
-- Theme runtime dependency: `timber/timber` (`^2.0`) in `theme/composer.json` `require` and `extra.strauss.packages`. Prefixed to `CompanyName\BoilerplateTheme\Timber\…` and `CompanyName\BoilerplateTheme\Twig\…` (placeholders until `rename-theme.js`)
+- Theme runtime dependency: `timber/timber` (`^2.0`) in `theme/composer.json` `require` and `extra.strauss.packages`. Prefixed to `CompanyName\BoilerplateTheme\Timber\…` and `CompanyName\BoilerplateTheme\Twig\…` (placeholders until `pnpm run rename:theme`)
 - `update_call_sites: true` rewrites PHP only in the autoload directory (`theme/src/`, plugin `includes/`). Root templates and `theme/inc/` keep hand-written prefixed imports: `use CompanyName\BoilerplateTheme\Timber\Timber;`
 - Theme `prefix-namespaces` runs `bin/fix-prefixed-twig.php` after `strauss.phar`. Strauss does not rewrite class names inside Twig code-generation strings (`use Twig\Template;`). Without that script every Twig render fatals with `Class "Twig\Template" not found`. The dry-run script and the plugin `prefix-namespaces` scripts do not run it.
 - `delete_vendor_packages: true` deletes the unprefixed package from `vendor/` after copying. Rebuild with `composer install` in that package. `prefix-namespaces` alone does not download the packages again.

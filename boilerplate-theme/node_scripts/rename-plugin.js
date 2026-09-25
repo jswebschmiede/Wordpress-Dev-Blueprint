@@ -25,7 +25,7 @@ const rootDir = join(__dirname, '..');
 const args = process.argv.slice(2);
 const isDryRun = args.includes('--dry-run');
 
-const usageMessage = `Usage: node node_scripts/rename-plugin.js <slug> --company <company> [--plugin <plugin-dir>] [--old-slug <placeholder-slug>] [--namespace <Namespace>] [--dry-run]
+const usageMessage = `Usage: pnpm run rename:plugin <slug> --company <company> [--plugin <plugin-dir>] [--old-slug <placeholder-slug>] [--namespace <Namespace>] [--dry-run]
 
 Required:
   <slug>              New plugin slug / text domain

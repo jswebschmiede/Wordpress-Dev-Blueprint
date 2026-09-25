@@ -28,7 +28,7 @@ scf-boilerplate-plugin/
 
 ## Placeholders
 
-Content placeholders match the Settings API plugin (for `rename-plugin.js`):
+Content placeholders match the Settings API plugin (for `pnpm run rename:plugin`):
 
 - `boilerplate-plugin` — slug / text domain / handles
 - `boilerplate_plugin` — shortcode / option keys
@@ -41,8 +41,10 @@ The **directory** stays `scf-boilerplate-plugin` so both alternatives can coexis
 
 ## Rename for a project
 
+`pnpm run rename:plugin` does not read the new slug or company from `.env`. pnpm forwards the arguments; do not insert an extra `--` before them:
+
 ```bash
-node node_scripts/rename-plugin.js mvg-aktuell \
+pnpm run rename:plugin mvg-aktuell \
   --plugin scf-boilerplate-plugin \
   --old-slug boilerplate-plugin \
   --company SmartMedia24 \
@@ -61,7 +63,7 @@ pnpm run sync:plugins --optional
 pnpm run watch:sync:plugins
 ```
 
-2. Install Composer dependencies (again after `rename-plugin.js`; that script skips `vendor-prefixed/`, including the prefixed project autoload):
+2. Install Composer dependencies (again after `pnpm run rename:plugin`; that script skips `vendor-prefixed/`, including the prefixed project autoload):
 
 ```bash
 composer install --working-dir=plugins/scf-boilerplate-plugin
