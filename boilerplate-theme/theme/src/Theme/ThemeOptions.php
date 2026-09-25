@@ -402,7 +402,7 @@ class ThemeOptions {
 
 		$value = \Redux::get_option( self::get_options_name(), $key, $default_value );
 
-		if ( self::is_blank_option_value( $value ) ) {
+		if ( null === $value || '' === $value || array() === $value ) {
 			return $default_value;
 		}
 
@@ -420,27 +420,5 @@ class ThemeOptions {
 	 */
 	public static function cast_switch( mixed $value ): bool {
 		return true === $value || 1 === $value || '1' === $value;
-	}
-
-	/**
-	 * Whether a Redux value is blank and should use the caller default.
-	 *
-	 * @param mixed $value Raw Redux value.
-	 * @return bool True for null, "", or an empty array.
-	 */
-	private static function is_blank_option_value( mixed $value ): bool {
-		if ( null === $value ) {
-			return true;
-		}
-
-		if ( is_string( $value ) ) {
-			return '' === $value;
-		}
-
-		if ( is_array( $value ) ) {
-			return array() === $value;
-		}
-
-		return false;
 	}
 }
