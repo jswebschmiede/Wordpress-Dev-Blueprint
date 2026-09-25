@@ -271,5 +271,5 @@ See [`../README.md` §Best practices](../README.md#best-practices) and [`../READ
 ## 7. Related documentation
 
 - [`../README.md`](../README.md) — package structure, rename workflow, pnpm/Composer commands, local WordPress usage
-- [`../../README.md`](../../README.md) — boilerplate overview, WSL/Linux setup, theme and plugin symlinks
+- [`../../README.md`](../../README.md) — boilerplate overview, WSL/Linux development, theme and plugin symlinks (Windows symbolic links to `\\wsl.localhost\...` when WordPress is Local and the repository is in WSL)
 - [`../../cursor/skills/boilerplate-theme-create-block/SKILL.md`](../../cursor/skills/boilerplate-theme-create-block/SKILL.md) — block scaffolding checklist

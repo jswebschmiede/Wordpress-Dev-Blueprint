@@ -4,7 +4,7 @@ Reusable WordPress theme and plugin development boilerplate with Gutenberg block
 
 ## Development environment
 
-This package is `boilerplate-theme/` (or your renamed slug) inside the repository. The repository is a standalone clone; WordPress stays outside it. On Windows, open the repository with Cursor or VS Code **Remote – WSL**. For clone instructions, WordPress locations, and symlink commands, see [`../README.md`](../README.md#wordpress-development-environment).
+This package is `boilerplate-theme/` (or your renamed slug) inside the repository. The repository is a standalone clone; WordPress stays outside it. On Windows, open the repository with Cursor or VS Code **Remote – WSL** and run the tooling in Linux. Local WP’s PHP runs on Windows, so theme and plugin symlinks for a Local site are created on the Windows side. Clone instructions and the three symlink cases are in [`../README.md`](../README.md#wordpress-development-environment).
 
 ## Structure
 
@@ -77,7 +77,7 @@ For architecture, build pipeline details, and Node script behaviour, see [`docs/
 3. Run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)). Theme first, then plugin.
 4. Run `pnpm run composer:install:dev`. Strauss prefixes Timber and plugin dependencies with the namespaces the rename scripts wrote into each `composer.json`. Do this after the rename scripts, not before.
 5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-6. Symlink the theme and the plugins into the real WordPress `wp-content`, then activate (see [Local usage](#local-usage)). Activation requires step 4.
+6. Symlink the theme and the plugins into the real WordPress `wp-content`, then activate (see [Local usage](#local-usage)). On Local for Windows, create those links with PowerShell or `mklink /D`. Activation requires step 4.
 7. From the repository root, copy `cursor/` to `.cursor/` after the rename scripts (see [Cursor AI configuration](#cursor-ai-configuration)).
 
 ## Prerequisites
@@ -285,19 +285,9 @@ cp -a cursor .cursor
 
 ## Local usage
 
-Symlink the theme and both plugins into the real WordPress `wp-content`. Use the same `ln -s` pattern for each. Run the commands from the repository root. Full environment notes are in [`../README.md`](../README.md#symlink-theme-and-plugins).
+Symlink the theme and both plugins into the real WordPress `wp-content`. The link name is the slug WordPress loads. After a rename, the target uses the new package or plugin directory, and the link name is that slug. Full notes, including `mklink /D` and the Windows-drive fallback, are in [`../README.md`](../README.md#symlink-theme-and-plugins).
 
-Local WP, from WSL:
-
-```bash
-WP_CONTENT="/mnt/c/Users/you/Local Sites/my-site/app/public/wp-content"
-
-ln -s "$(pwd)/boilerplate-theme/theme" "$WP_CONTENT/themes/boilerplate-theme"
-ln -s "$(pwd)/boilerplate-theme/plugins/boilerplate-plugin" "$WP_CONTENT/plugins/boilerplate-plugin"
-ln -s "$(pwd)/boilerplate-theme/plugins/scf-boilerplate-plugin" "$WP_CONTENT/plugins/scf-boilerplate-plugin"
-```
-
-Linux install:
+Native Linux WordPress, from the repository root:
 
 ```bash
 WP_CONTENT="/var/www/my-site/wp-content"
@@ -307,7 +297,23 @@ ln -s "$(pwd)/boilerplate-theme/plugins/boilerplate-plugin" "$WP_CONTENT/plugins
 ln -s "$(pwd)/boilerplate-theme/plugins/scf-boilerplate-plugin" "$WP_CONTENT/plugins/scf-boilerplate-plugin"
 ```
 
-After a rename, the source path uses the new package or plugin directory, and the link name is the slug WordPress should see.
+Local on Windows with the repository in the WSL filesystem (`/home/...`): Local’s PHP cannot open a Linux symlink target. Create the links in PowerShell (Administrator, or Developer Mode). WSL must be running. Replace the distro and home path. A site on `C:` uses `C:\Users\you\Local Sites\...` as `$Link`.
+
+```powershell
+$Link = "J:\Local Sites\my-site\app\public\wp-content\themes\boilerplate-theme"
+$Target = "\\wsl.localhost\Ubuntu-22.04\home\you\projects\my-project\boilerplate-theme\theme"
+New-Item -ItemType SymbolicLink -Path $Link -Target $Target
+
+$Link = "J:\Local Sites\my-site\app\public\wp-content\plugins\boilerplate-plugin"
+$Target = "\\wsl.localhost\Ubuntu-22.04\home\you\projects\my-project\boilerplate-theme\plugins\boilerplate-plugin"
+New-Item -ItemType SymbolicLink -Path $Link -Target $Target
+
+$Link = "J:\Local Sites\my-site\app\public\wp-content\plugins\scf-boilerplate-plugin"
+$Target = "\\wsl.localhost\Ubuntu-22.04\home\you\projects\my-project\boilerplate-theme\plugins\scf-boilerplate-plugin"
+New-Item -ItemType SymbolicLink -Path $Link -Target $Target
+```
+
+Local on Windows with the repository on a Windows drive (`J:\dev\my-project`, in WSL `/mnt/j/dev/my-project`): point `$Target` at that Windows path, for example `J:\dev\my-project\boilerplate-theme\theme`. `Get-Item` must show a Windows target. Use this layout when `\\wsl.localhost\...` does not resolve.
 
 Activate the theme and plugin(s) in WordPress after linking. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**.
 
@@ -342,6 +348,7 @@ Root-level tooling:
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
 | Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
 | `pnpm install` before folder rename | Broken symlinks in `node_modules` | Rename package folder first, then run `pnpm install` |
+| `ln -s` from WSL into a Local site while the repo is under `/home` | Local PHP cannot open the theme or plugin | Windows symbolic link to `\\wsl.localhost\<Distro>\...` ([root README](../README.md#local-on-windows-repository-in-wsl)) |
 | Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `cursor/` and `.vscode/settings.json` at the repository root) |
 
 ## Theme dependencies and scaffolding
@@ -411,4 +418,4 @@ For a step-by-step checklist, see [`../cursor/skills/boilerplate-theme-create-bl
 ## Related documentation
 
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — asset pipeline architecture, Node script API, Tailwind details
-- [`../README.md`](../README.md) — standalone clone, WSL/Linux setup, theme and plugin symlinks
+- [`../README.md`](../README.md) — standalone clone, WSL/Linux development, theme and plugin symlinks (Windows links when WordPress is Local)
