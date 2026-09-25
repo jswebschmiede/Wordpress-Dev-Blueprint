@@ -1,0 +1,21 @@
+{% set networks = [
+	{ key: 'instagram', title: 'Instagram', label: __('Folgen Sie uns auf Instagram', 'boilerplate-theme'), icon: 'fa-instagram' },
+	{ key: 'facebook', title: 'Facebook', label: __('Folgen Sie uns auf Facebook', 'boilerplate-theme'), icon: 'fa-square-facebook' },
+	{ key: 'linkedin', title: 'LinkedIn', label: __('Folgen Sie uns auf LinkedIn', 'boilerplate-theme'), icon: 'fa-square-linkedin' },
+	{ key: 'twitter', title: 'Twitter / X', label: __('Folgen Sie uns auf Twitter / X', 'boilerplate-theme'), icon: 'fa-square-x-twitter' },
+	{ key: 'youtube', title: 'YouTube', label: __('Folgen Sie uns auf YouTube', 'boilerplate-theme'), icon: 'fa-youtube' },
+	{ key: 'pinterest', title: 'Pinterest', label: __('Folgen Sie uns auf Pinterest', 'boilerplate-theme'), icon: 'fa-pinterest' },
+] %}
+
+<div class="social-media__wrapper flex gap-4 text-white justify-center pt-4">
+	{% for network in networks %}
+		{% set url = options.social[network.key]|default('')|esc_url %}
+		{% if url %}
+			<a title="{{ network.title }}" aria-label="{{ network.label|esc_attr }}"
+				target="_blank" rel="nofollow" href="{{ url }}"
+				class="text-4xl js-tooltip-trigger" data-tooltip-position="top">
+				<i class="fa-brands {{ network.icon }}" aria-hidden="true"></i>
+			</a>
+		{% endif %}
+	{% endfor %}
+</div>

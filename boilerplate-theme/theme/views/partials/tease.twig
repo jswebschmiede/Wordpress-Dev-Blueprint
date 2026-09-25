@@ -1,0 +1,30 @@
+{#
+ # Post teaser for the blog index (full content up to <!--more-->). Expects `post` (Timber\Post).
+ #}
+<article id="post-{{ post.id }}" class="{{ post.class|esc_attr }}">
+
+	<header class="entry-header">
+		{% if function('is_sticky', post.id) and function('is_home') and not function('is_paged') %}
+			<span>{{ _x('Hervorgehoben', 'post', 'boilerplate-theme')|esc_html }}</span>
+		{% endif %}
+
+		{% if function('is_singular') %}
+			<h1 class="entry-title">{{ function('get_the_title', post.id) }}</h1>
+		{% else %}
+			<h2 class="entry-title"><a href="{{ post.link|esc_url }}" rel="bookmark">{{ function('get_the_title', post.id) }}</a></h2>
+		{% endif %}
+	</header>
+
+	{% include 'partials/post-thumbnail.twig' %}
+
+	<div class="entry-content {{ typography_classes }}">
+		{{ the_content() }}
+
+		{{ function('wp_link_pages', {
+			before: '<div>' ~ __('Seiten:', 'boilerplate-theme'),
+			after: '</div>',
+			echo: false,
+		}) }}
+	</div>
+
+</article>

@@ -1,0 +1,23 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+	<section id="primary">
+		<main id="main">
+
+			<article id="post-{{ post.id }}" class="{{ post.class|esc_attr }}">
+
+				{% block headline %}
+					{% include 'partials/entry-header.twig' with { title: function('get_the_title', post.id) } %}
+				{% endblock %}
+
+				<div class="entry-content {{ typography_classes }}">
+					{% include 'partials/entry-meta.twig' %}
+
+					{{ the_content() }}
+				</div>
+
+			</article>
+
+		</main><!-- #main -->
+	</section><!-- #primary -->
+{% endblock %}

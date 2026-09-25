@@ -46,7 +46,15 @@ node node_scripts/rename-plugin.js <slug> \
 
 ## Local Usage
 
-Create a symlink or copy this folder to `wp-content/plugins/boilerplate-plugin`.
+Theme files are copied into Local with `pnpm run sync:theme` ([repository README](../../../README.md#sync-the-theme-to-local)). This plugin is copied only when its folder is listed in `PLUGIN_SLUGS` (or passed with `--slug`). The files land in `wp-content/plugins/boilerplate-plugin/`. Leave `PLUGIN_SLUGS` empty or commented out to skip plugin build, watch, and sync. Do not symlink the plugin from `\\wsl.localhost\...` or with `ln -s`: Local’s PHP `is_readable()` is false for those targets.
+
+```bash
+pnpm run development:plugins --slug=boilerplate-plugin
+pnpm run watch:plugins
+pnpm run sync:plugin --slug=boilerplate-plugin
+pnpm run sync:plugins --optional
+pnpm run watch:sync:plugins
+```
 
 Install Composer dependencies in the plugin directory before activating the plugin:
 
@@ -54,7 +62,7 @@ Install Composer dependencies in the plugin directory before activating the plug
 composer install --working-dir=plugins/boilerplate-plugin
 ```
 
-This runs [Strauss](https://github.com/BrianHenryIE/strauss) automatically and generates `vendor-prefixed/` with prefixed runtime dependencies. WordPress loads `vendor-prefixed/autoload.php` at runtime.
+This runs [Strauss](https://github.com/BrianHenryIE/strauss) automatically and generates `vendor-prefixed/` with prefixed runtime dependencies. WordPress loads `vendor-prefixed/autoload.php` at runtime. If `rename-plugin.js` already ran, run this install afterwards: the rename script skips `vendor-prefixed/`.
 
 Preview prefixing without changes:
 
@@ -66,14 +74,14 @@ composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
 
 Settings → Boilerplate Plugin shows a read-only **Strauss test (UUID)** field. It uses `ramsey/uuid` loaded from `vendor-prefixed/` to verify prefixed autoloading works.
 
-Build scripts are defined in the development package root `package.json`, matching the reference structure:
+`PLUGIN_SLUGS` in `.env` selects which plugins `development:plugins`, `watch:plugins`, and `production:esbuild:plugins` build. An empty list skips them. To build only this plugin:
 
 ```bash
-pnpm run development:esbuild:plugin:boilerplate-plugin
-pnpm run production:esbuild:plugin:boilerplate-plugin
+pnpm run development:plugins --slug=boilerplate-plugin
+pnpm run production:esbuild:plugins
 ```
 
-Run build scripts only when you intentionally want to generate assets.
+Run build scripts only when you intentionally want to generate assets. The sync copies `build/` after that.
 
 ## Included Examples
 

@@ -7,21 +7,20 @@
  * @package BoilerplateTheme
  */
 
-get_header();
-?>
+declare( strict_types=1 );
 
-	<section id="primary">
-		<main id="main">
+use CompanyName\BoilerplateTheme\Timber\Timber;
 
-			<?php
-			while ( have_posts() ) :
-				the_post();
-				get_template_part( 'template-parts/content/content', 'single' );
-			endwhile;
-			?>
+if ( boilerplate_theme_bail_if_timber_unavailable() ) {
+	return;
+}
 
-		</main><!-- #main -->
-	</section><!-- #primary -->
+$context = Timber::context();
 
-<?php
-get_footer();
+Timber::render(
+	array(
+		'templates/single-' . $context['post']->post_type . '.twig',
+		'templates/single.twig',
+	),
+	$context
+);

@@ -21,7 +21,7 @@ description: WordPress-specific rules and best practices
 ## Block Editor Integration
 
 -   Use WordPress Block API for custom blocks
--   Register blocks in `_wp-content-dev/boilerplate-theme/blocks/`
+-   Register blocks in `boilerplate-theme/blocks/`
 -   Block JSON files should follow WordPress block.json schema
 -   Use WordPress block editor components and utilities
 -   Support block editor features (alignments, colors, etc.)
@@ -32,6 +32,15 @@ description: WordPress-specific rules and best practices
 -   Use `add_theme_support()` for WordPress features
 -   Common features: `title-tag`, `post-thumbnails`, `editor-styles`, `html5`, etc.
 -   Remove unsupported features: `remove_theme_support( 'block-templates' )`
+
+## Theme Templates (Timber)
+
+Frontend markup is Twig under `boilerplate-theme/theme/views/`, rendered with Timber 2. PHP templates only supply context and call `Timber::render()` or `Timber::compile()`. Follow [Timber v2](https://timber.github.io/docs/v2/), including [template inheritance](https://timber.github.io/docs/v2/getting-started/template-inheritance-and-includes/) and [menus](https://timber.github.io/docs/v2/guides/menus/), with this theme's paths and prefixed classes (see `general.mdc`).
+
+-   Import `CompanyName\BoilerplateTheme\Timber\Timber`, not `Timber\Timber`
+-   Page templates extend `layouts/base.twig`. Reuse `partials/`. Block frontend markup is `views/blocks/<slug>.twig`
+-   Do not add a `Walker_Nav_Menu` or call `wp_nav_menu()` for theme navigation. Menus are `Timber\Menu` objects in context (`header_menu`, `footer_menu_*`), rendered by `partials/menu.twig` and `partials/footer-menu.twig`
+-   In Twig, escape with `|esc_html`, `|esc_attr`, `|esc_url`, or `|wp_kses_post` ([escaping](https://timber.github.io/docs/v2/guides/escaping/)). Autoescape is off. PHP `esc_*()` still applies to any output that stays in PHP
 
 ## Security Functions
 

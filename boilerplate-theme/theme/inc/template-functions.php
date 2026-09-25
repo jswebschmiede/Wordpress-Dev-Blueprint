@@ -3,6 +3,8 @@
 declare( strict_types=1 );
 
 use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\TimberIntegration;
+use CompanyName\BoilerplateTheme\Timber\Timber;
 
 /**
  * Functions which enhance the theme by hooking into WordPress
@@ -118,6 +120,24 @@ function boilerplate_theme_get_current_search_term(): string {
 }
 
 /**
+ * Builds a plain-text excerpt (max. 40 words) for a search result.
+ *
+ * Falls back to the post content when the excerpt is empty.
+ *
+ * @param int $post_id Post ID.
+ * @return string Plain-text excerpt.
+ */
+function boilerplate_theme_get_search_result_excerpt( int $post_id ): string {
+	$excerpt = wp_trim_words( wp_strip_all_tags( get_the_excerpt( $post_id ) ), 40 );
+
+	if ( '' === $excerpt ) {
+		$excerpt = wp_trim_words( wp_strip_all_tags( get_the_content( null, false, $post_id ) ), 40 );
+	}
+
+	return $excerpt;
+}
+
+/**
  * Highlights matching search terms in plain text.
  *
  * @param string $text        Plain text content.
@@ -173,33 +193,23 @@ function boilerplate_theme_highlight_search_term( string $text, string $search_t
  * @return string Custom search form markup.
  */
 function boilerplate_theme_filter_search_form( string $form, array $args = array() ): string {
-	$action_url   = boilerplate_theme_get_search_page_url();
-	$input_id     = wp_unique_id( 'search-form-' );
-	$search_term  = boilerplate_theme_get_current_search_term();
-	$label        = $args['label'] ?? __( 'Suche nach', 'boilerplate-theme' );
-	$placeholder  = $args['placeholder'] ?? __( 'Suchbegriff...', 'boilerplate-theme' );
-	$button_label = $args['button_label'] ?? __( 'Webseite durchsuchen', 'boilerplate-theme' );
+	if ( ! class_exists( TimberIntegration::class ) || ! TimberIntegration::is_available() ) {
+		return $form;
+	}
 
-	ob_start();
-	?>
-	<form role="search" method="get" class="boilerplate-theme-form search-form-custom flex gap-3 rounded-form bg-white p-2 shadow-sm flex-row items-center" action="<?php echo esc_url( $action_url . '#search-results' ); ?>">
-		<label class="sr-only" for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $label ); ?></label>
-		<input
-			id="<?php echo esc_attr( $input_id ); ?>"
-			type="search"
-			class="search-field min-w-0 min-h-0! sm:min-h-13! flex-1 rounded-form border border-slate-200 bg-slate-50 px-4 py-1! sm:py-3! text-base text-foreground outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
-			placeholder="<?php echo esc_attr( $placeholder ); ?>"
-			value="<?php echo esc_attr( $search_term ); ?>"
-			name="search_term"
-		/>
-		<button type="submit" class="search-submit btn btn-primary font-normal rounded-full aspect-square px-3 js-tooltip-trigger" aria-label="<?php echo esc_attr( $button_label ); ?>" title="<?php echo esc_attr( $button_label ); ?>" data-tooltip-position="left" >
-			<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-			<span class="sr-only"><?php echo esc_html( $button_label ); ?></span>
-		</button>
-	</form>
-	<?php
+	unset( $form );
 
-	return (string) ob_get_clean();
+	return (string) Timber::compile(
+		'partials/search-form.twig',
+		array(
+			'action_url'   => boilerplate_theme_get_search_page_url() . '#search-results',
+			'input_id'     => wp_unique_id( 'search-form-' ),
+			'search_term'  => boilerplate_theme_get_current_search_term(),
+			'label'        => $args['label'] ?? __( 'Suche nach', 'boilerplate-theme' ),
+			'placeholder'  => $args['placeholder'] ?? __( 'Suchbegriff...', 'boilerplate-theme' ),
+			'button_label' => $args['button_label'] ?? __( 'Webseite durchsuchen', 'boilerplate-theme' ),
+		)
+	);
 }
 add_filter( 'get_search_form', 'boilerplate_theme_filter_search_form', 10, 2 );
 

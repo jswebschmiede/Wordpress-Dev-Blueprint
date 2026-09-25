@@ -1,0 +1,21 @@
+{#
+ # Breadcrumb navigation with Schema.org microdata. Items come from Theme\Breadcrumb::get_crumbs().
+ # List items are kept on one line so no whitespace text nodes end up between the inline elements.
+ #}
+{% set crumbs = breadcrumb_items() %}
+
+{% if crumbs is not empty %}
+	<nav class="breadcrumbs max-w-wide w-p-1 xs:w-p-2 mx-auto text-sm lg:text-base md:mb-5 mb-2.5" aria-label="{{ __('Brotkrumen-Navigation', 'boilerplate-theme')|esc_attr }}" itemscope itemtype="https://schema.org/BreadcrumbList">
+		<ol class="breadcrumbs__list flex flex-nowrap lg:flex-wrap overflow-auto">
+			{%- for crumb in crumbs -%}
+				{%- if loop.last -%}
+					<li class="breadcrumbs__item" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name">{{ crumb.label|esc_html }}</span><meta itemprop="position" content="{{ loop.index }}"></li>
+				{%- elseif crumb.url -%}
+					<li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="{{ crumb.url|esc_url }}" class="text-inherit underline hover:text-primary active:text-primary" itemprop="item"><span itemprop="name">{{ crumb.label|esc_html }}</span></a><meta itemprop="position" content="{{ loop.index }}"><span class="breadcrumbs__separator" aria-hidden="true"></span></li>
+				{%- else -%}
+					<li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name">{{ crumb.label|esc_html }}</span><meta itemprop="position" content="{{ loop.index }}"><span class="breadcrumbs__separator" aria-hidden="true"></span></li>
+				{%- endif -%}
+			{%- endfor -%}
+		</ol>
+	</nav>
+{% endif %}

@@ -1,0 +1,13 @@
+{#
+ # Page preloader. Style comes from `options.preloader_style` (v1–v6), falls back to v1.
+ #}
+{% set valid_styles = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6'] %}
+{% set style = options.preloader_style in valid_styles ? options.preloader_style : 'v1' %}
+
+<div class="visible z-50 fixed inset-0 flex justify-center items-center bg-white transition spinner-wrapper"
+	id="loader">
+	<div class="circle-loader circle-loader--{{ style }}" role="alert">
+		<p class="circle-loader__label">{{ __('Seite wird geladen...', 'boilerplate-theme')|esc_html }}</p>
+		{% include 'partials/preloader/loader-' ~ style ~ '.twig' %}
+	</div>
+</div>

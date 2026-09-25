@@ -1,0 +1,19 @@
+{#
+ # Theme search form, rendered through the get_search_form filter.
+ # Expects `action_url`, `input_id`, `search_term`, `label`, `placeholder`, `button_label`.
+ #}
+<form role="search" method="get" class="boilerplate-theme-form search-form-custom flex gap-3 rounded-form bg-white p-2 shadow-sm flex-row items-center" action="{{ action_url|esc_url }}">
+	<label class="sr-only" for="{{ input_id|esc_attr }}">{{ label|esc_html }}</label>
+	<input
+		id="{{ input_id|esc_attr }}"
+		type="search"
+		class="search-field min-w-0 min-h-0! sm:min-h-13! flex-1 rounded-form border border-slate-200 bg-slate-50 px-4 py-1! sm:py-3! text-base text-foreground outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary"
+		placeholder="{{ placeholder|esc_attr }}"
+		value="{{ search_term|esc_attr }}"
+		name="search_term"
+	/>
+	<button type="submit" class="search-submit btn btn-primary font-normal rounded-full aspect-square px-3 js-tooltip-trigger" aria-label="{{ button_label|esc_attr }}" title="{{ button_label|esc_attr }}" data-tooltip-position="left" >
+		<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+		<span class="sr-only">{{ button_label|esc_html }}</span>
+	</button>
+</form>

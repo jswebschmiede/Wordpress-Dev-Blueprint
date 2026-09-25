@@ -1,0 +1,26 @@
+{#
+ # Single search result card. Expects `post` (Timber\Post) and `search_term`.
+ #}
+{% set post_type_label = post.type.labels.singular_name|default(__('Inhalt', 'boilerplate-theme')) %}
+{% set excerpt = function('boilerplate_theme_get_search_result_excerpt', post.id) %}
+
+<article id="post-{{ post.id }}" class="{{ post.css_class('search-result-item')|esc_attr }}">
+	<a class="search-result-item__link flex flex-col card no-underline! hover:shadow-lg text-foreground! font-normal! transition-shadow duration-300"
+		title="{{ __('Zum Inhalt wechseln', 'boilerplate-theme')|esc_attr }}"
+		href="{{ post.link|esc_url }}">
+		<div class="search-result-item__header">
+			<p class="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+				{{ post_type_label|esc_html }}
+			</p>
+			<h3 class="search-result-item__title mb-0!">
+				{{ function('boilerplate_theme_highlight_search_term', function('get_the_title', post.id), search_term)|wp_kses_post }}
+			</h3>
+		</div>
+
+		<div class="search-result-item__excerpt">
+			<p class="mb-0! text-foreground!">
+				{{ function('boilerplate_theme_highlight_search_term', excerpt, search_term)|wp_kses_post }}
+			</p>
+		</div>
+	</a>
+</article>

@@ -1,0 +1,38 @@
+{#
+ # Custom search page (page template templates/template-search.php).
+ #}
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+	<section id="primary">
+		<main id="main">
+
+			{% include 'partials/entry-header.twig' with { title: function('get_the_title', post.id) } %}
+
+			<section class="bg-light-gray py-6">
+				<div class="mx-auto flex max-w-wide w-p-1 flex-col gap-4 lg:w-p-2">
+					<p class="sr-only">
+						{{ __('Ihre Suchbegriffe', 'boilerplate-theme')|esc_html }}
+					</p>
+
+					{{ function('get_search_form', { echo: false }) }}
+				</div>
+			</section>
+
+			<div class="entry-content pt-14 max-w-wide w-full mx-auto lg:w-p-2 {{ typography_classes }}">
+				{% if search_results %}
+					{% include 'partials/search/search-results.twig' %}
+				{% else %}
+					<div class="card">
+						<h2 class="text-primary">
+							{{ __('Starten Sie Ihre Suche', 'boilerplate-theme')|esc_html }}
+						</h2>
+						<p class="mb-0!">
+							{{ __('Geben Sie einen Suchbegriff ein, um Inhalte, Seiten und Beiträge zu durchsuchen.', 'boilerplate-theme')|esc_html }}
+						</p>
+					</div>
+				{% endif %}
+			</div>
+		</main><!-- #main -->
+	</section><!-- #primary -->
+{% endblock %}

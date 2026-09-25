@@ -4,17 +4,19 @@ Reusable WordPress theme and plugin development boilerplate with Gutenberg block
 
 ## Development environment
 
-This package lives at `_wp-content-dev/boilerplate-theme/` (or your renamed slug) inside a local WordPress site. For clone instructions and the directory layout, see [`../README.md`](../README.md#wordpress-development-environment).
+This package is `boilerplate-theme/` (or your renamed slug) inside the repository. The repository stays in the WSL filesystem (`/home/...`); WordPress stays in a separate Local WP install on Windows. Open the repository with Cursor or VS Code **Remote – WSL** and run the tooling in Linux. Sync `theme/` into the Local `wp-content/themes/<slug>` folder. Clone instructions and the sync setup are in [`../README.md`](../README.md#sync-the-theme-to-local).
 
 ## Structure
 
 ```text
-_wp-content-dev/
+repository root/
+├── .vscode/settings.json
 ├── cursor/
 │   ├── rules/
 │   └── skills/
 └── boilerplate-theme/
     ├── .editorconfig
+    ├── .env.example
     ├── .gitignore
     ├── .npmrc
     ├── .prettierignore
@@ -28,14 +30,21 @@ _wp-content-dev/
     ├── tailwind.css
     ├── docs/
     │   └── DEVELOPMENT.md
+    ├── bin/
+    │   ├── download-strauss.php
+    │   └── fix-prefixed-twig.php
     ├── node_scripts/
     │   ├── build-blocks.js
     │   ├── build-block-views.js
     │   ├── build-plugin.js
     │   ├── clean-js-sourcemaps.js
     │   ├── copy-blocks.js
+    │   ├── plugin-slugs.js
     │   ├── rename-theme.js
     │   ├── rename-plugin.js
+    │   ├── run-plugin-builds.js
+    │   ├── sync-theme.js
+    │   ├── sync-plugin.js
     │   └── zip.js
     ├── javascript/
     │   ├── blocks.js
@@ -50,61 +59,80 @@ _wp-content-dev/
         ├── style.css
         ├── style-editor.css
         ├── composer.json
+        ├── index.php, page.php, single.php, archive.php, 404.php   # thin Timber stubs
+        ├── templates/template-search.php                          # WP page template (stub)
         ├── blocks/example-block/block.json
+        ├── inc/template-functions.php
         ├── src/
-        └── template-parts/blocks/example-block.php
+        └── views/                                                  # Twig (Timber)
+            ├── layouts/base.twig
+            ├── partials/
+            ├── templates/
+            └── blocks/example-block.twig
 ```
 
-The root directory is the development package. The deployable WordPress theme lives in `theme/`; plugin boilerplates live in `plugins/`. The Cursor AI template lives in `_wp-content-dev/cursor/`.
+The package directory is the development package. The deployable WordPress theme lives in `theme/`; plugin boilerplates live in `plugins/`. The Cursor AI template lives in `cursor/` at the repository root.
 
 For architecture, build pipeline details, and Node script behaviour, see [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 ## Recommended project setup order
 
-1. Set up a local WordPress site and clone the blueprint into its web root as `_wp-content-dev` (see [`../README.md`](../README.md#wordpress-development-environment)).
-2. Rename this folder to your slug, run `pnpm install` and `pnpm run composer:install:dev`, then run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)).
-3. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-4. Link or copy theme and plugin into WordPress (see [Local usage](#local-usage)).
-5. Copy `_wp-content-dev/cursor/` to your workspace root as `.cursor/` (see [Cursor AI configuration](#cursor-ai-configuration)).
+1. Clone the blueprint into the WSL filesystem and keep WordPress in a separate Local WP install (see [`../README.md`](../README.md#wordpress-development-environment)). Open the repository with Remote – WSL.
+2. Rename this folder to your slug, then run `pnpm install` (see [Prerequisites](#prerequisites)).
+3. Run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)). Theme first, then plugin.
+4. Run `pnpm run composer:install:dev`. Strauss prefixes Timber and plugin dependencies with the namespaces the rename scripts wrote into each `composer.json`. Do this after the rename scripts, not before.
+5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
+6. Copy `.env.example` to `.env` and set `WP_CONTENT_PATH`. Uncomment `PLUGIN_SLUGS` when a plugin should be built and copied into Local. Sync with `pnpm run sync:theme` or `pnpm run watch`. Activate the theme after step 4. See [Local usage](#local-usage).
+7. From the repository root, copy `cursor/` to `.cursor/` after the rename scripts (see [Cursor AI configuration](#cursor-ai-configuration)).
 
 ## Prerequisites
 
-From this directory after renaming (e.g. `_wp-content-dev/sw-soltau/`):
+From this directory after renaming (for example `sw-soltau/` inside the repository):
 
 - **Node.js** and **pnpm** for CSS/JS builds and linting.
-- **PHP** and **Composer** for autoloading, Strauss prefixing, and PHPCS.
+- **PHP 8.3+** and **Composer** for autoloading, Strauss prefixing, and PHPCS. The theme requires PHP 8.3 (`theme/composer.json`); Timber 2 itself allows PHP 8.2.
 
 Rename the package folder **before** `pnpm install`. pnpm creates symlinks in `node_modules` that break when the parent directory path changes.
 
 ```bash
-cd _wp-content-dev
+# repository root
 mv boilerplate-theme sw-soltau
 cd sw-soltau
 pnpm install
-composer install
-composer install --working-dir=theme
-composer install --working-dir=plugins/boilerplate-plugin
 ```
+
+Run Composer only after the rename scripts. `pnpm run composer:install:dev` installs the package root (PHPCS), the theme (Timber), and both plugins. A manual install of only `plugins/boilerplate-plugin` skips `plugins/scf-boilerplate-plugin`.
 
 ## Rename theme placeholders
 
 Rename the package folder **before** `pnpm install`, then run the rename scripts to replace placeholder strings in file contents.
 
 ```bash
-cd _wp-content-dev
+# repository root
 mv boilerplate-theme sw-soltau
 cd sw-soltau
 pnpm install
-pnpm run composer:install:dev
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
 node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 ```
 
-On Windows (PowerShell), replace `mv boilerplate-theme sw-soltau` with `Rename-Item boilerplate-theme sw-soltau`.
+Slug and company can also come from `.env` or `.env.local` (`THEME_SLUG` or its alias `THEME_SYNC_SLUG`, and `THEME_COMPANY`). CLI arguments override those values. The process environment is checked for every slug key before the files, so a shell `THEME_SYNC_SLUG` still overrides `THEME_SLUG` in `.env`. Within one key, the process environment wins over `.env.local`, which wins over `.env`. If slug or company is still missing, the script exits with an error.
+
+```bash
+# .env or .env.local:
+# THEME_SLUG=sw-soltau
+# THEME_COMPANY=SmartMedia24
+node node_scripts/rename-theme.js --dry-run
+node node_scripts/rename-theme.js
+```
+
+`rename-theme.js` rewrites `extra.strauss.namespace_prefix` in `theme/composer.json` and the prefixed `use` lines in PHP and Twig. It skips `vendor/` and `vendor-prefixed/`. If Composer already ran, those directories still contain `CompanyName\BoilerplateTheme\…`. Run `pnpm run composer:install:dev` once, after the theme rename and any plugin rename. Do not run it before those scripts or between them.
+
+It also rewrites the theme-sync slug in `.env.example` (commented `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_SYNC_TARGET`) and the default in `node_scripts/sync-theme.js`, so the Local folder becomes `wp-content/themes/<new-slug>`. `.env` and `.env.local` are not changed. A slug already set there keeps the sync destination.
 
 For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 
-The script replaces placeholders in this package and in `_wp-content-dev/cursor/` (rules and skills). It only replaces file contents and does not rename folders.
+The script replaces placeholders in this package, in `cursor/` at the repository root (rules and skills), and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the script updates the `boilerplate-theme` segment to the new slug. It also renames directories under `cursor/skills/` whose names contain `boilerplate-theme` (for example `boilerplate-theme-create-block`). Other folders are not renamed.
 
 ### Rename plugin
 
@@ -127,7 +155,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 For the SCF alternative, use `--plugin scf-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
 
-This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace).
+This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace). Composer, zip, and sourcemap script names in `package.json` are updated as whole tokens, so renaming `boilerplate-plugin` leaves `scf-boilerplate-plugin` intact. The commented `PLUGIN_SLUGS` example in `.env.example` is updated the same way, one comma-separated field at a time. `.env` and `.env.local` are left unchanged. Then run `pnpm run composer:install:dev` so each `vendor-prefixed/` autoloader matches the new namespaces.
 
 ## Manual rename checklist
 
@@ -144,9 +172,11 @@ If you rename manually, replace:
 - `BOILERPLATE_THEME_` -> your constant prefix.
 - `boilerplate/example-block` -> your block namespace.
 
+After a manual rename, run `pnpm run composer:install:dev`. Replacing strings in `composer.json` does not rebuild `vendor-prefixed/`.
+
 ## Development workflow
 
-All commands below are run from `_wp-content-dev/boilerplate-theme/`.
+All commands below are run from the package directory (`boilerplate-theme/`, or the renamed slug).
 
 ### Daily development
 
@@ -157,10 +187,17 @@ pnpm run development
 pnpm run dev          # alias
 ```
 
-Watch CSS, JS, blocks, and plugin assets during active work:
+Watch CSS, JS, blocks, and the plugins listed in `PLUGIN_SLUGS`. When `WP_CONTENT_PATH` is set, this also syncs `theme/` and those plugins once, then copies only files that change. An empty `PLUGIN_SLUGS` makes the plugin build and plugin sync exit immediately so the theme watchers keep running:
 
 ```bash
 pnpm run watch
+```
+
+Sync the theme into Local without building (full copy). `pnpm run development` does this once after the asset build:
+
+```bash
+pnpm run sync:theme
+pnpm run sync:theme --slug=hair-salon
 ```
 
 ### Blocks
@@ -196,12 +233,18 @@ pnpm run production:esbuild:block-views
 
 ### Plugin JavaScript
 
+`PLUGIN_SLUGS` drives the dev build, the watch build, and the production minify. An empty or commented key skips all three.
+
 ```bash
-pnpm run development:esbuild:plugin:boilerplate-plugin
-pnpm run production:esbuild:plugin:boilerplate-plugin
+pnpm run development:plugins --slug=scf-boilerplate-plugin
+pnpm run watch:plugins
+pnpm run sync:plugin --slug=scf-boilerplate-plugin
+pnpm run sync:plugins --optional
+pnpm run watch:sync:plugins
+pnpm run production:esbuild:plugins
 ```
 
-After `rename-plugin.js`, the script name in `package.json` is updated automatically.
+`pnpm run development` runs `development:plugins` with the theme build, then `sync:theme`, then `sync:plugins`. `pnpm run production` minifies the listed plugins through `production:esbuild:plugins`. Composer, zip, and sourcemap cleanup stay as per-directory scripts.
 
 ### Linting
 
@@ -245,9 +288,13 @@ pnpm run bundle       # production + zip
 Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins ship isolated dependencies without autoloader conflicts.
 
 - Prefixed output: `vendor-prefixed/` (generated on `composer install`, gitignored)
-- Strauss PHAR: downloaded via `bin/download-strauss.php` (cURL with `file_get_contents` fallback; avoids empty files from shell curl under WAMP)
+- Strauss PHAR: downloaded via `bin/download-strauss.php` (PHP cURL, then `file_get_contents`, so a failed download cannot leave an empty PHAR)
 - `require-dev` packages are **not** prefixed
-- After renaming a plugin, run `composer install --working-dir=plugins/<slug>` to regenerate `vendor-prefixed/`
+- After `rename-theme.js` or `rename-plugin.js`, run `pnpm run composer:install:dev` (or `composer install --working-dir=theme` and `composer install --working-dir=plugins/<slug>`). The rename scripts skip `vendor-prefixed/`, so an install from before the rename leaves Timber and other packages on the placeholder namespace.
+- The theme ships **Timber 2** (`timber/timber` `^2.0`, including Twig) as its only runtime dependency, listed in `extra.strauss.packages`, prefixed to `CompanyName\BoilerplateTheme\Timber\…` / `CompanyName\BoilerplateTheme\Twig\…`
+- `update_call_sites: true` rewrites call sites only under the Composer autoload directory (`theme/src/`, plugin `includes/`). Root templates and `inc/` are not rewritten.
+- `bin/fix-prefixed-twig.php` runs in the theme `prefix-namespaces` script after `strauss.phar` (not on `prefix-namespaces:dry-run`, and not in the plugins). Strauss does not rewrite the class names Twig writes into compiled templates (`use Twig\Template;` etc.), which would otherwise break every render with `Class "Twig\Template" not found`
+- `delete_vendor_packages` removes the unprefixed sources after prefixing, so regenerate `vendor-prefixed/` with `composer install` in that package. `composer prefix-namespaces` alone cannot refetch deleted packages.
 
 ```bash
 pnpm run composer:install:dev
@@ -256,30 +303,33 @@ composer prefix-namespaces:dry-run --working-dir=plugins/boilerplate-plugin
 
 ## Cursor AI configuration
 
-The template lives in `_wp-content-dev/cursor/` (rules and skills). After renaming placeholders:
+The template lives in `cursor/` at the repository root (rules and skills). After renaming placeholders:
 
-- Copy `cursor/` to your WordPress workspace root as `.cursor/` (copy, not symlink).
-- The template stays under `_wp-content-dev/` for reuse.
+- Copy `cursor/` to `.cursor/` at the repository root (the workspace). Copy, not symlink.
+- Keep `cursor/` as the reusable template.
 
 ```bash
-cp -r "_wp-content-dev/cursor" ".cursor"
+# repository root
+cp -a cursor .cursor
 ```
-
-On Windows, use `_wp-content-dev/ps/copy-cursor-config.ps1` or `Copy-Item -Recurse`.
 
 ## Local usage
 
-Create a symlink or copy the deployable theme directory to WordPress:
+Sync `theme/` into the Local site. The destination folder name is the theme slug (`boilerplate-theme` until `rename-theme.js` runs). `style.css` lands at `wp-content/themes/<slug>/style.css`.
 
 ```bash
-ln -s "_wp-content-dev/boilerplate-theme/theme" "wp-content/themes/boilerplate-theme"
-ln -s "_wp-content-dev/boilerplate-theme/plugins/boilerplate-plugin" "wp-content/plugins/boilerplate-plugin"
-ln -s "_wp-content-dev/boilerplate-theme/plugins/scf-boilerplate-plugin" "wp-content/plugins/scf-boilerplate-plugin"
+cp .env.example .env
+# WP_CONTENT_PATH=/mnt/j/Local Sites/my-site/app/public/wp-content
+pnpm run sync:theme
 ```
 
-On Windows, configure and run `_wp-content-dev/ps/create-blueprint-theme-link.ps1` and `create-blueprint-plugin-link.ps1` (adapt the script paths for additional plugins as needed).
+A symlink into WSL does not work: `\\wsl.localhost\...` and `ln -s` leave PHP `is_readable()` false, so WordPress treats the theme as incomplete. Paths, CLI overrides, and the watch behaviour are in [`../README.md`](../README.md#sync-the-theme-to-local).
 
-Activate the theme and plugin(s) in WordPress after linking. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**. Install Composer dependencies before activating if you have not run `pnpm run composer:install:dev` yet.
+Activate the theme after `vendor-prefixed/` exists. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**.
+
+Plugin sync uses the same `WP_CONTENT_PATH`. Set `PLUGIN_SLUGS` to the folder names that should be built and copied (see [Plugin JavaScript](#plugin-javascript)). The files land in `wp-content/plugins/<slug>/`. Leave `PLUGIN_SLUGS` commented out to skip plugin build, watch, and sync.
+
+The theme must load `theme/vendor-prefixed/autoload.php` from a Composer install that ran **after** the rename scripts. Otherwise `functions.php` shows an admin error that `vendor-prefixed` is missing, or `ThemeManager` shows that prefixed Timber was not found. The front end does not fatal: template stubs print a short HTML notice for administrators and a generic message for visitors, the example block is empty for visitors, and the search form keeps WordPress core markup.
 
 Root-level tooling:
 
@@ -295,7 +345,7 @@ Root-level tooling:
 - Use **`apiVersion`: 3** for new blocks (iframe editor compatibility).
 - For dynamic blocks, implement PHP `render` and keep `save` minimal (`null` or inner blocks content only).
 - Align **`editorScript`** with the theme's registered handle; avoid raw file paths in `block.json` where the theme expects a handle.
-- Run **`rename-theme.js`** then **`rename-plugin.js`** before copying `_wp-content-dev/cursor/` to `.cursor/` when starting a new project.
+- Run **`rename-theme.js`**, then **`rename-plugin.js`**, then **`pnpm run composer:install:dev`**, before copying `cursor/` to `.cursor/` at the repository root when starting a new project.
 
 ## Common pitfalls
 
@@ -303,11 +353,15 @@ Root-level tooling:
 | ------- | ------- | ---------- |
 | Forgot `copy-blocks` after `block.json` edit | WordPress loads stale metadata | Run `development:copy-blocks` |
 | New `@wordpress/*` import in blocks bundle | Resolve/bundle errors | Extend `wpGlobals` in `build-blocks.js` |
-| Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP/templates in `theme/`; bundle JS via `javascript/` and `blocks/` |
+| Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP classes in `theme/src/` and Twig in `theme/views/blocks/`; bundle JS via `javascript/` and `blocks/` |
+| `composer install` in `theme/` before `rename-theme.js` | Admin notice that Timber is missing from `vendor-prefixed`; front end shows the Timber fallback instead of Twig | Run `pnpm run composer:install:dev` again after the rename scripts |
+| Theme activated without `theme/vendor-prefixed/` | Admin notice that `vendor-prefixed` is missing; front end shows the Timber fallback instead of Twig | `composer install --working-dir=theme` before activation |
+| `pnpm run zip:theme` before the theme Composer install | ZIP has no prefixed Timber | `pnpm run bundle` runs production Composer installs, then zips. `zip:theme` alone archives `theme/` as it is |
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
-| Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
+| Plugin script empty in WordPress | `build/` missing or outdated | `pnpm run development:plugins --slug=<folder>` and sync that slug |
 | `pnpm install` before folder rename | Broken symlinks in `node_modules` | Rename package folder first, then run `pnpm install` |
-| Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `_wp-content-dev/cursor/`) |
+| Symlink or UNC path from Local into WSL | `is_readable()` is false; stylesheet is missing | Sync with `pnpm run sync:theme` ([root README](../README.md#sync-the-theme-to-local)) |
+| Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `cursor/` and `.vscode/settings.json` at the repository root) |
 
 ## Theme dependencies and scaffolding
 
@@ -318,6 +372,39 @@ The theme includes general infrastructure migrated from a production reference (
 - **Font Awesome** (recommended): icons in header search, footer social links, and back-to-top button.
 - **Example CPT** (`example_item` + `example_category`): scaffold in `theme/src/PostTypes/ExamplePostType.php` — copy and adapt for project-specific post types.
 - **Breadcrumb CPT mapping**: extend via the `boilerplate_theme_breadcrumb_cpt_page_map` filter.
+
+## Timber views
+
+The theme renders all frontend markup with [Timber 2](https://timber.github.io/docs/v2/) and Twig. The view structure follows the [Timber Starter Theme 2.x](https://github.com/timber/starter-theme/tree/2.x/views):
+
+| Path | Purpose |
+| ---- | ------- |
+| `views/layouts/base.twig` | HTML skeleton (`wp_head`, `wp_body_open`, `wp_footer`) with the blocks `head`, `header`, `content`, `footer` |
+| `views/templates/*.twig` | Page templates; each `{% extends 'layouts/base.twig' %}` and fills `{% block content %}` |
+| `views/partials/*.twig` | Reusable includes (header, footer, menus, teasers, pagination, breadcrumb, search, preloader) |
+| `views/blocks/*.twig` | Frontend markup of dynamic Gutenberg blocks |
+
+Root templates (`index.php`, `page.php`, `single.php`, `archive.php`, `404.php`, `templates/template-search.php`) contain no markup: they build the context and call `Timber::render()`. If prefixed Timber is unavailable, each stub returns early via `boilerplate_theme_bail_if_timber_unavailable()` and prints a minimal HTML fallback instead. More specific Twig files are picked up automatically where the stub lists fallbacks (e.g. `templates/single-{post_type}.twig`, `templates/page-{slug}.twig`, `templates/archive-{post_type}.twig`).
+
+**Imports:** Root templates and `inc/` are outside the Strauss autoload scope, so their call sites are not rewritten. Always import the prefixed class: `use CompanyName\BoilerplateTheme\Timber\Timber;`.
+
+**Global context** (`Theme\TimberIntegration`, filter `timber/context`):
+
+| Key | Content |
+| --- | ------- |
+| `options` | Curated Redux theme options with defaults (works without Redux): `logo`, `logo_footer` (media arrays, use `.url`), `website_title`, `show_breadcrumb`, `show_preloader`, `preloader_style`, `show_backtotop`, `social.*`, `error_title`, `error_text`, `error_btn` |
+| `header_menu`, `footer_menu_1` … `footer_menu_3` | `Timber\Menu` per location (`null` if unassigned); footer menus are limited to depth 1 |
+| `search_url` | URL of the search page (`search_page` option or first page using the search template) |
+| `typography_classes` | Tailwind Typography classes for content wrappers |
+| `strip_header_footer_links` | Result of the `boilerplate_theme_strip_header_footer_links` filter |
+
+Twig never calls `ThemeOptions` directly; security and asset options (`disable_*`, `custom_css`, `custom_js`) stay in PHP.
+
+**Theme Twig functions:** `breadcrumb_items()` returns the crumbs from `Theme\Breadcrumb`; `the_content()` returns the filtered content of the current post like WordPress' `the_content()` (Timber's `post.content` ignores `<!--more-->`).
+
+**Menus:** There is no PHP walker. `partials/menu.twig` / `menu-item.twig` render the header menu with the `f-header__*` BEM classes used by `flexi-header.css` and the header JavaScript; `partials/footer-menu.twig` renders the footer menus. Filters such as `nav_menu_link_attributes` and `walker_nav_menu_start_el` no longer run, because the markup is Twig rather than `wp_nav_menu()`.
+
+**Escaping and i18n:** Timber disables Twig autoescaping, so escape explicitly with `|esc_html`, `|esc_attr`, `|esc_url` or `|wp_kses_post`. Translate with `{{ __('Text', 'boilerplate-theme') }}`, `_x()`, `_n()`. Note that `wp i18n make-pot` does not scan `.twig` files; strings used only in Twig are not extracted into the POT file.
 
 ## Plugin boilerplates
 
@@ -332,9 +419,9 @@ Theme Options still use Redux (`ThemeOptions`); CPT meta and the SCF plugin alte
 
 1. Copy `blocks/example-block/` to a new block directory.
 2. Update the block name, title, attributes, and editor UI.
-3. Add a PHP renderer class in `theme/src/Blocks/Blocks/`.
+3. Add a PHP renderer class in `theme/src/Blocks/Blocks/` that prepares the view data and calls `Timber::compile( 'blocks/<slug>.twig', $context )`.
 4. Register the block in `theme/src/Blocks/BlockManager.php`.
-5. Add a template in `theme/template-parts/blocks/`.
+5. Add a Twig template in `theme/views/blocks/<slug>.twig`.
 6. Add styles under `tailwind/custom/components/`.
 7. Run `pnpm run development:copy-blocks` and rebuild block assets when ready.
 
@@ -343,4 +430,4 @@ For a step-by-step checklist, see [`../cursor/skills/boilerplate-theme-create-bl
 ## Related documentation
 
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — asset pipeline architecture, Node script API, Tailwind details
-- [`../README.md`](../README.md) — clone setup, package overview, Windows helper scripts
+- [`../README.md`](../README.md) — WSL clone, sync into Local WP `wp-content/themes/<slug>`

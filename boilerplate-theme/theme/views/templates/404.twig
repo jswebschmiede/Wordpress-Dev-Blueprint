@@ -1,0 +1,28 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+	<section id="primary">
+		<main id="main">
+
+			<section class="max-w-content w-p-1 lg:w-p-2 mx-auto text-center">
+				<div class="page-content pt-10 md:pt-16 {{ typography_classes }}">
+					<header class="page-header">
+						<h1 class="page-title">
+							{{ options.error_title|esc_html }}
+						</h1>
+					</header>
+
+					<div>
+						<p>{{ options.error_text|esc_html }}</p>
+
+						<p>
+							<a href="{{ site.url|esc_url }}"
+								class="btn btn-primary">{{ options.error_btn|esc_html }}
+							</a>
+						</p>
+					</div>
+				</div>
+			</section>
+		</main><!-- #main -->
+	</section><!-- #primary -->
+{% endblock %}

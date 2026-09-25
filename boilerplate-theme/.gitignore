@@ -27,3 +27,7 @@ tailwind-intellisense.css
 
 # ZIP directory
 zip/
+
+# Local WordPress sync. Copy .env.example to .env.
+.env
+.env.local

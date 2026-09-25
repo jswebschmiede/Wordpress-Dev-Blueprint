@@ -387,8 +387,12 @@ class ThemeOptions {
 	/**
 	 * Get theme option value.
 	 *
+	 * Null, blank strings, and empty arrays fall back to the caller default.
+	 * Switch off-states (0, "0", false) are returned as stored. PHP empty()
+	 * treats 0 and "0" as empty and would replace an explicit off with the default.
+	 *
 	 * @param string $key           Option key.
-	 * @param mixed  $default_value Default value if option doesn't exist.
+	 * @param mixed  $default_value Default value if the option is missing or blank.
 	 * @return mixed
 	 */
 	public static function get_option( string $key, $default_value = null ) {
@@ -398,10 +402,23 @@ class ThemeOptions {
 
 		$value = \Redux::get_option( self::get_options_name(), $key, $default_value );
 
-		if ( empty( $value ) ) {
+		if ( null === $value || '' === $value || array() === $value ) {
 			return $default_value;
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Casts a Redux switch value to a boolean.
+	 *
+	 * Redux persists switches as 1/0 or "1"/"0", not true/false. A plain (bool)
+	 * cast treats the string "0" as true because it is non-empty.
+	 *
+	 * @param mixed $value Raw switch value.
+	 * @return bool True for true, 1, and "1"; false for false, 0, "0", and any other value.
+	 */
+	public static function cast_switch( mixed $value ): bool {
+		return true === $value || 1 === $value || '1' === $value;
 	}
 }

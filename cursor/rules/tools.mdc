@@ -8,35 +8,35 @@ description: Build tools and configuration guidelines
 ## Tailwind CSS
 
 - Use Tailwind CSS for styling
-- Tailwind configuration files in `_wp-content-dev/boilerplate-theme/tailwind/`
-- Main CSS file: `_wp-content-dev/boilerplate-theme/tailwind.css`
+- Tailwind configuration files in `boilerplate-theme/tailwind/`
+- Main CSS file: `boilerplate-theme/tailwind.css`
 - Build outputs:
-    - Frontend: `_wp-content-dev/boilerplate-theme/theme/style.css`
-    - Editor: `_wp-content-dev/boilerplate-theme/theme/style-editor.css`
-    - Intellisense: `_wp-content-dev/boilerplate-theme/tailwind-intellisense.css`
+    - Frontend: `boilerplate-theme/theme/style.css`
+    - Editor: `boilerplate-theme/theme/style-editor.css`
+    - Intellisense: `boilerplate-theme/tailwind-intellisense.css`
 - Use PostCSS for CSS processing
 - Production builds use `_TW_ENV=production` environment variable
 
 ## ESLint
 
-- ESLint configuration in `_wp-content-dev/boilerplate-theme/eslint.config.js`
+- ESLint configuration in `boilerplate-theme/eslint.config.js`
 - Use for JavaScript linting
 - Follow ESLint rules and Prettier integration
-- Run linting: `npm run lint:eslint`
-- Auto-fix: `npm run lint-fix:eslint`
+- Run linting: `pnpm run lint:eslint`
+- Auto-fix: `pnpm run lint-fix:eslint`
 
 ## Prettier
 
-- Prettier configuration in `_wp-content-dev/boilerplate-theme/prettier.config.js`
+- Prettier configuration in `boilerplate-theme/prettier.config.js`
 - Based on WordPress Prettier Config (`@wordpress/prettier-config`)
 - Includes Tailwind CSS plugin (`prettier-plugin-tailwindcss`)
 - Use for code formatting
-- Run formatting check: `npm run lint:prettier`
-- Auto-format: `npm run lint-fix:prettier`
+- Run formatting check: `pnpm run lint:prettier`
+- Auto-format: `pnpm run lint-fix:prettier`
 
 ## PHPCS (PHP CodeSniffer)
 
-- PHPCS configuration in `_wp-content-dev/boilerplate-theme/phpcs.xml`
+- PHPCS configuration in `boilerplate-theme/phpcs.xml`
 - Run PHPCS from the package root: `composer install` then `composer php:lint`
 - Text domains configured: `boilerplate-theme`, `boilerplate-plugin`
 - Excludes: `vendor/`, `tests/`, `node_modules/`
@@ -47,49 +47,49 @@ description: Build tools and configuration guidelines
 
 - JavaScript bundling tool
 - Configuration in `package.json` scripts
-- Builds JavaScript files from `_wp-content-dev/boilerplate-theme/javascript/`
-- Outputs minified files to `_wp-content-dev/boilerplate-theme/theme/js/*.min.js`
+- Builds JavaScript files from `boilerplate-theme/javascript/`
+- Outputs minified files to `boilerplate-theme/theme/js/*.min.js`
 - Also builds block editor files
 - Production builds use `--minify` flag
 
 ### PostCSS
 
 - CSS processing tool
-- Configuration in `_wp-content-dev/boilerplate-theme/postcss.config.js`
+- Configuration in `boilerplate-theme/postcss.config.js`
 - Processes Tailwind CSS files
 - Uses plugins: `postcss-import-ext-glob`, `postcss-nesting`, `postcss-advanced-variables`, `cssnano` (production)
 
-## npm Scripts
+## pnpm Scripts
 
 ### Development
 
-- `npm run development` - Build all assets for development
-- `npm run watch` - Watch mode for all assets
-- `npm run dev` - Alias for development
+- `pnpm run development` - Build all assets for development
+- `pnpm run watch` - Watch mode for all assets
+- `pnpm run dev` - Alias for development
 
 ### Linting
 
-- `npm run lint` - Run all linters
-- `npm run lint-fix` - Auto-fix all linting issues
+- `pnpm run lint` - Run all linters
+- `pnpm run lint-fix` - Auto-fix all linting issues
 
 ### Production
 
-- `npm run production` - Build all assets for production
-- `npm run prod` - Alias for production
-- `npm run bundle` - Production build + create zip
+- `pnpm run production` - Build all assets for production
+- `pnpm run prod` - Alias for production
+- `pnpm run bundle` - Production build + create zip
 
 ### Individual Tasks
 
-- `npm run development:tailwind:frontend` - Build frontend CSS
-- `npm run development:tailwind:editor` - Build editor CSS
-- `npm run development:esbuild` - Build JavaScript
-- `npm run development:esbuild:blocks` - Build block files
-- `npm run development:copy-blocks` - Copy block files
+- `pnpm run development:tailwind:frontend` - Build frontend CSS
+- `pnpm run development:tailwind:editor` - Build editor CSS
+- `pnpm run development:esbuild` - Build JavaScript
+- `pnpm run development:esbuild:blocks` - Build block files
+- `pnpm run development:copy-blocks` - Copy block files
 
 ## Important Notes
 
 - Do not modify build configuration files without consultation
-- Use existing npm scripts instead of running tools directly
+- Use existing pnpm scripts instead of running tools directly
 - Minified files are automatically generated - do not edit manually
 - Watch mode is available for development workflow
 - Production builds optimize and minify assets

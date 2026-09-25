@@ -11,15 +11,14 @@
 
 declare( strict_types=1 );
 
-use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Timber\Timber;
 
-if ( have_posts() ) {
-	the_post();
+if ( boilerplate_theme_bail_if_timber_unavailable() ) {
+	return;
 }
 
-$search_term              = boilerplate_theme_get_current_search_term();
-$show_breadcrumb          = ThemeOptions::get_option( 'show_breadcrumb', false );
-$breadcrumb_visible_class = ! $show_breadcrumb ? 'mb-12' : '';
+$context     = Timber::context();
+$search_term = boilerplate_theme_get_current_search_term();
 
 $current_page = max(
 	1,
@@ -27,10 +26,13 @@ $current_page = max(
 	absint( get_query_var( 'page' ) ),
 	isset( $_GET['paged'] ) ? absint( wp_unslash( (string) $_GET['paged'] ) ) : 0
 );
-$search_query = null;
+
+$context['search_term']       = $search_term;
+$context['search_results']    = null;
+$context['search_pagination'] = null;
 
 if ( '' !== $search_term ) {
-	$search_query = new \WP_Query(
+	$search_results = Timber::get_posts(
 		array(
 			's'              => $search_term,
 			'paged'          => $current_page,
@@ -38,58 +40,28 @@ if ( '' !== $search_term ) {
 			'posts_per_page' => 10,
 		)
 	);
+
+	// Timber\Pagination double-encodes placeholders in the base query string, so the page
+	// number goes into `format` and all other query args into `add_args`.
+	$search_url_parts = explode( '?', (string) $context['search_url'], 2 );
+	$add_args         = array();
+
+	if ( isset( $search_url_parts[1] ) ) {
+		wp_parse_str( $search_url_parts[1], $add_args );
+	}
+
+	$add_args['search_term'] = $search_term;
+
+	$context['search_results']    = $search_results;
+	$context['search_pagination'] = $search_results->pagination(
+		array(
+			'base'         => $search_url_parts[0] . '%_%',
+			'format'       => '?paged=%#%',
+			'add_args'     => $add_args,
+			'add_fragment' => '#search-results',
+			'mid_size'     => 2,
+		)
+	);
 }
 
-get_header();
-?>
-<section id="primary">
-	<main id="main">
-
-		<div class="entry-header <?php echo esc_attr( $breadcrumb_visible_class ); ?>">
-			<h1 class="entry-title"><?php the_title(); ?></h1>
-		</div>
-
-		<?php if ( $show_breadcrumb ) : ?>
-			<?php boilerplate_theme_breadcrumb(); ?>
-		<?php endif; ?>
-
-		<section class="bg-light-gray py-6">
-			<div class="mx-auto flex max-w-wide w-p-1 flex-col gap-4 lg:w-p-2">
-				<p class="sr-only">
-					<?php esc_html_e( 'Ihre Suchbegriffe', 'boilerplate-theme' ); ?>
-				</p>
-
-				<?php get_search_form(); ?>
-			</div>
-		</section>
-
-		<div <?php boilerplate_theme_content_class( 'entry-content pt-14 max-w-wide w-full mx-auto lg:w-p-2' ); ?>>
-			<?php if ( $search_query instanceof \WP_Query ) : ?>
-				<?php
-				get_template_part(
-					'template-parts/search/search-results',
-					null,
-					array(
-						'search_query' => $search_query,
-						'search_term'  => $search_term,
-						'current_page' => $current_page,
-						'search_url'   => boilerplate_theme_get_search_page_url(),
-					)
-				);
-				?>
-				<?php wp_reset_postdata(); ?>
-			<?php else : ?>
-				<div class="card">
-					<h2 class="text-primary">
-						<?php esc_html_e( 'Starten Sie Ihre Suche', 'boilerplate-theme' ); ?>
-					</h2>
-					<p class="mb-0!">
-						<?php esc_html_e( 'Geben Sie einen Suchbegriff ein, um Inhalte, Seiten und Beiträge zu durchsuchen.', 'boilerplate-theme' ); ?>
-					</p>
-				</div>
-			<?php endif; ?>
-		</div>
-	</main><!-- #main -->
-</section><!-- #primary -->
-<?php
-get_footer();
+Timber::render( 'templates/search.twig', $context );

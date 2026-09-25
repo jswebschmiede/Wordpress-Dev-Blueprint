@@ -58,6 +58,24 @@ class ThemeManager {
 	public function init(): void {
 		$this->set_constants();
 
+		if ( TimberIntegration::is_available() ) {
+			$timber_integration = new TimberIntegration();
+			$timber_integration->init();
+		} else {
+			add_action(
+				'admin_notices',
+				static function (): void {
+					if ( ! current_user_can( 'manage_options' ) ) {
+						return;
+					}
+
+					echo '<div class="notice notice-error"><p><strong>Boilerplate Theme:</strong> ';
+					echo esc_html( TimberIntegration::get_missing_dependency_message() );
+					echo '</p></div>';
+				},
+			);
+		}
+
 		$theme_setup = new ThemeSetup();
 		$theme_setup->init();
 

@@ -1,0 +1,29 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+	<section id="primary">
+		<main id="main">
+
+			{% if posts is not empty %}
+
+				{% if function('is_home') and not function('is_front_page') %}
+					<header class="entry-header">
+						<h1 class="entry-title">{{ function('single_post_title', '', false) }}</h1>
+					</header><!-- .entry-header -->
+				{% endif %}
+
+				{% for post in posts %}
+					{% include ['partials/tease-' ~ post.post_type ~ '.twig', 'partials/tease.twig'] %}
+				{% endfor %}
+
+				{% include 'partials/pagination.twig' %}
+
+			{% else %}
+
+				{% include 'partials/content-none.twig' %}
+
+			{% endif %}
+
+		</main><!-- #main -->
+	</section><!-- #primary -->
+{% endblock %}

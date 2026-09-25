@@ -1,0 +1,18 @@
+{#
+ # Posts pagination for the main query, mirrors the_posts_pagination() markup.
+ # Expects `posts` (Timber\PostQuery).
+ #}
+{% set pagination = posts.pagination({ mid_size: 2 }) %}
+
+{% if pagination and pagination.pages is not empty %}
+	<nav class="navigation pagination" aria-label="{{ __('Posts pagination')|esc_attr }}">
+		<h2 class="screen-reader-text">{{ __('Posts pagination')|esc_html }}</h2>
+		<div class="nav-links">
+			{% include 'partials/pagination-links.twig' with {
+				pagination: pagination,
+				prev_text: __('Neuere Beiträge', 'boilerplate-theme'),
+				next_text: __('Ältere Beiträge', 'boilerplate-theme'),
+			} only %}
+		</div>
+	</nav>
+{% endif %}

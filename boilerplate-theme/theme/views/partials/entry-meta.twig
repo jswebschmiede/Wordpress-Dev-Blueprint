@@ -1,0 +1,8 @@
+{#
+ # Publication date badge for posts and example items. Expects `post` (Timber\Post).
+ #}
+{% if post.post_type in ['post', 'example_item'] %}
+	<div class="entry-meta mb-8">
+		<span class="badge"><span class="mr-1.5">{{ __('Veröffentlicht am', 'boilerplate-theme')|esc_html }}: </span><time class="published" datetime="{{ post.date(constant('DATE_W3C'))|esc_attr }}">{{ post.date|esc_html }}</time></span>
+	</div><!-- .entry-meta -->
+{% endif %}

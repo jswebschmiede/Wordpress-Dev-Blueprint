@@ -1,0 +1,45 @@
+{#
+ # Single header menu item (recursive).
+ # Expects `item` (Timber\MenuItem) and `depth` (0 = top level).
+ #}
+{% set attr_title = item.attr_title|default('')|lower %}
+{% set plain_title = item.title|striptags %}
+
+{% if depth == 1 and (attr_title == 'divider' or plain_title|lower == 'divider') %}
+	<li role="presentation" class="divider"></li>
+{% elseif depth == 1 and attr_title == 'dropdown-header' %}
+	<li role="presentation" class="dropdown-header">{{ item.title|esc_html }}</li>
+{% elseif attr_title == 'disabled' %}
+	<li role="presentation" class="disabled"><a href="#">{{ item.title|esc_html }}</a></li>
+{% else %}
+	{% set has_children = item.children is not empty %}
+	{% set link_attributes %}
+		{%- if item.is_target_blank %} target="_blank"{% endif -%}
+		{%- if item.xfn %} rel="{{ item.xfn|esc_attr }}"{% endif -%}
+		{%- if item.link %} href="{{ item.link|esc_url }}"{% endif -%}
+		{%- if item.current %} aria-current="page"{% endif -%}
+	{% endset %}
+
+	<li itemscope="itemscope" itemtype="https://www.schema.org/SiteNavigationElement" id="menu-item-{{ item.id }}" class="{{ item.class|esc_attr }} f-header__item">
+		{% if has_children and depth == 0 %}
+			<button type="button" class="text-inherit f-header__dropdown-control js-f-header__dropdown-control"
+				aria-expanded="false"
+				aria-label="{{ __('Untermenü für %s öffnen', 'boilerplate-theme')|format(plain_title)|esc_attr }}"
+				aria-controls="dropdown-menu-{{ item.id }}"
+				{%- if item.current %} aria-current="page"{% endif %}>
+				<a class="f-header__link"{{ link_attributes }}>{{ item.title }}</a>
+				<svg class="f-header__dropdown-icon" aria-hidden="true" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 6 9 11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+		{% else %}
+			<a class="{{ depth > 0 ? 'f-header__dropdown-link' : 'f-header__link' }}"{{ link_attributes }}>{{ item.title }}</a>
+		{% endif %}
+
+		{% if has_children %}
+			<ul role="menu" class="f-header__dropdown"{% if depth == 0 %} id="dropdown-menu-{{ item.id }}"{% endif %}>
+				{% for child in item.children %}
+					{% include 'partials/menu-item.twig' with { item: child, depth: depth + 1 } only %}
+				{% endfor %}
+			</ul>
+		{% endif %}
+	</li>
+{% endif %}

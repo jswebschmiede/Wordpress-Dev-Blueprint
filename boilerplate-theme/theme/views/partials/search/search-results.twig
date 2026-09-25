@@ -1,0 +1,49 @@
+{#
+ # Search results list. Expects `search_results` (Timber\PostQuery), `search_term`, `search_pagination`.
+ #}
+{% set found_posts = search_results.found_posts %}
+{% set found_posts_i18n = function('number_format_i18n', found_posts) %}
+
+<div id="search-results" class="search-results flex flex-col lg:gap-12 gap-6">
+	<header class="search-results__header flex flex-col gap-3">
+		<h2 class="not-prose text-primary text-3xl md:text-5xl font-bold">
+			{{ _n('%s Treffer', '%s Treffer', found_posts, 'boilerplate-theme')|format(found_posts_i18n)|esc_html }}
+		</h2>
+		<p class="search-results__description">
+			{{ _n(
+				'Für Ihren Suchbegriff "%1$s" wurde "%2$s" Ergebnis gefunden.',
+				'Für Ihren Suchbegriff "%1$s" wurden "%2$s" Ergebnisse gefunden.',
+				found_posts,
+				'boilerplate-theme'
+			)|esc_html|format(search_term|esc_html, found_posts_i18n) }}
+		</p>
+	</header>
+
+	{% if search_results is not empty %}
+		<div class="search-results__list flex flex-col gap-6">
+			{% for result in search_results %}
+				{% include 'partials/search/search-result-item.twig' with { post: result } %}
+			{% endfor %}
+		</div>
+
+		{% if search_pagination and search_pagination.pages is not empty %}
+			<nav class="search-results__pagination" aria-label="{{ __('Suchergebnisse Navigation', 'boilerplate-theme')|esc_attr }}">
+				{% include 'partials/pagination-links.twig' with {
+					pagination: search_pagination,
+					prev_text: __('Zurück', 'boilerplate-theme'),
+					next_text: __('Weiter', 'boilerplate-theme'),
+					type: 'list',
+				} only %}
+			</nav>
+		{% endif %}
+	{% else %}
+		<div class="search-results__no-results card">
+			<h3>
+				{{ __('Keine passenden Ergebnisse gefunden', 'boilerplate-theme')|esc_html }}
+			</h3>
+			<p class="mb-0!">
+				{{ __('Für "%s" konnten wir aktuell keine Inhalte finden. Versuchen Sie es mit einem allgemeineren Begriff oder einer anderen Schreibweise.', 'boilerplate-theme')|esc_html|format(search_term|esc_html) }}
+			</p>
+		</div>
+	{% endif %}
+</div>

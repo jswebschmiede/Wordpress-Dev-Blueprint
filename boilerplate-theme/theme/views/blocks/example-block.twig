@@ -1,0 +1,21 @@
+{#
+ # Example block (boilerplate-theme/example-block).
+ # Data is prepared in Blocks\Blocks\ExampleBlock::render(); `wrapper_attributes` is already escaped by WordPress.
+ #}
+<section {{ wrapper_attributes }}>
+	<div class="example-block__inner">
+		{% if title %}
+			<h2 class="example-block__title">{{ title|esc_html }}</h2>
+		{% endif %}
+
+		{% if description %}
+			<p class="example-block__description">{{ description|esc_html }}</p>
+		{% endif %}
+
+		{% if url %}
+			<a class="example-block__link" href="{{ url|esc_url }}">
+				{{ __('Read more', 'boilerplate-theme')|esc_html }}
+			</a>
+		{% endif %}
+	</div>
+</section>

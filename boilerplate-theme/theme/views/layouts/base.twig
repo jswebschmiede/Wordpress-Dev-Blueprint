@@ -1,0 +1,36 @@
+<!doctype html>
+<html {{ site.language_attributes }}>
+<head>
+	{% block head %}
+		{% include 'partials/head.twig' %}
+	{% endblock %}
+</head>
+
+<body class="{{ body_class }}">
+
+{{ function('wp_body_open') }}
+
+<div id="page" class="flex flex-col grow">
+	{% include 'partials/skip-link.twig' %}
+
+	{% block header %}
+		{% include 'partials/header.twig' %}
+	{% endblock %}
+
+	<div id="content" class="grow">
+		{% block content %}{% endblock %}
+	</div><!-- #content -->
+
+	{% block footer %}
+		{% include 'partials/footer.twig' %}
+	{% endblock %}
+</div><!-- #page -->
+
+{% if options.show_preloader %}
+	{% include 'partials/preloader.twig' %}
+{% endif %}
+
+{{ function('wp_footer') }}
+
+</body>
+</html>

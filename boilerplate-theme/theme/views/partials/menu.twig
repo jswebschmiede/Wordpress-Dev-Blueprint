@@ -1,0 +1,11 @@
+{#
+ # Header navigation with the f-header__* BEM markup expected by flexi-header.css and the header JS.
+ # Expects `menu` (Timber\Menu). Nested levels are rendered by partials/menu-item.twig.
+ #}
+{% if menu and menu.items %}
+	<ul id="primary-menu" class="flex lg:flex-row flex-col justify-end gap-1 lg:gap-8 xl:gap-20 menu f-header__list grow" aria-label="submenu">
+		{% for item in menu.items %}
+			{% include 'partials/menu-item.twig' with { item: item, depth: 0 } only %}
+		{% endfor %}
+	</ul>
+{% endif %}

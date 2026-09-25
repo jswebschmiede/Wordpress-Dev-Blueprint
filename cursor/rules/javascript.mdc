@@ -14,6 +14,7 @@ description: JavaScript coding standards for WordPress theme development
 -   For block editor files: Globals `wp` is readonly available
 -   For browser files: Browser globals are available
 -   For Node scripts: Node globals are available
+-   Dynamic block frontend markup is Twig in `theme/views/blocks/*.twig` (Timber 2, [docs](https://timber.github.io/docs/v2/)). `save` returns `null` or Inner Blocks content; do not duplicate that HTML in JavaScript
 
 ## JSDoc Standards
 

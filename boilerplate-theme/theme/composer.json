@@ -4,7 +4,8 @@
     "type": "wordpress-theme",
     "license": "GPL-2.0-or-later",
     "require": {
-        "php": ">=8.3"
+        "php": ">=8.3",
+        "timber/timber": "^2.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^7.0"
@@ -18,6 +19,7 @@
         "prefix-namespaces": [
             "@php ../bin/download-strauss.php",
             "@php ../bin/strauss.phar",
+            "@php ../bin/fix-prefixed-twig.php",
             "@composer dump-autoload"
         ],
         "prefix-namespaces:dry-run": [
@@ -36,7 +38,9 @@
             "target_directory": "vendor-prefixed",
             "namespace_prefix": "CompanyName\\BoilerplateTheme\\",
             "classmap_prefix": "CompanyName_BoilerplateTheme_",
-            "packages": [],
+            "packages": [
+                "timber/timber"
+            ],
             "update_call_sites": true,
             "include_root_autoload": true,
             "delete_vendor_packages": true

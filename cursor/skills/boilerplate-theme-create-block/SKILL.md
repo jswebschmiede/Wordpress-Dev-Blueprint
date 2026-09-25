@@ -16,19 +16,19 @@ Use this skill when:
 
 ## Project structure
 
-All paths are relative to `_wp-content-dev/boilerplate-theme/`:
+All paths are relative to `boilerplate-theme/` (the package directory inside the repository root):
 
 | Purpose                       | Path                                                      |
 | ----------------------------- | --------------------------------------------------------- |
 | Block source (JS, block.json) | `blocks/<slug>/`                                          |
 | block.json copy target        | `theme/blocks/<slug>/block.json`                          |
 | PHP block class               | `theme/src/Blocks/Blocks/<Name>Block.php`                 |
-| PHP template                  | `theme/template-parts/blocks/<slug>.php`                  |
+| Twig template (Timber)        | `theme/views/blocks/<slug>.twig`                          |
 | JS entry (import all blocks)  | `javascript/blocks.js`                                    |
 | Block registration            | `theme/src/Blocks/BlockManager.php`                       |
 | Styles                        | `tailwind/custom/components/<slug>.css`                   |
 
-**Build flow:** `blocks/<slug>/block.json` is copied to `theme/blocks/<slug>/` by `development:copy-blocks`. All block JS is bundled into `theme/js/blocks.min.js` via `development:esbuild:blocks`. Do not run npm scripts; the user manages builds.
+**Build flow:** `blocks/<slug>/block.json` is copied to `theme/blocks/<slug>/` by `development:copy-blocks`. All block JS is bundled into `theme/js/blocks.min.js` via `development:esbuild:blocks`. Do not run pnpm scripts; the user manages builds.
 
 ## Checklist: New block
 
@@ -39,7 +39,7 @@ Copy and track progress:
 - [ ] 2. Add import to javascript/blocks.js
 - [ ] 3. Create theme/src/Blocks/Blocks/<Name>Block.php
 - [ ] 4. Add register_block() call in BlockManager::register_blocks()
-- [ ] 5. Create theme/template-parts/blocks/<slug>.php
+- [ ] 5. Create theme/views/blocks/<slug>.twig
 - [ ] 6. Run development:copy-blocks (user) after block.json changes
 ```
 
@@ -49,7 +49,7 @@ Required fields:
 
 -   `"$schema": "https://schemas.wp.org/trunk/block.json"`
 -   `"apiVersion": 3` (WordPress 6.9+)
--   `"name": "boilerplate/<slug>"`
+-   `"name": "boilerplate-theme/<slug>"`
 -   `"category": "boilerplate-theme"`
 -   `"textdomain": "boilerplate-theme"`
 -   `"editorScript": "boilerplate-theme-blocks-editor"` (shared handle; do not use file paths)
@@ -72,10 +72,18 @@ Treat `name` as stable API; renaming breaks existing content. For markup changes
 ### 4. PHP block class
 
 -   Implement `BlockInterface` with `render( array $attributes, string $content, ?\WP_Block $block = null ): string`
--   Load template from `get_template_directory() . '/template-parts/blocks/<slug>.php'`
--   Use `wp_parse_args()` for attribute defaults; escape output with `esc_attr()`, `esc_html()`, etc.
+-   Use `wp_parse_args()` for attribute defaults and prepare all view data in PHP (sanitized strings, `get_block_wrapper_attributes()`)
+-   Render with `Timber::compile( 'blocks/<slug>.twig', $context )`; import the Strauss-prefixed class `CompanyName\BoilerplateTheme\Timber\Timber`
+-   Optionally expose the template name through a filter (see `boilerplate_theme_example_block_template` in `ExampleBlock`)
 
-### 5. BlockManager registration
+### 5. Twig template
+
+-   Lives in `theme/views/blocks/<slug>.twig` (Timber view root is `theme/views/`)
+-   Markup only, no data lookups; Timber autoescape is off, so escape explicitly: `{{ value|esc_html }}`, `{{ value|esc_attr }}`, `{{ url|esc_url }}`
+-   Output `wrapper_attributes` from `get_block_wrapper_attributes()` unescaped (already escaped by WordPress)
+-   Translations: `{{ __('Text', 'boilerplate-theme') }}`
+
+### 6. BlockManager registration
 
 Add in `register_blocks()`:
 
@@ -83,11 +91,11 @@ Add in `register_blocks()`:
 $this->register_block( '<slug>', new Blocks\<Name>Block() );
 ```
 
-### 6. New @wordpress/\* imports
+### 7. New @wordpress/\* imports
 
 If the block uses a package not yet in the bundle, add it to `wpGlobals` in `node_scripts/build-blocks.js`.
 
-### 7. Styles
+### 8. Styles
 
 -   Create a new file in `tailwind/custom/components/<slug>.css`
 -   Add the styles to the file
@@ -103,3 +111,4 @@ If the block uses a package not yet in the bundle, add it to `wpGlobals` in `nod
 ## Additional resources
 
 -   Minimal skeletons and templates: [reference.md](reference.md)
+-   [Timber v2](https://timber.github.io/docs/v2/) — theme views are Twig; import the Strauss-prefixed `CompanyName\BoilerplateTheme\Timber\Timber`. See also [template inheritance](https://timber.github.io/docs/v2/getting-started/template-inheritance-and-includes/) and [escaping](https://timber.github.io/docs/v2/guides/escaping/)

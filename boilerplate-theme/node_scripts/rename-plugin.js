@@ -10,7 +10,8 @@ import {
     collectTextFiles,
     companyToNamespace,
     companyToVendorSlug,
-    defaultSkippedDirectories,
+    replaceWholeToken,
+    rewriteCommentedPluginSlugsLine,
     slugToConstantPrefix,
     slugToNamespace,
     slugToPlaceholderConstantPrefix,
@@ -277,16 +278,40 @@ console.log(`Plugin Name: ${slugToTitle(slug)}`);
 console.log(`Constant Prefix: ${slugToConstantPrefix(slug)}`);
 
 /**
+ * Applies whole-token replacements, longer keys first.
+ *
+ * @param {string} content - File text.
+ * @param {Record<string, string>} replacements - Token map.
+ * @returns {string} Updated text.
+ */
+function applyTokenReplacements(content, replacements) {
+    const orderedEntries = Object.entries(replacements).sort(
+        ([searchA], [searchB]) => searchB.length - searchA.length,
+    );
+
+    return orderedEntries.reduce(
+        (updatedContent, [search, replacement]) => replaceWholeToken(updatedContent, search, replacement),
+        content,
+    );
+}
+
+/**
  * Writes replacements for a file list.
+ *
+ * Root references use whole tokens so `boilerplate-plugin` does not match inside
+ * `scf-boilerplate-plugin`. Plugin files keep substring replacement for placeholders.
  *
  * @param {string[]} fileList - Absolute file paths.
  * @param {Record<string, string>} replacements - Replacement map.
+ * @param {boolean} wholeToken - When true, replace only whole slug tokens.
  * @returns {void}
  */
-function applyReplacementsToFiles(fileList, replacements) {
+function applyReplacementsToFiles(fileList, replacements, wholeToken) {
     for (const file of fileList) {
         const originalContent = readFileSync(file, 'utf8');
-        const updatedContent = applyReplacements(originalContent, replacements);
+        const updatedContent = wholeToken
+            ? applyTokenReplacements(originalContent, replacements)
+            : applyReplacements(originalContent, replacements);
 
         if (originalContent === updatedContent) {
             continue;
@@ -300,8 +325,43 @@ function applyReplacementsToFiles(fileList, replacements) {
     }
 }
 
-applyReplacementsToFiles(pluginFiles, pluginReplacements);
-applyReplacementsToFiles(rootFiles, rootReplacements);
+/**
+ * Updates commented PLUGIN_SLUGS examples in `.env.example`.
+ *
+ * Each comma-separated field is compared as a whole token. `.env` and
+ * `.env.local` are left unchanged so a local list keeps its current slugs.
+ *
+ * @param {string} pluginDirValue - Current plugin directory name.
+ * @param {string} slugValue - New plugin directory name.
+ * @returns {void}
+ */
+function updateCommentedPluginSlugs(pluginDirValue, slugValue) {
+    const filePath = join(rootDir, '.env.example');
+
+    if (!existsSync(filePath)) {
+        return;
+    }
+
+    const originalContent = readFileSync(filePath, 'utf8');
+    const updatedContent = originalContent
+        .split('\n')
+        .map((line) => rewriteCommentedPluginSlugsLine(line, pluginDirValue, slugValue))
+        .join('\n');
+
+    if (originalContent === updatedContent) {
+        return;
+    }
+
+    changedFiles.push(filePath);
+
+    if (!isDryRun) {
+        writeFileSync(filePath, updatedContent, 'utf8');
+    }
+}
+
+applyReplacementsToFiles(pluginFiles, pluginReplacements, false);
+applyReplacementsToFiles(rootFiles, rootReplacements, true);
+updateCommentedPluginSlugs(pluginDirName, slug);
 
 if (!isDryRun) {
     renamePluginPaths(oldPluginDir, newPluginDir, oldSlug, slug, oldNamespace, namespace);

@@ -5,7 +5,7 @@
 import { existsSync, readdirSync, statSync } from 'fs';
 import { extname, join } from 'path';
 
-export const allowedExtensions = new Set(['.php', '.json', '.js', '.css', '.md', '.mdc']);
+export const allowedExtensions = new Set(['.php', '.json', '.js', '.css', '.md', '.mdc', '.twig']);
 
 export const defaultSkippedDirectories = new Set([
     'vendor',
@@ -172,6 +172,49 @@ export function shouldSkipPath(
 }
 
 /**
+ * Plans renames for immediate child directories whose names contain a slug.
+ *
+ * Only the directory basename is rewritten. Nested directories are left in place.
+ * A missing parent, an empty slug, or an unchanged slug yields an empty plan.
+ *
+ * @param {string} parentDir - Directory whose immediate children are scanned.
+ * @param {string} oldSlug - Slug substring currently in the directory name.
+ * @param {string} newSlug - Replacement slug.
+ * @returns {{ from: string, to: string, fromName: string, toName: string }[]} Planned renames, sorted by current name.
+ */
+export function planChildDirectoryRenames(parentDir, oldSlug, newSlug) {
+    if (!existsSync(parentDir) || !oldSlug || oldSlug === newSlug) {
+        return [];
+    }
+
+    /** @type {{ from: string, to: string, fromName: string, toName: string }[]} */
+    const planned = [];
+
+    for (const entry of readdirSync(parentDir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || !entry.name.includes(oldSlug)) {
+            continue;
+        }
+
+        const toName = entry.name.replaceAll(oldSlug, newSlug);
+
+        if (toName === entry.name) {
+            continue;
+        }
+
+        planned.push({
+            from: join(parentDir, entry.name),
+            to: join(parentDir, toName),
+            fromName: entry.name,
+            toName,
+        });
+    }
+
+    planned.sort((left, right) => left.fromName.localeCompare(right.fromName));
+
+    return planned;
+}
+
+/**
  * Collects text files that can be renamed safely.
  *
  * @param {string} directory - Directory to scan.
@@ -220,6 +263,76 @@ export function collectTextFiles(
     }
 
     return files;
+}
+
+/**
+ * Escapes a string for use inside a regular expression.
+ *
+ * @param {string} value - Literal text.
+ * @returns {string} Expression-safe text.
+ */
+function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Replaces a slug only when it is a whole token.
+ *
+ * Hyphen slugs treat `-` as part of the token, so `boilerplate-plugin` does not
+ * match inside `scf-boilerplate-plugin`. Underscore slugs use the same rule for `_`.
+ *
+ * @param {string} content - File text.
+ * @param {string} token - Slug token to replace.
+ * @param {string} replacement - New slug token.
+ * @returns {string} Updated text.
+ */
+export function replaceWholeToken(content, token, replacement) {
+    if (!token || token === replacement) {
+        return content;
+    }
+
+    const interior = token.includes('_') && !token.includes('-') ? 'A-Za-z0-9_' : 'A-Za-z0-9-';
+    const pattern = new RegExp(`(?<![${interior}])${escapeRegExp(token)}(?![${interior}])`, 'g');
+
+    return content.replace(pattern, () => replacement);
+}
+
+/**
+ * Rewrites one commented PLUGIN_SLUGS example line.
+ *
+ * Only a whole comma-separated field equal to `fromSlug` is replaced.
+ * Other lines, including an empty `# PLUGIN_SLUGS=`, are returned unchanged.
+ *
+ * @param {string} line - One line from `.env.example`.
+ * @param {string} fromSlug - Current plugin directory name.
+ * @param {string} toSlug - New plugin directory name.
+ * @returns {string} Updated line.
+ */
+export function rewriteCommentedPluginSlugsLine(line, fromSlug, toSlug) {
+    const match = line.match(/^(\s*#\s*PLUGIN_SLUGS=)(.*)$/);
+
+    if (!match || !fromSlug || fromSlug === toSlug) {
+        return line;
+    }
+
+    let changed = false;
+    const fields = match[2].split(',').map((field) => {
+        if (field.trim() !== fromSlug) {
+            return field;
+        }
+
+        changed = true;
+        const leading = field.match(/^\s*/)?.[0] ?? '';
+        const trailing = field.match(/\s*$/)?.[0] ?? '';
+
+        return `${leading}${toSlug}${trailing}`;
+    });
+
+    if (!changed) {
+        return line;
+    }
+
+    return `${match[1]}${fields.join(',')}`;
 }
 
 /**

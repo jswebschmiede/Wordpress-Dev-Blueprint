@@ -8,7 +8,7 @@ Minimal templates for new blocks. Replace `<slug>`, `<Name>`, and placeholders a
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "boilerplate/<slug>",
+    "name": "boilerplate-theme/<slug>",
     "version": "1.0.0",
     "title": "Block Title",
     "category": "boilerplate-theme",
@@ -102,51 +102,36 @@ declare( strict_types=1 );
 namespace CompanyName\BoilerplateTheme\Blocks\Blocks;
 
 use CompanyName\BoilerplateTheme\Blocks\BlockInterface;
+use CompanyName\BoilerplateTheme\Timber\Timber;
 
 defined( 'ABSPATH' ) || exit;
 
 class <Name>Block implements BlockInterface {
 	public function render( array $attributes, string $content, ?\WP_Block $block = null ): string {
 		$attributes = wp_parse_args( $attributes, array( /* defaults */ ) );
-		$template_path = get_template_directory() . '/template-parts/blocks/<slug>.php';
 
-		if ( ! file_exists( $template_path ) ) {
-			return '';
-		}
+		$context = array(
+			'attributes'         => $attributes,
+			'wrapper_attributes' => get_block_wrapper_attributes(
+				array(
+					'class' => '<slug>',
+				)
+			),
+		);
 
-		ob_start();
-		include $template_path;
-		return ob_get_clean();
+		return (string) Timber::compile( 'blocks/<slug>.twig', $context );
 	}
 }
 ```
 
-## PHP template (template-parts/blocks/<slug>.php)
+## Twig template (views/blocks/<slug>.twig)
 
-```php
-<?php
-
-declare( strict_types=1 );
-
-/**
- * Template for the <Name> block.
- *
- * @var array<string, mixed> $attributes Block attributes.
- *
- * @package BoilerplateTheme
- */
-
-defined( 'ABSPATH' ) || exit;
-
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => '<slug>',
-	)
-);
-?>
-
-<section <?php echo wp_kses_data( $wrapper_attributes ); ?>>
-	<?php // Block markup ?>
+```twig
+{#
+ # <Name> block. Data is prepared in Blocks\Blocks\<Name>Block::render().
+ #}
+<section {{ wrapper_attributes }}>
+	{# Block markup, escape values explicitly: {{ attributes.title|esc_html }} #}
 </section>
 ```
 
@@ -164,6 +149,7 @@ $this->register_block( '<slug>', new Blocks\<Name>Block() );
 
 ## Official documentation
 
+- [Timber v2](https://timber.github.io/docs/v2/) (compile a block view with the prefixed `Timber` class; [escaping](https://timber.github.io/docs/v2/guides/escaping/))
 - [Block metadata (block.json)](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/)
 - [Block API versions / Iframe migration](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-api-versions/)
 - [Nested blocks (Inner Blocks)](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/nested-blocks-inner-blocks/)
