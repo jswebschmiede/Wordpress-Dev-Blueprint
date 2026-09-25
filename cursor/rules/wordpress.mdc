@@ -21,7 +21,7 @@ description: WordPress-specific rules and best practices
 ## Block Editor Integration
 
 -   Use WordPress Block API for custom blocks
--   Register blocks in `_wp-content-dev/boilerplate-theme/blocks/`
+-   Register blocks in `boilerplate-theme/blocks/`
 -   Block JSON files should follow WordPress block.json schema
 -   Use WordPress block editor components and utilities
 -   Support block editor features (alignments, colors, etc.)
@@ -35,7 +35,7 @@ description: WordPress-specific rules and best practices
 
 ## Theme Templates (Timber)
 
-Frontend markup is Twig under `_wp-content-dev/boilerplate-theme/theme/views/`, rendered with Timber 2. PHP templates only supply context and call `Timber::render()` or `Timber::compile()`. Follow [Timber v2](https://timber.github.io/docs/v2/), including [template inheritance](https://timber.github.io/docs/v2/getting-started/template-inheritance-and-includes/) and [menus](https://timber.github.io/docs/v2/guides/menus/), with this theme's paths and prefixed classes (see `general.mdc`).
+Frontend markup is Twig under `boilerplate-theme/theme/views/`, rendered with Timber 2. PHP templates only supply context and call `Timber::render()` or `Timber::compile()`. Follow [Timber v2](https://timber.github.io/docs/v2/), including [template inheritance](https://timber.github.io/docs/v2/getting-started/template-inheritance-and-includes/) and [menus](https://timber.github.io/docs/v2/guides/menus/), with this theme's paths and prefixed classes (see `general.mdc`).
 
 -   Import `CompanyName\BoilerplateTheme\Timber\Timber`, not `Timber\Timber`
 -   Page templates extend `layouts/base.twig`. Reuse `partials/`. Block frontend markup is `views/blocks/<slug>.twig`

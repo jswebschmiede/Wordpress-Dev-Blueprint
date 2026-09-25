@@ -1,5 +1,9 @@
 /**
  * Replaces boilerplate theme placeholders with project-specific names.
+ *
+ * Includes `cursor/` and `.vscode/settings.json` at the repository root.
+ * `phpsab.standard` is `boilerplate-theme/phpcs.xml` relative to that root;
+ * the `boilerplate-theme` segment is replaced with the new package slug.
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs';

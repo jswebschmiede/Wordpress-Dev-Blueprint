@@ -46,7 +46,23 @@ node node_scripts/rename-plugin.js <slug> \
 
 ## Local Usage
 
-Create a symlink or copy this folder to `wp-content/plugins/boilerplate-plugin`.
+WordPress stays outside the repository. From the repository root, symlink this plugin into the real `wp-content/plugins` the same way as the theme. On Windows, open the repository with Remote – WSL. See [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
+
+Local WP, from WSL:
+
+```bash
+WP_CONTENT="/mnt/c/Users/you/Local Sites/my-site/app/public/wp-content"
+ln -s "$(pwd)/boilerplate-theme/plugins/boilerplate-plugin" "$WP_CONTENT/plugins/boilerplate-plugin"
+```
+
+Linux install:
+
+```bash
+WP_CONTENT="/var/www/my-site/wp-content"
+ln -s "$(pwd)/boilerplate-theme/plugins/boilerplate-plugin" "$WP_CONTENT/plugins/boilerplate-plugin"
+```
+
+After `rename-plugin.js`, use the new plugin directory in the source path and that slug as the link name.
 
 Install Composer dependencies in the plugin directory before activating the plugin:
 

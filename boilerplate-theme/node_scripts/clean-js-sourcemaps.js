@@ -37,7 +37,7 @@ async function collectMapFiles(dir) {
 }
 
 /**
- * Deletes a file with retries for transient Windows lock errors (EBUSY, EPERM).
+ * Deletes a file with retries for transient lock errors (EBUSY, EPERM).
  * @param {string} file - Absolute file path
  * @param {number} [maxAttempts=5] - Maximum delete attempts
  * @returns {Promise<void>}

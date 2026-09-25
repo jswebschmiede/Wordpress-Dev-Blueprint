@@ -56,7 +56,7 @@ flowchart LR
   P --> BP
   BP --> PB
   RT --> sources
-  RT --> cursor[_wp-content-dev/cursor/]
+  RT --> cursorRepo[cursor/]
   TJ --> CS
   PB --> CS
   TB --> ZP
@@ -124,7 +124,7 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 **Usage:** `node node_scripts/rename-theme.js <slug> --company <company> [--dry-run]`
 
-**What it does:** Replaces boilerplate placeholders in this package, in `_wp-content-dev/cursor/`, and in `_wp-content-dev/.vscode/settings.json` (`phpsab.standard`).
+**What it does:** Replaces boilerplate placeholders in this package, in `cursor/` at the repository root, and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the `boilerplate-theme` segment becomes the new slug.
 
 **Replacements:**
 
@@ -244,7 +244,7 @@ Build commands: [`../README.md` §Development workflow](../README.md#development
 Runtime Composer packages are **prefixed with [Strauss](https://github.com/BrianHenryIE/strauss)** so theme and plugins can ship isolated dependencies without autoloader conflicts. Install commands and the production workflow are documented in [`../README.md`](../README.md#composer-and-strauss).
 
 - Strauss PHAR: `bin/strauss.phar` (gitignored; fetched by `bin/download-strauss.php` on first run)
-- Downloader uses PHP cURL, then `file_get_contents` as fallback — shell curl often fails under WAMP when SSL CA certificates are missing and can leave an empty PHAR
+- Downloader uses PHP cURL, then `file_get_contents` as fallback, and rejects a body that is too small to be a real PHAR
 - Prefixed output: `vendor-prefixed/` (gitignored, generated on `composer install`)
 - Bootstrap loads `vendor-prefixed/autoload.php` (includes project PSR-4 via `include_root_autoload`)
 - `require-dev` packages (e.g. `symfony/var-dumper`) are **not** prefixed
@@ -270,6 +270,6 @@ See [`../README.md` §Best practices](../README.md#best-practices) and [`../READ
 
 ## 7. Related documentation
 
-- [`../README.md`](../README.md) — package structure, rename workflow, npm/Composer commands, local WordPress usage
-- [`../../README.md`](../../README.md) — boilerplate overview, environment setup, PowerShell helpers
+- [`../README.md`](../README.md) — package structure, rename workflow, pnpm/Composer commands, local WordPress usage
+- [`../../README.md`](../../README.md) — boilerplate overview, WSL/Linux setup, theme and plugin symlinks
 - [`../../cursor/skills/boilerplate-theme-create-block/SKILL.md`](../../cursor/skills/boilerplate-theme-create-block/SKILL.md) — block scaffolding checklist

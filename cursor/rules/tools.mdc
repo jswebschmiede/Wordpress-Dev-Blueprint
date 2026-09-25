@@ -8,18 +8,18 @@ description: Build tools and configuration guidelines
 ## Tailwind CSS
 
 - Use Tailwind CSS for styling
-- Tailwind configuration files in `_wp-content-dev/boilerplate-theme/tailwind/`
-- Main CSS file: `_wp-content-dev/boilerplate-theme/tailwind.css`
+- Tailwind configuration files in `boilerplate-theme/tailwind/`
+- Main CSS file: `boilerplate-theme/tailwind.css`
 - Build outputs:
-    - Frontend: `_wp-content-dev/boilerplate-theme/theme/style.css`
-    - Editor: `_wp-content-dev/boilerplate-theme/theme/style-editor.css`
-    - Intellisense: `_wp-content-dev/boilerplate-theme/tailwind-intellisense.css`
+    - Frontend: `boilerplate-theme/theme/style.css`
+    - Editor: `boilerplate-theme/theme/style-editor.css`
+    - Intellisense: `boilerplate-theme/tailwind-intellisense.css`
 - Use PostCSS for CSS processing
 - Production builds use `_TW_ENV=production` environment variable
 
 ## ESLint
 
-- ESLint configuration in `_wp-content-dev/boilerplate-theme/eslint.config.js`
+- ESLint configuration in `boilerplate-theme/eslint.config.js`
 - Use for JavaScript linting
 - Follow ESLint rules and Prettier integration
 - Run linting: `pnpm run lint:eslint`
@@ -27,7 +27,7 @@ description: Build tools and configuration guidelines
 
 ## Prettier
 
-- Prettier configuration in `_wp-content-dev/boilerplate-theme/prettier.config.js`
+- Prettier configuration in `boilerplate-theme/prettier.config.js`
 - Based on WordPress Prettier Config (`@wordpress/prettier-config`)
 - Includes Tailwind CSS plugin (`prettier-plugin-tailwindcss`)
 - Use for code formatting
@@ -36,7 +36,7 @@ description: Build tools and configuration guidelines
 
 ## PHPCS (PHP CodeSniffer)
 
-- PHPCS configuration in `_wp-content-dev/boilerplate-theme/phpcs.xml`
+- PHPCS configuration in `boilerplate-theme/phpcs.xml`
 - Run PHPCS from the package root: `composer install` then `composer php:lint`
 - Text domains configured: `boilerplate-theme`, `boilerplate-plugin`
 - Excludes: `vendor/`, `tests/`, `node_modules/`
@@ -47,15 +47,15 @@ description: Build tools and configuration guidelines
 
 - JavaScript bundling tool
 - Configuration in `package.json` scripts
-- Builds JavaScript files from `_wp-content-dev/boilerplate-theme/javascript/`
-- Outputs minified files to `_wp-content-dev/boilerplate-theme/theme/js/*.min.js`
+- Builds JavaScript files from `boilerplate-theme/javascript/`
+- Outputs minified files to `boilerplate-theme/theme/js/*.min.js`
 - Also builds block editor files
 - Production builds use `--minify` flag
 
 ### PostCSS
 
 - CSS processing tool
-- Configuration in `_wp-content-dev/boilerplate-theme/postcss.config.js`
+- Configuration in `boilerplate-theme/postcss.config.js`
 - Processes Tailwind CSS files
 - Uses plugins: `postcss-import-ext-glob`, `postcss-nesting`, `postcss-advanced-variables`, `cssnano` (production)
 

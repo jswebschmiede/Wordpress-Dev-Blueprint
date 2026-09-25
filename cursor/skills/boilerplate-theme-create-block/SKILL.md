@@ -16,7 +16,7 @@ Use this skill when:
 
 ## Project structure
 
-All paths are relative to `_wp-content-dev/boilerplate-theme/`:
+All paths are relative to `boilerplate-theme/` (the package directory inside the repository root):
 
 | Purpose                       | Path                                                      |
 | ----------------------------- | --------------------------------------------------------- |

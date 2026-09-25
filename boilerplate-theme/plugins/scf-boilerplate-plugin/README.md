@@ -51,7 +51,22 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 ## Usage
 
-1. Symlink or copy this folder to `wp-content/plugins/scf-boilerplate-plugin`.
+1. From the repository root, symlink this folder into the real WordPress `wp-content/plugins` (same `ln -s` pattern as the theme). On Windows, use Remote – WSL. See [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
+
+Local WP, from WSL:
+
+```bash
+WP_CONTENT="/mnt/c/Users/you/Local Sites/my-site/app/public/wp-content"
+ln -s "$(pwd)/boilerplate-theme/plugins/scf-boilerplate-plugin" "$WP_CONTENT/plugins/scf-boilerplate-plugin"
+```
+
+Linux install:
+
+```bash
+WP_CONTENT="/var/www/my-site/wp-content"
+ln -s "$(pwd)/boilerplate-theme/plugins/scf-boilerplate-plugin" "$WP_CONTENT/plugins/scf-boilerplate-plugin"
+```
+
 2. Install Composer dependencies (again after `rename-plugin.js`; that script skips `vendor-prefixed/`, including the prefixed project autoload):
 
 ```bash
