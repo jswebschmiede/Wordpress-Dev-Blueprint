@@ -51,7 +51,15 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 ## Usage
 
-1. Theme files are copied into Local with `pnpm run sync:theme` ([repository README](../../../README.md#sync-the-theme-to-local)). This plugin is not synced yet. Do not symlink it from `\\wsl.localhost\...` or with `ln -s`: Local’s PHP `is_readable()` is false for those targets.
+1. Theme files are copied into Local with `pnpm run sync:theme` ([repository README](../../../README.md#sync-the-theme-to-local)). This plugin is copied when `PLUGIN_SLUGS` includes `scf-boilerplate-plugin` (or when you pass `--slug=scf-boilerplate-plugin`). The folder name is the slug. The bootstrap file stays `boilerplate-plugin.php`, directly inside `wp-content/plugins/scf-boilerplate-plugin/`. Leave `PLUGIN_SLUGS` empty or commented out to skip plugin build, watch, and sync. Do not symlink the plugin from `\\wsl.localhost\...` or with `ln -s`: Local’s PHP `is_readable()` is false for those targets.
+
+```bash
+pnpm run development:plugins --slug=scf-boilerplate-plugin
+pnpm run watch:plugins
+pnpm run sync:plugin --slug=scf-boilerplate-plugin
+pnpm run sync:plugins --optional
+pnpm run watch:sync:plugins
+```
 
 2. Install Composer dependencies (again after `rename-plugin.js`; that script skips `vendor-prefixed/`, including the prefixed project autoload):
 
@@ -78,11 +86,12 @@ Options are stored via SCF options (`get_field( $key, 'option' )`).
 
 ## Build scripts
 
-From the development package root:
+From the development package root. `PLUGIN_SLUGS` selects the plugins; `--slug` builds this directory on its own:
 
 ```bash
-pnpm run development:esbuild:plugin:scf-boilerplate-plugin
-pnpm run production:esbuild:plugin:scf-boilerplate-plugin
+pnpm run development:plugins --slug=scf-boilerplate-plugin
+pnpm run watch:plugins
+pnpm run production:esbuild:plugins
 ```
 
 ## Relationship to boilerplate-plugin

@@ -39,9 +39,12 @@ repository root/
     │   ├── build-plugin.js
     │   ├── clean-js-sourcemaps.js
     │   ├── copy-blocks.js
+    │   ├── plugin-slugs.js
     │   ├── rename-theme.js
     │   ├── rename-plugin.js
+    │   ├── run-plugin-builds.js
     │   ├── sync-theme.js
+    │   ├── sync-plugin.js
     │   └── zip.js
     ├── sync-theme.example.json
     ├── javascript/
@@ -80,7 +83,7 @@ For architecture, build pipeline details, and Node script behaviour, see [`docs/
 3. Run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)). Theme first, then plugin.
 4. Run `pnpm run composer:install:dev`. Strauss prefixes Timber and plugin dependencies with the namespaces the rename scripts wrote into each `composer.json`. Do this after the rename scripts, not before.
 5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-6. Copy `.env.example` to `.env` and set `WP_CONTENT_PATH`, then sync the theme into Local WP (`pnpm run sync:theme` or `pnpm run watch`). Activate the theme after step 4. See [Local usage](#local-usage).
+6. Copy `.env.example` to `.env` and set `WP_CONTENT_PATH`. Uncomment `PLUGIN_SLUGS` when a plugin should be built and copied into Local. Sync with `pnpm run sync:theme` or `pnpm run watch`. Activate the theme after step 4. See [Local usage](#local-usage).
 7. From the repository root, copy `cursor/` to `.cursor/` after the rename scripts (see [Cursor AI configuration](#cursor-ai-configuration)).
 
 ## Prerequisites
@@ -153,7 +156,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 For the SCF alternative, use `--plugin scf-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
 
-This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace). Then run `pnpm run composer:install:dev` so each `vendor-prefixed/` autoloader matches the new namespaces.
+This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace). Composer, zip, and sourcemap script names in `package.json` are updated as whole tokens, so renaming `boilerplate-plugin` leaves `scf-boilerplate-plugin` intact. The commented `PLUGIN_SLUGS` example in `.env.example` is updated the same way, one comma-separated field at a time. `.env` and `.env.local` are left unchanged. Then run `pnpm run composer:install:dev` so each `vendor-prefixed/` autoloader matches the new namespaces.
 
 ## Manual rename checklist
 
@@ -185,7 +188,7 @@ pnpm run development
 pnpm run dev          # alias
 ```
 
-Watch CSS, JS, blocks, and plugin assets during active work. When a Local destination is configured, this also syncs `theme/` once, then copies only files that change:
+Watch CSS, JS, blocks, and the plugins listed in `PLUGIN_SLUGS`. When `WP_CONTENT_PATH` is set, this also syncs `theme/` and those plugins once, then copies only files that change. An empty `PLUGIN_SLUGS` makes the plugin build and plugin sync exit immediately so the theme watchers keep running:
 
 ```bash
 pnpm run watch
@@ -231,12 +234,18 @@ pnpm run production:esbuild:block-views
 
 ### Plugin JavaScript
 
+`PLUGIN_SLUGS` drives the dev build, the watch build, and the production minify. An empty or commented key skips all three.
+
 ```bash
-pnpm run development:esbuild:plugin:boilerplate-plugin
-pnpm run production:esbuild:plugin:boilerplate-plugin
+pnpm run development:plugins --slug=scf-boilerplate-plugin
+pnpm run watch:plugins
+pnpm run sync:plugin --slug=scf-boilerplate-plugin
+pnpm run sync:plugins --optional
+pnpm run watch:sync:plugins
+pnpm run production:esbuild:plugins
 ```
 
-After `rename-plugin.js`, the script name in `package.json` is updated automatically.
+`pnpm run development` runs `development:plugins` with the theme build, then `sync:theme`, then `sync:plugins`. `pnpm run production` minifies the listed plugins through `production:esbuild:plugins`. Composer, zip, and sourcemap cleanup stay as per-directory scripts.
 
 ### Linting
 
@@ -317,7 +326,9 @@ pnpm run sync:theme
 
 A symlink into WSL does not work: `\\wsl.localhost\...` and `ln -s` leave PHP `is_readable()` false, so WordPress treats the theme as incomplete. Paths, CLI overrides, and the watch behaviour are in [`../README.md`](../README.md#sync-the-theme-to-local).
 
-Plugin directories are not synced yet. Activate the theme after `vendor-prefixed/` exists. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**.
+Activate the theme after `vendor-prefixed/` exists. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**.
+
+Plugin sync uses the same `WP_CONTENT_PATH`. Set `PLUGIN_SLUGS` to the folder names that should be built and copied (see [Plugin JavaScript](#plugin-javascript)). The files land in `wp-content/plugins/<slug>/`. Leave `PLUGIN_SLUGS` commented out to skip plugin build, watch, and sync.
 
 The theme must load `theme/vendor-prefixed/autoload.php` from a Composer install that ran **after** the rename scripts. Otherwise `functions.php` shows an admin error that `vendor-prefixed` is missing, or `ThemeManager` shows that prefixed Timber was not found. Frontend templates, the example block, and the search form call Timber directly, so the front end fatals in both cases. The admin notice does not replace those calls.
 
@@ -348,7 +359,7 @@ Root-level tooling:
 | Theme activated without `theme/vendor-prefixed/` | Admin notice that `vendor-prefixed` is missing; front end fatals | `composer install --working-dir=theme` before activation |
 | `pnpm run zip:theme` before the theme Composer install | ZIP has no prefixed Timber | `pnpm run bundle` runs production Composer installs, then zips. `zip:theme` alone archives `theme/` as it is |
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
-| Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
+| Plugin script empty in WordPress | `build/` missing or outdated | `pnpm run development:plugins --slug=<folder>` and sync that slug |
 | `pnpm install` before folder rename | Broken symlinks in `node_modules` | Rename package folder first, then run `pnpm install` |
 | Symlink or UNC path from Local into WSL | `is_readable()` is false; stylesheet is missing | Sync with `pnpm run sync:theme` ([root README](../README.md#sync-the-theme-to-local)) |
 | Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `cursor/` and `.vscode/settings.json` at the repository root) |

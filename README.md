@@ -52,9 +52,19 @@ pnpm run sync:theme -- --target="/mnt/j/Local Sites/my-site/app/public/wp-conten
 
 `--target` is the theme folder itself (`style.css` goes directly inside it). `--slug` with `WP_CONTENT_PATH` uses `…/wp-content/themes/<slug>`. When both a full target and a wp-content path are set, the wp-content path plus slug is used. If only `THEME_SYNC_TARGET` is set, `--slug` renames that folder.
 
-`pnpm run development` syncs once after the asset build. `pnpm run watch` syncs once, then copies only files that change under `theme/`. `node_modules`, `.git`, `vendor` (Composer sources), and `*.map` files are left behind. `vendor-prefixed/` is copied — Local PHP loads that autoloader.
+`pnpm run development` syncs the theme once after the asset build, then syncs plugins. `pnpm run watch` syncs once, then copies only files that change under `theme/`. `node_modules`, `.git`, `vendor` (Composer sources), and `*.map` files are left behind. `vendor-prefixed/` is copied — Local PHP loads that autoloader.
 
-Plugin directories are not synced yet. The same copy can be added later. Do not symlink them from `\\wsl.localhost\...` either: `is_readable()` is false there too.
+Plugin build, watch, and sync use the same `WP_CONTENT_PATH` and one list, `PLUGIN_SLUGS` (comma-separated folder names under `plugins/`). Leave that key empty or commented out and all three skip with exit 0. Set it in `.env`, for example `PLUGIN_SLUGS=scf-boilerplate-plugin`. The copy lands in `wp-content/plugins/<slug>/` with the plugin files directly in that folder, including `build/` after the driver has created it. For the SCF plugin the folder is `scf-boilerplate-plugin` and the bootstrap file stays `boilerplate-plugin.php`. The same excludes apply, and `vendor-prefixed/` is copied. Do not symlink plugins from `\\wsl.localhost\...` or with `ln -s`: `is_readable()` is false there too.
+
+```bash
+pnpm run development:plugins --slug=scf-boilerplate-plugin
+pnpm run watch:plugins
+pnpm run sync:plugin --slug=scf-boilerplate-plugin
+pnpm run sync:plugins --optional
+pnpm run watch:sync:plugins
+```
+
+`--slug` builds or syncs that one plugin even when it is absent from `PLUGIN_SLUGS`. With the list set and `WP_CONTENT_PATH` missing, the build still runs; `sync:plugins --optional` skips, and `sync:plugins` without `--optional` exits 1.
 
 ## Contents
 

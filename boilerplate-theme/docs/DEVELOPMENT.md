@@ -113,7 +113,7 @@ flowchart LR
 
 **Exit codes:** `1` if plugin name missing or plugin directory missing; `0` with a skip message if no entry files exist.
 
-**Example (included boilerplate plugin):**
+**Called by:** `node_scripts/run-plugin-builds.js` (see [§3.10](#310-node_scriptsrun-plugin-buildsjs)). Dev, watch, and production npm scripts no longer name a plugin slug. Pass the directory name when calling this file directly:
 
 ```bash
 node node_scripts/build-plugin.js boilerplate-plugin
@@ -204,7 +204,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 | `CompanyName` | `SmartMedia24` |
 | `companyname` | `smartmedia24` |
 
-Also updates the `--plugin` directory name in root references (`package.json`, docs, …) without rewriting the sibling plugin’s `boilerplate-plugin` placeholders.
+Also updates the `--plugin` directory name in root references (`package.json`, docs, …) as a whole token. Renaming `boilerplate-plugin` leaves `scf-boilerplate-plugin` intact in Composer, zip, and sourcemap script names. The commented `PLUGIN_SLUGS` example in `.env.example` is updated one comma-separated field at a time. `.env` and `.env.local` are not edited, and `.env.example` is not part of the substring replacement used for plugin files.
 
 After renaming, run `composer install --working-dir=plugins/<slug>` to regenerate Strauss `vendor-prefixed/`. If `rename-theme.js` ran as well, regenerate the theme in the same pass with `pnpm run composer:install:dev` (theme Timber prefix plus both plugins).
 
@@ -250,7 +250,54 @@ node node_scripts/zip.js plugin boilerplate-plugin
 - Refuses to create a mistyped `wp-content` path; the directory must already exist. The theme folder under `themes/` is created.
 - Repeat runs skip files with the same size and mtime. A full sync also deletes destination files that were removed from `theme/`.
 - `--dry-run` prints the plan and does not start the watcher.
-- Plugin sync is not implemented.
+- Plugin sync is `node_scripts/sync-plugin.js` ([§3.11](#311-node_scriptssync-pluginjs)).
+
+### 3.10 `node_scripts/run-plugin-builds.js`
+
+**Usage:** `node node_scripts/run-plugin-builds.js [--watch] [--minify] [--slug=<slug>]`
+
+**What it does:** Reads `PLUGIN_SLUGS` and runs `build-plugin.js` once per slug. No flag is the dev build, `--watch` keeps one esbuild process open per slug, and `--minify` is the production build used by `production:esbuild:plugins`.
+
+**Slug order:** `--slug`, otherwise `PLUGIN_SLUGS` from the process environment, then `.env.local`, then `.env`. `#` comments and blank values are ignored. An empty list exits 0. There is no default plugin. `--slug` builds that directory even when it is missing from the list.
+
+**npm scripts:**
+
+```bash
+pnpm run development:plugins --slug=scf-boilerplate-plugin
+pnpm run watch:plugins
+pnpm run production:esbuild:plugins
+```
+
+`development:**` includes `development:plugins`. `watch:**` includes `watch:plugins`. `production:esbuild*` includes `production:esbuild:plugins`, so `production:assets` minifies only the listed slugs. An empty list makes the watch process exit 0; `run-p` keeps the theme watchers running.
+
+### 3.11 `node_scripts/sync-plugin.js`
+
+**Usage:** `node node_scripts/sync-plugin.js [--watch] [--dry-run] [--optional] [--slug=<slug>]`
+
+**What it does:** Copies the contents of each `plugins/<slug>/` into `<WP_CONTENT_PATH>/plugins/<slug>/`. The bootstrap file lands directly in that folder. `build/` is included once the plugin build has written it. npm scripts:
+
+```bash
+pnpm run sync:plugin --slug=scf-boilerplate-plugin
+pnpm run sync:plugins --optional
+pnpm run watch:sync:plugins
+```
+
+`watch:sync:plugins` is `pnpm run sync:plugins --watch --optional`. `pnpm run development` syncs the theme, then the plugins. `pnpm run watch` starts `watch:sync:plugins` with the theme watcher.
+
+**Slug order:** same as `run-plugin-builds.js`. An empty list exits 0 with or without `--optional`.
+
+**Destination:** `<WP_CONTENT_PATH>/plugins/<slug>/`. `wp-content` must already exist; the plugin directory is created. A missing `plugins/<slug>/` source, a Windows drive path, or a destination inside the repository or equal to `plugins/` or `wp-content/` exits 1.
+
+**Excluded:** `node_modules/`, `.git/`, `vendor/` (unprefixed Composer), `*.map`, `.DS_Store`, `Thumbs.db`. **Included:** PHP, views, built JS, and `vendor-prefixed/`. The directory filter matches the name `vendor` only, so `vendor-prefixed/` is copied.
+
+**Exit codes:** `0` when `PLUGIN_SLUGS` is empty. `0` with `--optional` when the list is set and `WP_CONTENT_PATH` is missing. `1` in that case without `--optional`. `1` for a missing source, a Windows path, or an unsafe destination.
+
+**Edge cases:**
+
+- Repeat runs skip files with the same size and mtime. A full sync deletes destination files that were removed from the plugin source.
+- `--watch` does one full copy, then copies only changed files, with one watcher per slug.
+- `--dry-run` prints the plan and does not start the watcher.
+- The SCF plugin directory is `scf-boilerplate-plugin`. Its bootstrap file remains `boilerplate-plugin.php`. The slug is the folder name.
 
 ## 4. Tailwind and CSS
 
