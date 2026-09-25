@@ -46,7 +46,7 @@ node node_scripts/rename-plugin.js <slug> \
 
 ## Local Usage
 
-Local WP stays outside the repository. Open the repository with Remote – WSL and run tooling in Linux. Symlink this plugin into `wp-content/plugins` from Windows. With the repository in WSL, the target is `\\wsl.localhost\<Distro>\...` (WSL must be running). Do not `ln -s` to `/home/...`. If that UNC path does not resolve, use a Windows path such as `J:\dev\my-project\boilerplate-theme\plugins\boilerplate-plugin`. Commands, including `mklink /D`, are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
+Local WP stays outside the repository. Keep the repository in the WSL filesystem and open it with Remote – WSL. Symlink this plugin from Windows to a mapped drive (`W:\boilerplate-theme\plugins\boilerplate-plugin`), not to `\\wsl.localhost\...`. `ln -s` from WSL stores a Linux path Local’s PHP cannot open. A bare UNC target often leaves plugin files unreadable the same way a theme `style.css` does. Commands, including `mklink /D`, are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
 
 After `rename-plugin.js`, use the new plugin directory in the target and that slug as the link name.
 
