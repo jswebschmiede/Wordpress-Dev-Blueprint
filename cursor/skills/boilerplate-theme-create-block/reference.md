@@ -8,7 +8,7 @@ Minimal templates for new blocks. Replace `<slug>`, `<Name>`, and placeholders a
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "boilerplate/<slug>",
+    "name": "boilerplate-theme/<slug>",
     "version": "1.0.0",
     "title": "Block Title",
     "category": "boilerplate-theme",

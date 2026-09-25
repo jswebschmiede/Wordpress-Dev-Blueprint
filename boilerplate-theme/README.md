@@ -130,7 +130,7 @@ It also rewrites the theme-sync slug in `sync-theme.example.json`, `.env.example
 
 For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 
-The script replaces placeholders in this package, in `cursor/` at the repository root (rules and skills), and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the script updates the `boilerplate-theme` segment to the new slug. It only replaces file contents and does not rename folders.
+The script replaces placeholders in this package, in `cursor/` at the repository root (rules and skills), and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the script updates the `boilerplate-theme` segment to the new slug. It also renames directories under `cursor/skills/` whose names contain `boilerplate-theme` (for example `boilerplate-theme-create-block`). Other folders are not renamed.
 
 ### Rename plugin
 

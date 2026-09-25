@@ -4,6 +4,8 @@
  * Includes `cursor/` and `.vscode/settings.json` at the repository root.
  * `phpsab.standard` is `boilerplate-theme/phpcs.xml` relative to that root;
  * the `boilerplate-theme` segment is replaced with the new package slug.
+ * Skill directories under `cursor/skills/` whose names contain `boilerplate-theme`
+ * are renamed to the new slug (for example `boilerplate-theme-create-block`).
  *
  * Theme sync: rewrites the destination slug in `sync-theme.example.json`,
  * `.env.example`, and the default in `node_scripts/sync-theme.js`.
@@ -15,7 +17,7 @@
  * Company key: `THEME_COMPANY`.
  */
 
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -24,6 +26,7 @@ import {
     companyToNamespace,
     companyToVendorSlug,
     defaultSkippedDirectories,
+    planChildDirectoryRenames,
     slugToConstantPrefix,
     slugToNamespace,
     slugToTitle,
@@ -34,7 +37,9 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
 const repoRoot = join(rootDir, '..');
+const oldThemeSlug = 'boilerplate-theme';
 const cursorDir = join(repoRoot, 'cursor');
+const skillsDir = join(cursorDir, 'skills');
 const vscodeSettingsFile = join(repoRoot, '.vscode', 'settings.json');
 const envExampleFile = join(rootDir, '.env.example');
 const ignoredSyncOverrides = new Set([
@@ -239,8 +244,8 @@ function getReplacements(slugValue, companyValue) {
 
     return {
         'https://companyname.example': `https://${companyVendor}.example`,
-        'boilerplate-theme': slugValue,
-        'boilerplate_theme': slugValue.replaceAll('-', '_'),
+        [oldThemeSlug]: slugValue,
+        [oldThemeSlug.replaceAll('-', '_')]: slugValue.replaceAll('-', '_'),
         'boilerplate/example-block': `${slugValue}/example-block`,
         CompanyName: companyNamespace,
         companyname: companyVendor,
@@ -248,6 +253,60 @@ function getReplacements(slugValue, companyValue) {
         'Boilerplate Theme': title,
         BOILERPLATE_THEME_: constantPrefix,
     };
+}
+
+/**
+ * Exits when a planned skill-directory rename would overwrite an existing path.
+ *
+ * @param {{ to: string, toName: string }[]} planned - Planned directory renames.
+ * @returns {void}
+ */
+function assertSkillDirectoryTargets(planned) {
+    const seenTargets = new Set();
+
+    for (const item of planned) {
+        if (seenTargets.has(item.to)) {
+            console.error(`Skill directory renames collide on: ${item.toName}`);
+            process.exit(1);
+        }
+
+        seenTargets.add(item.to);
+
+        if (existsSync(item.to)) {
+            console.error(`Target skill directory already exists: ${item.to}`);
+            process.exit(1);
+        }
+    }
+}
+
+/**
+ * Renames skill directories whose names contain the old theme slug.
+ *
+ * Dry run logs the planned names and leaves the directories in place, matching
+ * the plugin rename script.
+ *
+ * @param {{ from: string, to: string, fromName: string, toName: string }[]} planned - Planned renames.
+ * @param {boolean} dryRun - When true, logs the plan and does not rename.
+ * @returns {void}
+ */
+function renameSkillDirectories(planned, dryRun) {
+    if (planned.length === 0) {
+        return;
+    }
+
+    if (dryRun) {
+        for (const item of planned) {
+            console.log(`Would rename skill directory: ${item.fromName} -> ${item.toName}`);
+        }
+
+        console.log('Dry run only. Skill directories were not renamed.');
+        return;
+    }
+
+    for (const item of planned) {
+        renameSync(item.from, item.to);
+        console.log(`Renamed skill directory: ${item.fromName} -> ${item.toName}`);
+    }
 }
 
 const fileEnv = loadFileEnv();
@@ -261,6 +320,8 @@ validateSlug(slug, usageMessage);
 validateCompany(company, usageMessage);
 
 const replacements = getReplacements(slug, company);
+const plannedSkillRenames = planChildDirectoryRenames(skillsDir, oldThemeSlug, slug);
+assertSkillDirectoryTargets(plannedSkillRenames);
 const files = [
     ...new Set([
         ...collectTextFiles(rootDir, '', defaultSkippedDirectories, skippedRelativeDirectories),
@@ -294,6 +355,8 @@ for (const file of files) {
         writeFileSync(file, updatedContent, 'utf8');
     }
 }
+
+renameSkillDirectories(plannedSkillRenames, isDryRun);
 
 if (isDryRun) {
     console.log('Dry run only. No files were changed.');

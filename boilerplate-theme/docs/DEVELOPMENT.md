@@ -126,7 +126,7 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 Slug and company are required. Omit `<slug>` when `THEME_SLUG` or `THEME_SYNC_SLUG` is set, and omit `--company` when `THEME_COMPANY` is set. Precedence for the slug: positional `<slug>`, then `THEME_SLUG`, then `THEME_SYNC_SLUG`. Precedence for the company: `--company`, then `THEME_COMPANY`. The process environment is checked before `.env.local` and `.env`. A CLI value overrides the environment.
 
-**What it does:** Replaces boilerplate placeholders in this package, in `cursor/` at the repository root, and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the `boilerplate-theme` segment becomes the new slug.
+**What it does:** Replaces boilerplate placeholders in this package, in `cursor/` at the repository root, and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the `boilerplate-theme` segment becomes the new slug. Directories under `cursor/skills/` whose names contain `boilerplate-theme` are renamed to the new slug (for example `boilerplate-theme-create-block` becomes `<slug>-create-block`).
 
 **Replacements:**
 
@@ -147,7 +147,7 @@ Slug and company are required. Omit `<slug>` when `THEME_SLUG` or `THEME_SYNC_SL
 - Slug must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
 - Company must be kebab-case (e.g. `smart-media-24`) or PascalCase (e.g. `SmartMedia24`).
 - Slug and company are required via CLI or environment. A CLI value overrides `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_COMPANY`.
-- Only file contents are updated; folders are not renamed.
+- Renames directories under `cursor/skills/` whose names contain `boilerplate-theme`. Other folders, including the package directory, are not renamed.
 - Scans `.php`, `.json`, `.js`, `.css`, `.md`, `.mdc`, and `.twig` files, plus `.env.example` (the sync example is not a scanned extension, so it is included explicitly, same idea as `.vscode/settings.json`).
 - Skips `vendor/`, `vendor-prefixed/`, `build/`, and `zip/` (important after Strauss: never rewrite prefixed dependencies).
 - Rewrites the Local theme-sync slug in `sync-theme.example.json` (`slug`), `.env.example` (commented `THEME_SLUG` / `THEME_SYNC_SLUG` / `THEME_SYNC_TARGET` and `THEME_COMPANY`), and the default in `node_scripts/sync-theme.js`. Does not edit `.env`, `.env.local`, or `sync-theme.local.json`. Those local values win when set.

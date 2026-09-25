@@ -172,6 +172,49 @@ export function shouldSkipPath(
 }
 
 /**
+ * Plans renames for immediate child directories whose names contain a slug.
+ *
+ * Only the directory basename is rewritten. Nested directories are left in place.
+ * A missing parent, an empty slug, or an unchanged slug yields an empty plan.
+ *
+ * @param {string} parentDir - Directory whose immediate children are scanned.
+ * @param {string} oldSlug - Slug substring currently in the directory name.
+ * @param {string} newSlug - Replacement slug.
+ * @returns {{ from: string, to: string, fromName: string, toName: string }[]} Planned renames, sorted by current name.
+ */
+export function planChildDirectoryRenames(parentDir, oldSlug, newSlug) {
+    if (!existsSync(parentDir) || !oldSlug || oldSlug === newSlug) {
+        return [];
+    }
+
+    /** @type {{ from: string, to: string, fromName: string, toName: string }[]} */
+    const planned = [];
+
+    for (const entry of readdirSync(parentDir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || !entry.name.includes(oldSlug)) {
+            continue;
+        }
+
+        const toName = entry.name.replaceAll(oldSlug, newSlug);
+
+        if (toName === entry.name) {
+            continue;
+        }
+
+        planned.push({
+            from: join(parentDir, entry.name),
+            to: join(parentDir, toName),
+            fromName: entry.name,
+            toName,
+        });
+    }
+
+    planned.sort((left, right) => left.fromName.localeCompare(right.fromName));
+
+    return planned;
+}
+
+/**
  * Collects text files that can be renamed safely.
  *
  * @param {string} directory - Directory to scan.

@@ -49,7 +49,7 @@ Required fields:
 
 -   `"$schema": "https://schemas.wp.org/trunk/block.json"`
 -   `"apiVersion": 3` (WordPress 6.9+)
--   `"name": "boilerplate/<slug>"`
+-   `"name": "boilerplate-theme/<slug>"`
 -   `"category": "boilerplate-theme"`
 -   `"textdomain": "boilerplate-theme"`
 -   `"editorScript": "boilerplate-theme-blocks-editor"` (shared handle; do not use file paths)
