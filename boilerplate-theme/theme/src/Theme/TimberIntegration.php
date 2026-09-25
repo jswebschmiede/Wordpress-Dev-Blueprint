@@ -122,10 +122,10 @@ class TimberIntegration {
 			'logo'            => ThemeOptions::get_option( 'logo', $empty_media ),
 			'logo_footer'     => ThemeOptions::get_option( 'logo_footer', $empty_media ),
 			'website_title'   => ThemeOptions::get_option( 'website_title', get_bloginfo( 'name' ) ),
-			'show_breadcrumb' => (bool) ThemeOptions::get_option( 'show_breadcrumb', true ),
-			'show_preloader'  => (bool) ThemeOptions::get_option( 'show_preloader', true ),
+			'show_breadcrumb' => $this->theme_option_flag( 'show_breadcrumb', true ),
+			'show_preloader'  => $this->theme_option_flag( 'show_preloader', true ),
 			'preloader_style' => (string) ThemeOptions::get_option( 'preloader_style', 'v1' ),
-			'show_backtotop'  => (bool) ThemeOptions::get_option( 'show_backtotop', true ),
+			'show_backtotop'  => $this->theme_option_flag( 'show_backtotop', true ),
 			'social'          => array(
 				'facebook'  => (string) ThemeOptions::get_option( 'facebook', '' ),
 				'twitter'   => (string) ThemeOptions::get_option( 'twitter', '' ),
@@ -150,6 +150,17 @@ class TimberIntegration {
 				esc_html__( 'Zur Startseite', 'boilerplate-theme' )
 			),
 		);
+	}
+
+	/**
+	 * Reads a Redux switch into a real boolean for Twig `{% if %}` checks.
+	 *
+	 * @param string $key           Option key.
+	 * @param bool   $default_value Value when Redux is unavailable or the option is blank.
+	 * @return bool Whether the switch is on.
+	 */
+	private function theme_option_flag( string $key, bool $default_value ): bool {
+		return ThemeOptions::cast_switch( ThemeOptions::get_option( $key, $default_value ) );
 	}
 
 	/**
