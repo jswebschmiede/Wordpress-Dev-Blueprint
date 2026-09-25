@@ -51,7 +51,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 ## Usage
 
-1. Symlink this folder into the Local WP `wp-content/plugins` (same pattern as the theme). Keep the repository in the WSL filesystem and develop with Remote – WSL. Map that path to a drive letter and point the link at `W:\boilerplate-theme\plugins\scf-boilerplate-plugin`. A target of `\\wsl.localhost\...` often leaves files unreadable. `ln -s` from WSL stores a Linux path Local’s PHP cannot open. Commands, including `mklink /D`, are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins). After `rename-plugin.js`, the target is the new plugin directory and the link name is that slug.
+1. Theme files are copied into Local with `pnpm run sync:theme` ([repository README](../../../README.md#sync-the-theme-to-local)). This plugin is not synced yet. Do not symlink it from `\\wsl.localhost\...` or with `ln -s`: Local’s PHP `is_readable()` is false for those targets.
 
 2. Install Composer dependencies (again after `rename-plugin.js`; that script skips `vendor-prefixed/`, including the prefixed project autoload):
 

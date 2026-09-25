@@ -146,8 +146,9 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 - Company must be kebab-case (e.g. `smart-media-24`) or PascalCase (e.g. `SmartMedia24`).
 - `--company` is required.
 - Only file contents are updated; folders are not renamed.
-- Scans `.php`, `.json`, `.js`, `.css`, `.md`, `.mdc`, and `.twig` files.
+- Scans `.php`, `.json`, `.js`, `.css`, `.md`, `.mdc`, and `.twig` files, plus `.env.example` (the sync example is not a scanned extension, so it is included explicitly, same idea as `.vscode/settings.json`).
 - Skips `vendor/`, `vendor-prefixed/`, `build/`, and `zip/` (important after Strauss: never rewrite prefixed dependencies).
+- Rewrites the Local theme-sync slug in `sync-theme.example.json` (`slug`), `.env.example` (commented `THEME_SYNC_SLUG` / `THEME_SYNC_TARGET`), and the default in `node_scripts/sync-theme.js`. Does not edit `.env`, `.env.local`, or `sync-theme.local.json`. Those local values win when set.
 - Rewrites `theme/composer.json` (`namespace_prefix`, `classmap_prefix`, PSR-4) and prefixed `use` lines, but leaves an existing `theme/vendor-prefixed/` on the old prefix. Run `composer install --working-dir=theme` afterwards (or `pnpm run composer:install:dev` once all rename scripts have finished) so Strauss and `bin/fix-prefixed-twig.php` rebuild it.
 
 ### 3.6 `node_scripts/rename-plugin.js`
@@ -230,6 +231,25 @@ node node_scripts/zip.js theme boilerplate-theme
 node node_scripts/zip.js plugin boilerplate-plugin
 ```
 
+### 3.9 `node_scripts/sync-theme.js`
+
+**Usage:** `node node_scripts/sync-theme.js [--watch] [--dry-run] [--optional] [--target=<path>] [--wp-content=<path>] [--slug=<slug>]`
+
+**What it does:** Copies the contents of `theme/` into a Local WP theme directory so `style.css` lands at `<destination>/style.css`. npm scripts: `sync:theme` (full copy), `development` (full copy once after the asset build, `--optional`), `watch:sync:theme` (initial copy, then changed files only; started by `pnpm run watch`).
+
+**Destination:** `--target` is that folder. Otherwise `<WP_CONTENT_PATH>/themes/<slug>`. Slug order: `--slug`, `THEME_SYNC_SLUG`, `sync-theme.local.json`, `sync-theme.example.json` (default `boilerplate-theme`), then the constant in this script. A full `THEME_SYNC_TARGET` is used only when no wp-content path is set. `--slug` with only a full target replaces the last folder name. `.env` overrides the example. `rename-theme.js` updates the example and the script default, not `.env`.
+
+**Excluded:** `node_modules/`, `.git/`, `vendor/` (unprefixed Composer), `*.map`, `.DS_Store`, `Thumbs.db`. **Included:** PHP, Twig, `style.css`, `style-editor.css`, built JS, block metadata, and `vendor-prefixed/`.
+
+**Exit codes:** `1` when the destination is missing (unless `--optional`, which prints a skip line and exits `0`), the path is a Windows drive path, or the target is the repo or a parent such as `themes/` or `wp-content/`. `--watch` keeps the process running after the initial sync.
+
+**Edge cases:**
+
+- Refuses to create a mistyped `wp-content` path; the directory must already exist. The theme folder under `themes/` is created.
+- Repeat runs skip files with the same size and mtime. A full sync also deletes destination files that were removed from `theme/`.
+- `--dry-run` prints the plan and does not start the watcher.
+- Plugin sync is not implemented.
+
 ## 4. Tailwind and CSS
 
 - Entry: `tailwind.css` with PostCSS (Tailwind 4, nesting, imports).
@@ -271,5 +291,5 @@ See [`../README.md` §Best practices](../README.md#best-practices) and [`../READ
 ## 7. Related documentation
 
 - [`../README.md`](../README.md) — package structure, rename workflow, pnpm/Composer commands, local WordPress usage
-- [`../../README.md`](../../README.md) — boilerplate overview, WSL development, theme and plugin symlinks into Local WP (map `\\wsl.localhost\...` to a drive letter)
+- [`../../README.md`](../../README.md) — boilerplate overview, WSL development, sync into Local WP (`is_readable()` is false for UNC and WSL symlinks)
 - [`../../cursor/skills/boilerplate-theme-create-block/SKILL.md`](../../cursor/skills/boilerplate-theme-create-block/SKILL.md) — block scaffolding checklist

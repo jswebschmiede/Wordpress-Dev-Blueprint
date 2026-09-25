@@ -4,7 +4,7 @@ Reusable WordPress theme and plugin development boilerplate with Gutenberg block
 
 ## Development environment
 
-This package is `boilerplate-theme/` (or your renamed slug) inside the repository. The repository stays in the WSL filesystem (`/home/...`); WordPress stays in a separate Local WP install on Windows. Open the repository with Cursor or VS Code **Remote – WSL** and run the tooling in Linux. Map the WSL path to a drive letter, then create the theme and plugin symlinks on Windows. Clone instructions and the symlink steps are in [`../README.md`](../README.md#wordpress-development-environment).
+This package is `boilerplate-theme/` (or your renamed slug) inside the repository. The repository stays in the WSL filesystem (`/home/...`); WordPress stays in a separate Local WP install on Windows. Open the repository with Cursor or VS Code **Remote – WSL** and run the tooling in Linux. Sync `theme/` into the Local `wp-content/themes/<slug>` folder. Clone instructions and the sync setup are in [`../README.md`](../README.md#sync-the-theme-to-local).
 
 ## Structure
 
@@ -16,6 +16,7 @@ repository root/
 │   └── skills/
 └── boilerplate-theme/
     ├── .editorconfig
+    ├── .env.example
     ├── .gitignore
     ├── .npmrc
     ├── .prettierignore
@@ -40,7 +41,9 @@ repository root/
     │   ├── copy-blocks.js
     │   ├── rename-theme.js
     │   ├── rename-plugin.js
+    │   ├── sync-theme.js
     │   └── zip.js
+    ├── sync-theme.example.json
     ├── javascript/
     │   ├── blocks.js
     │   ├── block-editor.js
@@ -77,7 +80,7 @@ For architecture, build pipeline details, and Node script behaviour, see [`docs/
 3. Run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)). Theme first, then plugin.
 4. Run `pnpm run composer:install:dev`. Strauss prefixes Timber and plugin dependencies with the namespaces the rename scripts wrote into each `composer.json`. Do this after the rename scripts, not before.
 5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-6. Symlink the theme and the plugins into the Local WP `wp-content`, then activate (see [Local usage](#local-usage)). Create those links on Windows with PowerShell or `mklink /D`. Activation requires step 4.
+6. Copy `.env.example` to `.env` and set `WP_CONTENT_PATH`, then sync the theme into Local WP (`pnpm run sync:theme` or `pnpm run watch`). Activate the theme after step 4. See [Local usage](#local-usage).
 7. From the repository root, copy `cursor/` to `.cursor/` after the rename scripts (see [Cursor AI configuration](#cursor-ai-configuration)).
 
 ## Prerequisites
@@ -112,6 +115,8 @@ node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
 ```
 
 `rename-theme.js` rewrites `extra.strauss.namespace_prefix` in `theme/composer.json` and the prefixed `use` lines in PHP and Twig. It skips `vendor/` and `vendor-prefixed/`. If Composer already ran, those directories still contain `CompanyName\BoilerplateTheme\…`. Run `pnpm run composer:install:dev` once, after the theme rename and any plugin rename. Do not run it before those scripts or between them.
+
+It also rewrites the theme-sync slug in `sync-theme.example.json`, `.env.example`, and the default in `node_scripts/sync-theme.js`, so the Local folder becomes `wp-content/themes/<new-slug>`. `.env` and `sync-theme.local.json` are not changed. A `THEME_SYNC_SLUG` or `THEME_SYNC_TARGET` set there still wins.
 
 For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 
@@ -170,10 +175,17 @@ pnpm run development
 pnpm run dev          # alias
 ```
 
-Watch CSS, JS, blocks, and plugin assets during active work:
+Watch CSS, JS, blocks, and plugin assets during active work. When a Local destination is configured, this also syncs `theme/` once, then copies only files that change:
 
 ```bash
 pnpm run watch
+```
+
+Sync the theme into Local without building (full copy). `pnpm run development` does this once after the asset build:
+
+```bash
+pnpm run sync:theme
+pnpm run sync:theme -- --slug=hair-salon
 ```
 
 ### Blocks
@@ -285,11 +297,17 @@ cp -a cursor .cursor
 
 ## Local usage
 
-Symlink the theme and both plugins into the Local WP `wp-content`. The link name is the slug WordPress loads. After a rename, the target uses the new package or plugin directory, and the link name is that slug.
+Sync `theme/` into the Local site. The destination folder name is the theme slug (`boilerplate-theme` until `rename-theme.js` runs). `style.css` lands at `wp-content/themes/<slug>/style.css`.
 
-Keep the repository under `/home/...` and open it with Remote – WSL. On Windows, map that path with `net use W: \\wsl.localhost\...` and point the symlink at `W:\...`. A target of `\\wsl.localhost\...` itself often leaves `style.css` unreadable. `ln -s` from WSL stores a Linux path Local’s PHP cannot open. Commands, including `mklink /D`, are in [`../README.md`](../README.md#symlink-theme-and-plugins).
+```bash
+cp .env.example .env
+# WP_CONTENT_PATH=/mnt/j/Local Sites/my-site/app/public/wp-content
+pnpm run sync:theme
+```
 
-Activate the theme and plugin(s) in WordPress after linking. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**.
+A symlink into WSL does not work: `\\wsl.localhost\...` and `ln -s` leave PHP `is_readable()` false, so WordPress treats the theme as incomplete. Paths, CLI overrides, and the watch behaviour are in [`../README.md`](../README.md#sync-the-theme-to-local).
+
+Plugin directories are not synced yet. Activate the theme after `vendor-prefixed/` exists. For the SCF demo plugin and example CPT fields, also activate **Secure Custom Fields**.
 
 The theme must load `theme/vendor-prefixed/autoload.php` from a Composer install that ran **after** the rename scripts. Otherwise `functions.php` shows an admin error that `vendor-prefixed` is missing, or `ThemeManager` shows that prefixed Timber was not found. Frontend templates, the example block, and the search form call Timber directly, so the front end fatals in both cases. The admin notice does not replace those calls.
 
@@ -322,7 +340,7 @@ Root-level tooling:
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
 | Plugin script empty in WordPress | `build/` missing or outdated | Run `build-plugin.js` for that plugin |
 | `pnpm install` before folder rename | Broken symlinks in `node_modules` | Rename package folder first, then run `pnpm install` |
-| Symlink target is `\\wsl.localhost\...`, or `ln -s` from WSL | Stylesheet is not readable; theme looks incomplete | Map the WSL path to a drive letter and symlink to `W:\...` ([root README](../README.md#symlink-theme-and-plugins)) |
+| Symlink or UNC path from Local into WSL | `is_readable()` is false; stylesheet is missing | Sync with `pnpm run sync:theme` ([root README](../README.md#sync-the-theme-to-local)) |
 | Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `cursor/` and `.vscode/settings.json` at the repository root) |
 
 ## Theme dependencies and scaffolding
@@ -392,4 +410,4 @@ For a step-by-step checklist, see [`../cursor/skills/boilerplate-theme-create-bl
 ## Related documentation
 
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — asset pipeline architecture, Node script API, Tailwind details
-- [`../README.md`](../README.md) — WSL clone, Local WP symlinks via a mapped drive letter
+- [`../README.md`](../README.md) — WSL clone, sync into Local WP `wp-content/themes/<slug>`

@@ -27,3 +27,8 @@ tailwind-intellisense.css
 
 # ZIP directory
 zip/
+
+# Local WordPress theme sync (copy from the example files)
+.env
+.env.local
+sync-theme.local.json

@@ -46,9 +46,7 @@ node node_scripts/rename-plugin.js <slug> \
 
 ## Local Usage
 
-Local WP stays outside the repository. Keep the repository in the WSL filesystem and open it with Remote – WSL. Symlink this plugin from Windows to a mapped drive (`W:\boilerplate-theme\plugins\boilerplate-plugin`), not to `\\wsl.localhost\...`. `ln -s` from WSL stores a Linux path Local’s PHP cannot open. A bare UNC target often leaves plugin files unreadable the same way a theme `style.css` does. Commands, including `mklink /D`, are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
-
-After `rename-plugin.js`, use the new plugin directory in the target and that slug as the link name.
+Theme files are copied into Local with `pnpm run sync:theme` ([repository README](../../../README.md#sync-the-theme-to-local)). This plugin is not synced yet; the same copy can be added later. Do not symlink it from `\\wsl.localhost\...` or with `ln -s`: Local’s PHP `is_readable()` is false for those targets.
 
 Install Composer dependencies in the plugin directory before activating the plugin:
 

@@ -4,6 +4,10 @@
  * Includes `cursor/` and `.vscode/settings.json` at the repository root.
  * `phpsab.standard` is `boilerplate-theme/phpcs.xml` relative to that root;
  * the `boilerplate-theme` segment is replaced with the new package slug.
+ *
+ * Theme sync: rewrites the destination slug in `sync-theme.example.json`,
+ * `.env.example`, and the default in `node_scripts/sync-theme.js`.
+ * `.env`, `.env.local`, and `sync-theme.local.json` are left unchanged.
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs';
@@ -27,6 +31,12 @@ const rootDir = join(__dirname, '..');
 const repoRoot = join(rootDir, '..');
 const cursorDir = join(repoRoot, 'cursor');
 const vscodeSettingsFile = join(repoRoot, '.vscode', 'settings.json');
+const envExampleFile = join(rootDir, '.env.example');
+const ignoredSyncOverrides = new Set([
+    join(rootDir, '.env'),
+    join(rootDir, '.env.local'),
+    join(rootDir, 'sync-theme.local.json'),
+]);
 const args = process.argv.slice(2);
 const slug = args.find((arg) => !arg.startsWith('--'));
 const isDryRun = args.includes('--dry-run');
@@ -73,8 +83,9 @@ const files = [
         ...collectTextFiles(rootDir, '', defaultSkippedDirectories, skippedRelativeDirectories),
         ...collectTextFiles(cursorDir),
         ...(existsSync(vscodeSettingsFile) ? [vscodeSettingsFile] : []),
+        ...(existsSync(envExampleFile) ? [envExampleFile] : []),
     ]),
-];
+].filter((file) => !ignoredSyncOverrides.has(file));
 const changedFiles = [];
 
 console.log('Theme rename values:');
