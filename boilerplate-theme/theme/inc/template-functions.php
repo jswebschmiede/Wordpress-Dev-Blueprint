@@ -3,6 +3,7 @@
 declare( strict_types=1 );
 
 use CompanyName\BoilerplateTheme\Theme\ThemeOptions;
+use CompanyName\BoilerplateTheme\Theme\TimberIntegration;
 use CompanyName\BoilerplateTheme\Timber\Timber;
 
 /**
@@ -192,6 +193,10 @@ function boilerplate_theme_highlight_search_term( string $text, string $search_t
  * @return string Custom search form markup.
  */
 function boilerplate_theme_filter_search_form( string $form, array $args = array() ): string {
+	if ( ! class_exists( TimberIntegration::class ) || ! TimberIntegration::is_available() ) {
+		return $form;
+	}
+
 	unset( $form );
 
 	return (string) Timber::compile(

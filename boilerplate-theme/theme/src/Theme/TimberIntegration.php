@@ -11,7 +11,7 @@ use CompanyName\BoilerplateTheme\Twig\TwigFunction;
 \defined( 'ABSPATH' ) || exit;
 
 /**
- * Bootstraps Timber and enriches the global Twig context.
+ * Bootstraps Timber, enriches the global Twig context, and renders a safe frontend fallback when Timber is missing.
  */
 class TimberIntegration {
 	/**
@@ -33,6 +33,87 @@ class TimberIntegration {
 	 */
 	public static function is_available(): bool {
 		return class_exists( Timber::class );
+	}
+
+	/**
+	 * Returns the admin-facing explanation when prefixed Timber cannot be loaded.
+	 *
+	 * @return string Plain-text guidance. Callers must escape before printing.
+	 */
+	public static function get_missing_dependency_message(): string {
+		$autoload = get_template_directory() . '/vendor-prefixed/autoload.php';
+
+		if ( ! file_exists( $autoload ) ) {
+			return \__(
+				'vendor-prefixed fehlt. Bitte führen Sie „composer install“ im Theme-Verzeichnis aus, um die Abhängigkeiten (inkl. Timber) zu generieren.',
+				'boilerplate-theme'
+			);
+		}
+
+		return \__(
+			'Timber wurde in vendor-prefixed nicht gefunden. Bitte führen Sie „composer install“ im Theme-Verzeichnis aus, damit Strauss Timber prefixiert. Ohne Timber können die Twig-Templates nicht gerendert werden.',
+			'boilerplate-theme'
+		);
+	}
+
+	/**
+	 * Prints a minimal HTML document when Twig cannot be rendered.
+	 *
+	 * Administrators see the same guidance as the admin notice. Visitors see a generic message.
+	 *
+	 * @return void
+	 */
+	public static function render_unavailable_fallback(): void {
+		$show_details = \function_exists( 'current_user_can' ) && current_user_can( 'manage_options' );
+		$message      = $show_details
+			? self::get_missing_dependency_message()
+			: \__( 'Diese Website ist vorübergehend nicht verfügbar.', 'boilerplate-theme' );
+		$title        = $show_details
+			? \__( 'Theme-Abhängigkeit fehlt', 'boilerplate-theme' )
+			: \__( 'Vorübergehend nicht verfügbar', 'boilerplate-theme' );
+		$language     = \function_exists( 'get_bloginfo' ) ? (string) get_bloginfo( 'language' ) : '';
+
+		if ( '' === $language ) {
+			$language = 'en';
+		}
+
+		if ( ! headers_sent() ) {
+			if ( \function_exists( 'status_header' ) ) {
+				status_header( 503 );
+			}
+
+			if ( \function_exists( 'nocache_headers' ) ) {
+				nocache_headers();
+			}
+		}
+
+		echo '<!DOCTYPE html><html lang="' . esc_attr( $language ) . '"><head><meta charset="utf-8">';
+		echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+		echo '<meta name="robots" content="noindex">';
+		echo '<title>' . esc_html( $title ) . '</title></head><body>';
+
+		if ( $show_details ) {
+			echo '<p><strong>Boilerplate Theme:</strong> ' . esc_html( $message ) . '</p>';
+		} else {
+			echo '<p>' . esc_html( $message ) . '</p>';
+		}
+
+		echo '</body></html>';
+	}
+
+	/**
+	 * Renders the frontend fallback and signals template stubs to stop.
+	 *
+	 * @return bool True when Timber is unavailable and the fallback was printed.
+	 */
+	public static function bail_if_unavailable(): bool {
+		if ( self::is_available() ) {
+			return false;
+		}
+
+		self::render_unavailable_fallback();
+
+		return true;
 	}
 
 	/**

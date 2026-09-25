@@ -70,10 +70,7 @@ class ThemeManager {
 					}
 
 					echo '<div class="notice notice-error"><p><strong>Boilerplate Theme:</strong> ';
-					echo esc_html__(
-						'Timber wurde in vendor-prefixed nicht gefunden. Bitte führen Sie „composer install“ im Theme-Verzeichnis aus, damit Strauss Timber prefixiert. Ohne Timber können die Twig-Templates nicht gerendert werden.',
-						'boilerplate-theme'
-					);
+					echo esc_html( TimberIntegration::get_missing_dependency_message() );
 					echo '</p></div>';
 				},
 			);

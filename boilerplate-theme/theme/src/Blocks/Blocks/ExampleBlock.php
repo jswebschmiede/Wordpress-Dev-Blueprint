@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace CompanyName\BoilerplateTheme\Blocks\Blocks;
 
 use CompanyName\BoilerplateTheme\Blocks\BlockInterface;
+use CompanyName\BoilerplateTheme\Theme\TimberIntegration;
 use CompanyName\BoilerplateTheme\Timber\Timber;
 
 \defined( 'ABSPATH' ) || exit;
@@ -23,6 +24,16 @@ class ExampleBlock implements BlockInterface {
 	 */
 	public function render( array $attributes, string $content, ?\WP_Block $block = null ): string {
 		unset( $content, $block );
+
+		if ( ! TimberIntegration::is_available() ) {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return '';
+			}
+
+			return '<p><strong>Boilerplate Theme:</strong> '
+				. esc_html( TimberIntegration::get_missing_dependency_message() )
+				. '</p>';
+		}
 
 		$attributes = wp_parse_args(
 			$attributes,

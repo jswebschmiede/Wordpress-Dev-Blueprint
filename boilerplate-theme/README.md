@@ -329,7 +329,7 @@ Activate the theme after `vendor-prefixed/` exists. For the SCF demo plugin and 
 
 Plugin sync uses the same `WP_CONTENT_PATH`. Set `PLUGIN_SLUGS` to the folder names that should be built and copied (see [Plugin JavaScript](#plugin-javascript)). The files land in `wp-content/plugins/<slug>/`. Leave `PLUGIN_SLUGS` commented out to skip plugin build, watch, and sync.
 
-The theme must load `theme/vendor-prefixed/autoload.php` from a Composer install that ran **after** the rename scripts. Otherwise `functions.php` shows an admin error that `vendor-prefixed` is missing, or `ThemeManager` shows that prefixed Timber was not found. Frontend templates, the example block, and the search form call Timber directly, so the front end fatals in both cases. The admin notice does not replace those calls.
+The theme must load `theme/vendor-prefixed/autoload.php` from a Composer install that ran **after** the rename scripts. Otherwise `functions.php` shows an admin error that `vendor-prefixed` is missing, or `ThemeManager` shows that prefixed Timber was not found. The front end does not fatal: template stubs print a short HTML notice for administrators and a generic message for visitors, the example block is empty for visitors, and the search form keeps WordPress core markup.
 
 Root-level tooling:
 
@@ -354,8 +354,8 @@ Root-level tooling:
 | Forgot `copy-blocks` after `block.json` edit | WordPress loads stale metadata | Run `development:copy-blocks` |
 | New `@wordpress/*` import in blocks bundle | Resolve/bundle errors | Extend `wpGlobals` in `build-blocks.js` |
 | Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP classes in `theme/src/` and Twig in `theme/views/blocks/`; bundle JS via `javascript/` and `blocks/` |
-| `composer install` in `theme/` before `rename-theme.js` | Admin notice that Timber is missing from `vendor-prefixed`; front end fatals | Run `pnpm run composer:install:dev` again after the rename scripts |
-| Theme activated without `theme/vendor-prefixed/` | Admin notice that `vendor-prefixed` is missing; front end fatals | `composer install --working-dir=theme` before activation |
+| `composer install` in `theme/` before `rename-theme.js` | Admin notice that Timber is missing from `vendor-prefixed`; front end shows the Timber fallback instead of Twig | Run `pnpm run composer:install:dev` again after the rename scripts |
+| Theme activated without `theme/vendor-prefixed/` | Admin notice that `vendor-prefixed` is missing; front end shows the Timber fallback instead of Twig | `composer install --working-dir=theme` before activation |
 | `pnpm run zip:theme` before the theme Composer install | ZIP has no prefixed Timber | `pnpm run bundle` runs production Composer installs, then zips. `zip:theme` alone archives `theme/` as it is |
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
 | Plugin script empty in WordPress | `build/` missing or outdated | `pnpm run development:plugins --slug=<folder>` and sync that slug |
@@ -384,7 +384,7 @@ The theme renders all frontend markup with [Timber 2](https://timber.github.io/d
 | `views/partials/*.twig` | Reusable includes (header, footer, menus, teasers, pagination, breadcrumb, search, preloader) |
 | `views/blocks/*.twig` | Frontend markup of dynamic Gutenberg blocks |
 
-Root templates (`index.php`, `page.php`, `single.php`, `archive.php`, `404.php`, `templates/template-search.php`) contain no markup: they build the context and call `Timber::render()`. More specific Twig files are picked up automatically where the stub lists fallbacks (e.g. `templates/single-{post_type}.twig`, `templates/page-{slug}.twig`, `templates/archive-{post_type}.twig`).
+Root templates (`index.php`, `page.php`, `single.php`, `archive.php`, `404.php`, `templates/template-search.php`) contain no markup: they build the context and call `Timber::render()`. If prefixed Timber is unavailable, each stub returns early via `boilerplate_theme_bail_if_timber_unavailable()` and prints a minimal HTML fallback instead. More specific Twig files are picked up automatically where the stub lists fallbacks (e.g. `templates/single-{post_type}.twig`, `templates/page-{slug}.twig`, `templates/archive-{post_type}.twig`).
 
 **Imports:** Root templates and `inc/` are outside the Strauss autoload scope, so their call sites are not rewritten. Always import the prefixed class: `use CompanyName\BoilerplateTheme\Timber\Timber;`.
 
