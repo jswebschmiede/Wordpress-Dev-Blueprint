@@ -41,7 +41,7 @@ cp .env.example .env
 
 Set `WP_CONTENT_PATH` in `.env` to the WSL path of that site’s `wp-content`. `.env` is gitignored. The sync copies the contents of `theme/` into `wp-content/themes/<slug>/`.
 
-The default slug is `boilerplate-theme` (the constant in `node_scripts/sync-theme.js`). `rename-theme.js` rewrites that default and the commented examples in `.env.example`. `THEME_SLUG`, `THEME_SYNC_SLUG` (alias), or `THEME_SYNC_TARGET` in `.env` or `.env.local` are not rewritten and win over the default.
+The default slug is `boilerplate-theme` (the constant in `node_scripts/sync-theme.js`). `pnpm run rename:theme` reads `THEME_SLUG` and `THEME_COMPANY` from `.env` and takes no slug or company arguments. It rewrites that default and the commented examples in `.env.example`. `THEME_SLUG`, `THEME_SYNC_SLUG` (alias), or `THEME_SYNC_TARGET` in `.env` or `.env.local` are not rewritten and win over the default.
 
 ```bash
 pnpm run sync:theme

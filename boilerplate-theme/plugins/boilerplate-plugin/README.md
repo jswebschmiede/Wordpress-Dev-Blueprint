@@ -23,15 +23,14 @@ boilerplate-plugin/
 
 ## Rename Checklist
 
-Replace these values when starting a new plugin (or run `rename-plugin.js` from the package root):
+Replace these values when starting a new plugin, or from the package root run `pnpm run rename:plugin`. That script does not read the new slug or company from `.env` (`PLUGIN_SLUGS` is only for build, watch, and sync). pnpm forwards the arguments; do not insert an extra `--` before them:
 
 ```bash
-node node_scripts/rename-plugin.js <slug> \
+pnpm run rename:plugin <slug> \
   --plugin boilerplate-plugin \
   --old-slug boilerplate-plugin \
   --company <Company> \
-  --namespace <Namespace> \
-  --dry-run
+  --namespace <Namespace>
 ```
 
 - `Boilerplate Plugin` -> your plugin display name.
@@ -62,7 +61,7 @@ Install Composer dependencies in the plugin directory before activating the plug
 composer install --working-dir=plugins/boilerplate-plugin
 ```
 
-This runs [Strauss](https://github.com/BrianHenryIE/strauss) automatically and generates `vendor-prefixed/` with prefixed runtime dependencies. WordPress loads `vendor-prefixed/autoload.php` at runtime. If `rename-plugin.js` already ran, run this install afterwards: the rename script skips `vendor-prefixed/`.
+This runs [Strauss](https://github.com/BrianHenryIE/strauss) automatically and generates `vendor-prefixed/` with prefixed runtime dependencies. WordPress loads `vendor-prefixed/autoload.php` at runtime. If `pnpm run rename:plugin` already ran, run this install afterwards: the rename script skips `vendor-prefixed/`.
 
 Preview prefixing without changes:
 

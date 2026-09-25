@@ -10,8 +10,8 @@
  * Theme sync: rewrites the destination slug in `.env.example` and the default
  * in `node_scripts/sync-theme.js`. `.env` and `.env.local` are left unchanged.
  *
- * Slug and company come from the CLI or from the environment
- * (process, then `.env.local`, then `.env`). CLI wins.
+ * Run via `pnpm run rename:theme`. Slug and company come from the environment
+ * (process, then `.env.local`, then `.env`). A CLI value still wins when passed.
  * Slug keys: `THEME_SLUG`, then `THEME_SYNC_SLUG`.
  * Company key: `THEME_COMPANY`.
  */
@@ -53,10 +53,10 @@ const isDryRun = args.includes('--dry-run');
 
 const skippedRelativeDirectories = new Set([join('theme', 'js')]);
 
-const usageMessage = `Usage: node node_scripts/rename-theme.js [<slug>] [--company <company>] [--dry-run]
-Slug: <slug>, THEME_SLUG, or THEME_SYNC_SLUG.
-Company: --company <company> or THEME_COMPANY.
-A CLI value overrides the process environment, .env.local, and .env.`;
+const usageMessage = `Usage: pnpm run rename:theme [--dry-run]
+Set THEME_SLUG (or THEME_SYNC_SLUG) and THEME_COMPANY in .env.
+.env.local overrides .env. The process environment overrides both.
+A positional <slug> or --company overrides those values.`;
 
 /**
  * Reads KEY=VALUE pairs from a dotenv-style file.
@@ -213,11 +213,11 @@ function assertRenameInputs(slugValue, companyValue) {
     const missing = [];
 
     if (!slugValue) {
-        missing.push('theme slug (<slug>, THEME_SLUG, or THEME_SYNC_SLUG)');
+        missing.push('theme slug (THEME_SLUG or THEME_SYNC_SLUG)');
     }
 
     if (!companyValue) {
-        missing.push('company (--company or THEME_COMPANY)');
+        missing.push('company (THEME_COMPANY)');
     }
 
     if (missing.length === 0) {

@@ -79,10 +79,10 @@ For architecture, build pipeline details, and Node script behaviour, see [`docs/
 
 1. Clone the blueprint into the WSL filesystem and keep WordPress in a separate Local WP install (see [`../README.md`](../README.md#wordpress-development-environment)). Open the repository with Remote – WSL.
 2. Rename this folder to your slug, then run `pnpm install` (see [Prerequisites](#prerequisites)).
-3. Run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)). Theme first, then plugin.
+3. Copy `.env.example` to `.env`, set `THEME_SLUG` and `THEME_COMPANY`, then run the rename scripts (see [Rename theme placeholders](#rename-theme-placeholders)). Theme first (`pnpm run rename:theme`), then plugin (`pnpm run rename:plugin`).
 4. Run `pnpm run composer:install:dev`. Strauss prefixes Timber and plugin dependencies with the namespaces the rename scripts wrote into each `composer.json`. Do this after the rename scripts, not before.
 5. Build development assets: `pnpm run development` (or start `pnpm run watch` during active work).
-6. Copy `.env.example` to `.env` and set `WP_CONTENT_PATH`. Uncomment `PLUGIN_SLUGS` when a plugin should be built and copied into Local. Sync with `pnpm run sync:theme` or `pnpm run watch`. Activate the theme after step 4. See [Local usage](#local-usage).
+6. In `.env`, set `WP_CONTENT_PATH`. Uncomment `PLUGIN_SLUGS` when a plugin should be built and copied into Local. Sync with `pnpm run sync:theme` or `pnpm run watch`. Activate the theme after step 4. See [Local usage](#local-usage).
 7. From the repository root, copy `cursor/` to `.cursor/` after the rename scripts (see [Cursor AI configuration](#cursor-ai-configuration)).
 
 ## Prerequisites
@@ -105,55 +105,54 @@ Run Composer only after the rename scripts. `pnpm run composer:install:dev` inst
 
 ## Rename theme placeholders
 
-Rename the package folder **before** `pnpm install`, then run the rename scripts to replace placeholder strings in file contents.
+Rename the package folder **before** `pnpm install`, then replace placeholder strings. `pnpm run rename:theme` reads the slug and company from `.env`. Do not pass them as arguments.
 
 ```bash
 # repository root
 mv boilerplate-theme sw-soltau
 cd sw-soltau
 pnpm install
-node node_scripts/rename-theme.js sw-soltau --company SmartMedia24 --dry-run
-node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
+cp .env.example .env
 ```
 
-Slug and company can also come from `.env` or `.env.local` (`THEME_SLUG` or its alias `THEME_SYNC_SLUG`, and `THEME_COMPANY`). CLI arguments override those values. The process environment is checked for every slug key before the files, so a shell `THEME_SYNC_SLUG` still overrides `THEME_SLUG` in `.env`. Within one key, the process environment wins over `.env.local`, which wins over `.env`. If slug or company is still missing, the script exits with an error.
+In `.env`, uncomment and set:
+
+```dotenv
+THEME_SLUG=sw-soltau
+THEME_COMPANY=SmartMedia24
+```
+
+`THEME_SYNC_SLUG` is an alias of `THEME_SLUG`. `.env.local` overrides `.env`. The process environment overrides both, and a shell `THEME_SYNC_SLUG` still overrides `THEME_SLUG` in `.env`. If slug or company is still missing, the script exits with an error.
+
+From the package directory:
 
 ```bash
-# .env or .env.local:
-# THEME_SLUG=sw-soltau
-# THEME_COMPANY=SmartMedia24
-node node_scripts/rename-theme.js --dry-run
-node node_scripts/rename-theme.js
+pnpm run rename:theme
 ```
 
-`rename-theme.js` rewrites `extra.strauss.namespace_prefix` in `theme/composer.json` and the prefixed `use` lines in PHP and Twig. It skips `vendor/` and `vendor-prefixed/`. If Composer already ran, those directories still contain `CompanyName\BoilerplateTheme\…`. Run `pnpm run composer:install:dev` once, after the theme rename and any plugin rename. Do not run it before those scripts or between them.
+`pnpm run rename:theme` rewrites `extra.strauss.namespace_prefix` in `theme/composer.json` and the prefixed `use` lines in PHP and Twig. It skips `vendor/` and `vendor-prefixed/`. If Composer already ran, those directories still contain `CompanyName\BoilerplateTheme\…`. Run `pnpm run composer:install:dev` once, after the theme rename and any plugin rename. Do not run it before those scripts or between them.
 
 It also rewrites the theme-sync slug in `.env.example` (commented `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_SYNC_TARGET`) and the default in `node_scripts/sync-theme.js`, so the Local folder becomes `wp-content/themes/<new-slug>`. `.env` and `.env.local` are not changed. A slug already set there keeps the sync destination.
 
-For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
+For `sw-soltau` with `THEME_COMPANY=SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 
 The script replaces placeholders in this package, in `cursor/` at the repository root (rules and skills), and in `.vscode/settings.json` (`phpsab.standard`). That setting is `boilerplate-theme/phpcs.xml` when the repository root is the workspace; the script updates the `boilerplate-theme` segment to the new slug. It also renames directories under `cursor/skills/` whose names contain `boilerplate-theme` (for example `boilerplate-theme-create-block`). Other folders are not renamed.
 
 ### Rename plugin
 
-Run **`rename-theme.js` first**, then **`rename-plugin.js`** (both after `pnpm install`):
+Run **`pnpm run rename:theme` first**, then **`pnpm run rename:plugin`** (both after `pnpm install`).
+
+`pnpm run rename:plugin` does not read a slug or company from `.env`. `PLUGIN_SLUGS` only selects plugins for build, watch, and sync. Pass the new slug and the flags the script requires. pnpm forwards those arguments; do not insert an extra `--` before them:
 
 ```bash
-node node_scripts/rename-theme.js sw-soltau --company SmartMedia24
-node node_scripts/rename-plugin.js mvg-aktuell \
-  --plugin boilerplate-plugin \
-  --old-slug boilerplate-plugin \
-  --company SmartMedia24 \
-  --namespace MvgAktuell \
-  --dry-run
-node node_scripts/rename-plugin.js mvg-aktuell \
+pnpm run rename:plugin mvg-aktuell \
   --plugin boilerplate-plugin \
   --old-slug boilerplate-plugin \
   --company SmartMedia24 \
   --namespace MvgAktuell
 ```
 
-For the SCF alternative, use `--plugin scf-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without arguments prints the required parameters.
+For the SCF alternative, use `--plugin scf-boilerplate-plugin` (content placeholders stay `--old-slug boilerplate-plugin`). Calling the script without the required slug and `--company` prints the missing parameters.
 
 This renames `plugins/<plugin>/` to `plugins/<slug>/` and updates plugin-specific placeholders (including company and namespace). Composer, zip, and sourcemap script names in `package.json` are updated as whole tokens, so renaming `boilerplate-plugin` leaves `scf-boilerplate-plugin` intact. The commented `PLUGIN_SLUGS` example in `.env.example` is updated the same way, one comma-separated field at a time. `.env` and `.env.local` are left unchanged. Then run `pnpm run composer:install:dev` so each `vendor-prefixed/` autoloader matches the new namespaces.
 
@@ -167,7 +166,7 @@ If you rename manually, replace:
 - `companyname` -> your Composer vendor and author slug (lowercase, e.g. `smartmedia24`).
 - `https://companyname.example` -> your company URL placeholder (update the domain after rename).
 - `CompanyName\\BoilerplateTheme\\` -> your full PSR-4 namespace root.
-- `BoilerplateTheme` -> your PHP namespace segment (replaced by `rename-theme.js`).
+- `BoilerplateTheme` -> your PHP namespace segment (replaced by `pnpm run rename:theme`).
 - `Boilerplate Theme` -> your display name.
 - `BOILERPLATE_THEME_` -> your constant prefix.
 - `boilerplate/example-block` -> your block namespace.
@@ -290,7 +289,7 @@ Runtime Composer packages are **prefixed with [Strauss](https://github.com/Brian
 - Prefixed output: `vendor-prefixed/` (generated on `composer install`, gitignored)
 - Strauss PHAR: downloaded via `bin/download-strauss.php` (PHP cURL, then `file_get_contents`, so a failed download cannot leave an empty PHAR)
 - `require-dev` packages are **not** prefixed
-- After `rename-theme.js` or `rename-plugin.js`, run `pnpm run composer:install:dev` (or `composer install --working-dir=theme` and `composer install --working-dir=plugins/<slug>`). The rename scripts skip `vendor-prefixed/`, so an install from before the rename leaves Timber and other packages on the placeholder namespace.
+- After `pnpm run rename:theme` or `pnpm run rename:plugin`, run `pnpm run composer:install:dev` (or `composer install --working-dir=theme` and `composer install --working-dir=plugins/<slug>`). The rename scripts skip `vendor-prefixed/`, so an install from before the rename leaves Timber and other packages on the placeholder namespace.
 - The theme ships **Timber 2** (`timber/timber` `^2.0`, including Twig) as its only runtime dependency, listed in `extra.strauss.packages`, prefixed to `CompanyName\BoilerplateTheme\Timber\…` / `CompanyName\BoilerplateTheme\Twig\…`
 - `update_call_sites: true` rewrites call sites only under the Composer autoload directory (`theme/src/`, plugin `includes/`). Root templates and `inc/` are not rewritten.
 - `bin/fix-prefixed-twig.php` runs in the theme `prefix-namespaces` script after `strauss.phar` (not on `prefix-namespaces:dry-run`, and not in the plugins). Strauss does not rewrite the class names Twig writes into compiled templates (`use Twig\Template;` etc.), which would otherwise break every render with `Class "Twig\Template" not found`
@@ -315,10 +314,10 @@ cp -a cursor .cursor
 
 ## Local usage
 
-Sync `theme/` into the Local site. The destination folder name is the theme slug (`boilerplate-theme` until `rename-theme.js` runs). `style.css` lands at `wp-content/themes/<slug>/style.css`.
+Sync `theme/` into the Local site. The destination folder name is the theme slug (`boilerplate-theme` until `pnpm run rename:theme` runs). `style.css` lands at `wp-content/themes/<slug>/style.css`.
 
 ```bash
-cp .env.example .env
+# .env is created in the rename step. If it is missing: cp .env.example .env
 # WP_CONTENT_PATH=/mnt/j/Local Sites/my-site/app/public/wp-content
 pnpm run sync:theme
 ```
@@ -345,7 +344,7 @@ Root-level tooling:
 - Use **`apiVersion`: 3** for new blocks (iframe editor compatibility).
 - For dynamic blocks, implement PHP `render` and keep `save` minimal (`null` or inner blocks content only).
 - Align **`editorScript`** with the theme's registered handle; avoid raw file paths in `block.json` where the theme expects a handle.
-- Run **`rename-theme.js`**, then **`rename-plugin.js`**, then **`pnpm run composer:install:dev`**, before copying `cursor/` to `.cursor/` at the repository root when starting a new project.
+- Run **`pnpm run rename:theme`**, then **`pnpm run rename:plugin`**, then **`pnpm run composer:install:dev`**, before copying `cursor/` to `.cursor/` at the repository root when starting a new project. `rename:theme` reads `THEME_SLUG` and `THEME_COMPANY` from `.env`.
 
 ## Common pitfalls
 
@@ -354,14 +353,14 @@ Root-level tooling:
 | Forgot `copy-blocks` after `block.json` edit | WordPress loads stale metadata | Run `development:copy-blocks` |
 | New `@wordpress/*` import in blocks bundle | Resolve/bundle errors | Extend `wpGlobals` in `build-blocks.js` |
 | Expecting full block folder under `theme/blocks/` | Only `block.json` is copied | Keep PHP classes in `theme/src/` and Twig in `theme/views/blocks/`; bundle JS via `javascript/` and `blocks/` |
-| `composer install` in `theme/` before `rename-theme.js` | Admin notice that Timber is missing from `vendor-prefixed`; front end shows the Timber fallback instead of Twig | Run `pnpm run composer:install:dev` again after the rename scripts |
+| `composer install` in `theme/` before `pnpm run rename:theme` | Admin notice that Timber is missing from `vendor-prefixed`; front end shows the Timber fallback instead of Twig | Run `pnpm run composer:install:dev` again after the rename scripts |
 | Theme activated without `theme/vendor-prefixed/` | Admin notice that `vendor-prefixed` is missing; front end shows the Timber fallback instead of Twig | `composer install --working-dir=theme` before activation |
 | `pnpm run zip:theme` before the theme Composer install | ZIP has no prefixed Timber | `pnpm run bundle` runs production Composer installs, then zips. `zip:theme` alone archives `theme/` as it is |
 | `view.js` present but not enqueued | Missing frontend behaviour | Register/enqueue handle in PHP; reference in `block.json` |
 | Plugin script empty in WordPress | `build/` missing or outdated | `pnpm run development:plugins --slug=<folder>` and sync that slug |
 | `pnpm install` before folder rename | Broken symlinks in `node_modules` | Rename package folder first, then run `pnpm install` |
 | Symlink or UNC path from Local into WSL | `is_readable()` is false; stylesheet is missing | Sync with `pnpm run sync:theme` ([root README](../README.md#sync-the-theme-to-local)) |
-| Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `rename-theme.js` (includes `cursor/` and `.vscode/settings.json` at the repository root) |
+| Renamed project but Cursor rules unchanged | AI uses old `boilerplate-theme` paths | Run `pnpm run rename:theme` (includes `cursor/` and `.vscode/settings.json` at the repository root) |
 
 ## Theme dependencies and scaffolding
 
