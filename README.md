@@ -41,13 +41,13 @@ cp .env.example .env
 
 Set `WP_CONTENT_PATH` in `.env` to the WSL path of that site’s `wp-content`. `.env` is gitignored. The sync copies the contents of `theme/` into `wp-content/themes/<slug>/`.
 
-The default slug is `boilerplate-theme` (`sync-theme.example.json`). `rename-theme.js` rewrites that committed slug (and the commented example in `.env.example`). `THEME_SLUG` or `THEME_SYNC_SLUG` (alias) or `THEME_SYNC_TARGET` in `.env`, and `sync-theme.local.json`, are not rewritten and win over the example.
+The default slug is `boilerplate-theme` (the constant in `node_scripts/sync-theme.js`). `rename-theme.js` rewrites that default and the commented examples in `.env.example`. `THEME_SLUG`, `THEME_SYNC_SLUG` (alias), or `THEME_SYNC_TARGET` in `.env` or `.env.local` are not rewritten and win over the default.
 
 ```bash
 pnpm run sync:theme
-pnpm run sync:theme -- --dry-run
-pnpm run sync:theme -- --slug=hair-salon
-pnpm run sync:theme -- --target="/mnt/j/Local Sites/my-site/app/public/wp-content/themes/hair-salon"
+pnpm run sync:theme --dry-run
+pnpm run sync:theme --slug=hair-salon
+pnpm run sync:theme --target="/mnt/j/Local Sites/my-site/app/public/wp-content/themes/hair-salon"
 ```
 
 `--target` is the theme folder itself (`style.css` goes directly inside it). `--slug` with `WP_CONTENT_PATH` uses `…/wp-content/themes/<slug>`. When both a full target and a wp-content path are set, the wp-content path plus slug is used. If only `THEME_SYNC_TARGET` is set, `--slug` renames that folder.

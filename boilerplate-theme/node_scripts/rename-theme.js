@@ -7,9 +7,8 @@
  * Skill directories under `cursor/skills/` whose names contain `boilerplate-theme`
  * are renamed to the new slug (for example `boilerplate-theme-create-block`).
  *
- * Theme sync: rewrites the destination slug in `sync-theme.example.json`,
- * `.env.example`, and the default in `node_scripts/sync-theme.js`.
- * `.env`, `.env.local`, and `sync-theme.local.json` are left unchanged.
+ * Theme sync: rewrites the destination slug in `.env.example` and the default
+ * in `node_scripts/sync-theme.js`. `.env` and `.env.local` are left unchanged.
  *
  * Slug and company come from the CLI or from the environment
  * (process, then `.env.local`, then `.env`). CLI wins.
@@ -42,9 +41,11 @@ const cursorDir = join(repoRoot, 'cursor');
 const skillsDir = join(cursorDir, 'skills');
 const vscodeSettingsFile = join(repoRoot, '.vscode', 'settings.json');
 const envExampleFile = join(rootDir, '.env.example');
+// Runtime sync reads env files only. Leftover JSON sync files are not rewritten.
 const ignoredSyncOverrides = new Set([
     join(rootDir, '.env'),
     join(rootDir, '.env.local'),
+    join(rootDir, 'sync-theme.example.json'),
     join(rootDir, 'sync-theme.local.json'),
 ]);
 const args = process.argv.slice(2);

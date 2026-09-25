@@ -46,7 +46,6 @@ repository root/
     │   ├── sync-theme.js
     │   ├── sync-plugin.js
     │   └── zip.js
-    ├── sync-theme.example.json
     ├── javascript/
     │   ├── blocks.js
     │   ├── block-editor.js
@@ -129,7 +128,7 @@ node node_scripts/rename-theme.js
 
 `rename-theme.js` rewrites `extra.strauss.namespace_prefix` in `theme/composer.json` and the prefixed `use` lines in PHP and Twig. It skips `vendor/` and `vendor-prefixed/`. If Composer already ran, those directories still contain `CompanyName\BoilerplateTheme\…`. Run `pnpm run composer:install:dev` once, after the theme rename and any plugin rename. Do not run it before those scripts or between them.
 
-It also rewrites the theme-sync slug in `sync-theme.example.json`, `.env.example` (commented `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_SYNC_TARGET`), and the default in `node_scripts/sync-theme.js`, so the Local folder becomes `wp-content/themes/<new-slug>`. `.env`, `.env.local`, and `sync-theme.local.json` are not changed. A slug already set there keeps the sync destination.
+It also rewrites the theme-sync slug in `.env.example` (commented `THEME_SLUG`, `THEME_SYNC_SLUG`, and `THEME_SYNC_TARGET`) and the default in `node_scripts/sync-theme.js`, so the Local folder becomes `wp-content/themes/<new-slug>`. `.env` and `.env.local` are not changed. A slug already set there keeps the sync destination.
 
 For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 
@@ -198,7 +197,7 @@ Sync the theme into Local without building (full copy). `pnpm run development` d
 
 ```bash
 pnpm run sync:theme
-pnpm run sync:theme -- --slug=hair-salon
+pnpm run sync:theme --slug=hair-salon
 ```
 
 ### Blocks

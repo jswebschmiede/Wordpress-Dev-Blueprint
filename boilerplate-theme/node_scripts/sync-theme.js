@@ -69,35 +69,6 @@ function parseEnvFile(filePath) {
 }
 
 /**
- * Reads the theme sync JSON shape.
- *
- * @param {string} filePath - Absolute path to a sync config file.
- * @returns {{ wpContentPath: string, slug: string, target: string }} Config fields. Empty when the file is missing.
- */
-function readJsonConfig(filePath) {
-    const empty = { wpContentPath: '', slug: '', target: '' };
-
-    if (!existsSync(filePath)) {
-        return empty;
-    }
-
-    let parsed;
-
-    try {
-        parsed = JSON.parse(readFileSync(filePath, 'utf8'));
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        throw new Error(`Could not parse ${filePath}: ${message}`);
-    }
-
-    return {
-        wpContentPath: typeof parsed.wpContentPath === 'string' ? parsed.wpContentPath.trim() : '',
-        slug: typeof parsed.slug === 'string' ? parsed.slug.trim() : '',
-        target: typeof parsed.target === 'string' ? parsed.target.trim() : '',
-    };
-}
-
-/**
  * Returns the first non-empty string.
  *
  * @param {...string} values - Candidates in priority order.
@@ -439,20 +410,16 @@ function syncChangedPath(themeSource, destination, relativePath, dryRun) {
 }
 
 /**
- * Resolves env and JSON config. CLI values are applied by the caller.
+ * Loads `.env` and `.env.local` from the package root.
  *
- * @returns {{ fileEnv: Record<string, string>, example: { wpContentPath: string, slug: string, target: string }, local: { wpContentPath: string, slug: string, target: string } }} Layers.
+ * `.env.local` overrides `.env`. `.env.example` is documentation only.
+ *
+ * @returns {Record<string, string>} Merged file variables.
  */
-function loadConfigLayers() {
-    const fileEnv = {
+function loadFileEnv() {
+    return {
         ...parseEnvFile(join(rootDir, '.env')),
         ...parseEnvFile(join(rootDir, '.env.local')),
-    };
-
-    return {
-        fileEnv,
-        example: readJsonConfig(join(rootDir, 'sync-theme.example.json')),
-        local: readJsonConfig(join(rootDir, 'sync-theme.local.json')),
     };
 }
 
@@ -512,31 +479,23 @@ function readEnv(key, fileEnv) {
  * `--target` is the folder that receives `theme/` contents. Otherwise the folder is
  * `<wp-content>/themes/<slug>`. A configured full target is used only when no wp-content
  * path is set. `--slug` changes that folder name. Slug keys are `THEME_SLUG`, then
- * `THEME_SYNC_SLUG`, before the JSON configs.
+ * `THEME_SYNC_SLUG`, then the default in this file. Values come from the process
+ * environment, then `.env.local`, then `.env`.
  *
  * @param {{ target?: string, wpContent?: string, slug?: string }} cli - Parsed CLI overrides.
  * @returns {{ destination: string, slug: string, wpContentPath: string }} Resolved destination.
  */
 function resolveDestination(cli) {
-    const { fileEnv, example, local } = loadConfigLayers();
+    const fileEnv = loadFileEnv();
     const slug = firstNonEmpty(
         cli.slug,
         ...envCandidates(['THEME_SLUG', 'THEME_SYNC_SLUG'], fileEnv),
-        local.slug,
-        example.slug,
         DEFAULT_THEME_SLUG,
     );
-    const wpContentPath = firstNonEmpty(
-        cli.wpContent,
-        readEnv('WP_CONTENT_PATH', fileEnv),
-        local.wpContentPath,
-        example.wpContentPath,
-    );
+    const wpContentPath = firstNonEmpty(cli.wpContent, readEnv('WP_CONTENT_PATH', fileEnv));
     const configuredTarget = firstNonEmpty(
         cli.target,
         cli.wpContent ? '' : readEnv('THEME_SYNC_TARGET', fileEnv),
-        cli.wpContent ? '' : local.target,
-        cli.wpContent ? '' : example.target,
     );
 
     if (cli.target) {
@@ -707,7 +666,7 @@ function main() {
 
         if (!resolved.destination) {
             const message =
-                'Set WP_CONTENT_PATH or THEME_SYNC_TARGET. See .env.example and sync-theme.example.json.';
+                'Set WP_CONTENT_PATH or THEME_SYNC_TARGET. See .env.example.';
 
             if (optional) {
                 console.log(`Theme sync skipped: ${message}`);
