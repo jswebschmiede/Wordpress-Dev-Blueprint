@@ -46,26 +46,9 @@ node node_scripts/rename-plugin.js <slug> \
 
 ## Local Usage
 
-WordPress stays outside the repository. Symlink this plugin into the real `wp-content/plugins` the same way as the theme. On Windows, open the repository with Remote – WSL and run tooling in Linux. The three symlink cases (native Linux, Local with the repo in WSL, Local with the repo on a Windows drive), plus `mklink /D`, are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
+Local WP stays outside the repository. Open the repository with Remote – WSL and run tooling in Linux. Symlink this plugin into `wp-content/plugins` from Windows. With the repository in WSL, the target is `\\wsl.localhost\<Distro>\...` (WSL must be running). Do not `ln -s` to `/home/...`. If that UNC path does not resolve, use a Windows path such as `J:\dev\my-project\boilerplate-theme\plugins\boilerplate-plugin`. Commands, including `mklink /D`, are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
 
-Native Linux, from the repository root:
-
-```bash
-WP_CONTENT="/var/www/my-site/wp-content"
-ln -s "$(pwd)/boilerplate-theme/plugins/boilerplate-plugin" "$WP_CONTENT/plugins/boilerplate-plugin"
-```
-
-Local on Windows, repository in WSL. PowerShell (Administrator or Developer Mode). WSL must be running. A `C:` site uses `C:\Users\you\Local Sites\...` as `$Link`.
-
-```powershell
-$Link = "J:\Local Sites\my-site\app\public\wp-content\plugins\boilerplate-plugin"
-$Target = "\\wsl.localhost\Ubuntu-22.04\home\you\projects\my-project\boilerplate-theme\plugins\boilerplate-plugin"
-New-Item -ItemType SymbolicLink -Path $Link -Target $Target
-```
-
-If that UNC path does not resolve, clone the repository onto a Windows drive and set `$Target` to that Windows path (for example `J:\dev\my-project\boilerplate-theme\plugins\boilerplate-plugin`).
-
-After `rename-plugin.js`, use the new plugin directory in the source path and that slug as the link name.
+After `rename-plugin.js`, use the new plugin directory in the target and that slug as the link name.
 
 Install Composer dependencies in the plugin directory before activating the plugin:
 

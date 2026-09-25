@@ -51,24 +51,7 @@ node node_scripts/rename-plugin.js mvg-aktuell \
 
 ## Usage
 
-1. Symlink this folder into the real WordPress `wp-content/plugins` (same pattern as the theme). On Windows, use Remote – WSL for development. The three symlink cases and `mklink /D` are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins).
-
-Native Linux, from the repository root:
-
-```bash
-WP_CONTENT="/var/www/my-site/wp-content"
-ln -s "$(pwd)/boilerplate-theme/plugins/scf-boilerplate-plugin" "$WP_CONTENT/plugins/scf-boilerplate-plugin"
-```
-
-Local on Windows, repository in WSL. PowerShell (Administrator or Developer Mode). WSL must be running. A `C:` site uses `C:\Users\you\Local Sites\...` as `$Link`.
-
-```powershell
-$Link = "J:\Local Sites\my-site\app\public\wp-content\plugins\scf-boilerplate-plugin"
-$Target = "\\wsl.localhost\Ubuntu-22.04\home\you\projects\my-project\boilerplate-theme\plugins\scf-boilerplate-plugin"
-New-Item -ItemType SymbolicLink -Path $Link -Target $Target
-```
-
-If that UNC path does not resolve, clone the repository onto a Windows drive and set `$Target` to that Windows path (for example `J:\dev\my-project\boilerplate-theme\plugins\scf-boilerplate-plugin`).
+1. Symlink this folder into the Local WP `wp-content/plugins` (same pattern as the theme). Develop in WSL with Remote – WSL. Create the link on Windows to `\\wsl.localhost\<Distro>\...` (WSL must be running). Do not `ln -s` to `/home/...`. If that UNC path does not resolve, use a Windows path such as `J:\dev\my-project\boilerplate-theme\plugins\scf-boilerplate-plugin`. Commands, including `mklink /D`, are in [`../../../README.md`](../../../README.md#symlink-theme-and-plugins). After `rename-plugin.js`, the target is the new plugin directory and the link name is that slug.
 
 2. Install Composer dependencies (again after `rename-plugin.js`; that script skips `vendor-prefixed/`, including the prefixed project autoload):
 
