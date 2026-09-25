@@ -2,7 +2,7 @@
  * Replaces boilerplate theme placeholders with project-specific names.
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -20,7 +20,9 @@ import {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
-const cursorDir = join(rootDir, '..', 'cursor');
+const repoRoot = join(rootDir, '..');
+const cursorDir = join(repoRoot, 'cursor');
+const vscodeSettingsFile = join(repoRoot, '.vscode', 'settings.json');
 const args = process.argv.slice(2);
 const slug = args.find((arg) => !arg.startsWith('--'));
 const isDryRun = args.includes('--dry-run');
@@ -66,6 +68,7 @@ const files = [
     ...new Set([
         ...collectTextFiles(rootDir, '', defaultSkippedDirectories, skippedRelativeDirectories),
         ...collectTextFiles(cursorDir),
+        ...(existsSync(vscodeSettingsFile) ? [vscodeSettingsFile] : []),
     ]),
 ];
 const changedFiles = [];

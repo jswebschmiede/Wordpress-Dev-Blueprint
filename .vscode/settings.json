@@ -1,0 +1,4 @@
+{
+    "php.stubs": ["wordpress", "*"],
+    "phpsab.standard": "_wp-content-dev/boilerplate-theme/phpcs.xml"
+}

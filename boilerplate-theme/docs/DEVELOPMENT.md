@@ -124,7 +124,7 @@ node node_scripts/build-plugin.js boilerplate-plugin --minify
 
 **Usage:** `node node_scripts/rename-theme.js <slug> --company <company> [--dry-run]`
 
-**What it does:** Replaces boilerplate placeholders in this package and in `_wp-content-dev/cursor/`.
+**What it does:** Replaces boilerplate placeholders in this package, in `_wp-content-dev/cursor/`, and in `_wp-content-dev/.vscode/settings.json` (`phpsab.standard`).
 
 **Replacements:**
 

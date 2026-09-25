@@ -116,7 +116,7 @@ On Windows (PowerShell), replace `mv boilerplate-theme sw-soltau` with `Rename-I
 
 For `sw-soltau` with `--company SmartMedia24`, the script derives text domain, hook prefix, PHP namespace, display name, and block namespace from the slug and company. See [`docs/DEVELOPMENT.md` §3.5](docs/DEVELOPMENT.md#35-node_scriptsrename-themejs) for the full replacement table and validation rules.
 
-The script replaces placeholders in this package and in `_wp-content-dev/cursor/` (rules and skills). It only replaces file contents and does not rename folders.
+The script replaces placeholders in this package, in `_wp-content-dev/cursor/` (rules and skills), and in `_wp-content-dev/.vscode/settings.json` (`phpsab.standard`). It only replaces file contents and does not rename folders.
 
 ### Rename plugin
 
