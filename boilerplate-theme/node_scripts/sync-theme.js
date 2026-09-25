@@ -17,7 +17,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
 const repoRoot = join(rootDir, '..');
 const sourceDir = join(rootDir, 'theme');
-const args = process.argv.slice(2);
+// pnpm forwards a bare "--" when a script uses "pnpm run <name> -- <flag>".
+const args = process.argv.slice(2).filter((arg) => arg !== '--');
 
 const DEFAULT_THEME_SLUG = 'boilerplate-theme';
 const EXCLUDED_DIRECTORIES = new Set(['node_modules', '.git', 'vendor']);
