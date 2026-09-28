@@ -8,6 +8,8 @@ Clone this repository into the WSL filesystem (`/home/...`). WordPress stays in 
 
 Local’s PHP cannot read the theme through a symlink into WSL. A target of `\\wsl.localhost\...`, or a link created with `ln -s`, leaves `is_readable()` false, so WordPress reports that `style.css` is missing. Copy the theme onto the Windows drive with [Sync the theme to Local](#sync-the-theme-to-local).
 
+When Docker and WSL share a filesystem, symlink `theme/` and plugins into `wp-content` instead of file sync. Leave `WP_CONTENT_PATH` and `THEME_SYNC_TARGET` empty (setting `WP_CONTENT_PATH` lets sync copy back through the link), set `PLUGIN_SLUGS` if plugins should still build and watch, then `pnpm run watch` or `pnpm run dev` builds and watches without syncing.
+
 ```text
 /home/you/projects/my-project/boilerplate-theme/theme/          source (WSL)
         │  pnpm run sync:theme
