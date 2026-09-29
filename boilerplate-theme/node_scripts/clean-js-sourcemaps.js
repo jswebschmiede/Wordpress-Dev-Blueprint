@@ -23,17 +23,17 @@ const pluginName = args.find((arg) => !arg.startsWith('--'));
  * @returns {Promise<string[]>}
  */
 async function collectMapFiles(dir) {
-    const out = [];
-    const entries = await readdir(dir, { withFileTypes: true });
-    for (const entry of entries) {
-        const full = join(dir, entry.name);
-        if (entry.isDirectory()) {
-            out.push(...(await collectMapFiles(full)));
-        } else if (entry.isFile() && entry.name.endsWith('.map')) {
-            out.push(full);
-        }
-    }
-    return out;
+	const out = [];
+	const entries = await readdir(dir, { withFileTypes: true });
+	for (const entry of entries) {
+		const full = join(dir, entry.name);
+		if (entry.isDirectory()) {
+			out.push(...(await collectMapFiles(full)));
+		} else if (entry.isFile() && entry.name.endsWith('.map')) {
+			out.push(full);
+		}
+	}
+	return out;
 }
 
 /**
@@ -43,24 +43,24 @@ async function collectMapFiles(dir) {
  * @returns {Promise<void>}
  */
 async function unlinkWithRetry(file, maxAttempts = 5) {
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-            await unlink(file);
-            return;
-        } catch (err) {
-            const retryable =
-                err &&
-                typeof err === 'object' &&
-                'code' in err &&
-                (err.code === 'EBUSY' || err.code === 'EPERM');
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		try {
+			await unlink(file);
+			return;
+		} catch (err) {
+			const retryable =
+				err &&
+				typeof err === 'object' &&
+				'code' in err &&
+				(err.code === 'EBUSY' || err.code === 'EPERM');
 
-            if (!retryable || attempt === maxAttempts) {
-                throw err;
-            }
+			if (!retryable || attempt === maxAttempts) {
+				throw err;
+			}
 
-            await new Promise((resolve) => setTimeout(resolve, 50 * attempt));
-        }
-    }
+			await new Promise((resolve) => setTimeout(resolve, 50 * attempt));
+		}
+	}
 }
 
 /**
@@ -70,19 +70,19 @@ async function unlinkWithRetry(file, maxAttempts = 5) {
  * @returns {Promise<void>}
  */
 async function cleanDir(targetDir, label) {
-    if (!existsSync(targetDir)) {
-        console.log(`clean-js-sourcemaps: skip (missing ${label})`);
-        return;
-    }
+	if (!existsSync(targetDir)) {
+		console.log(`clean-js-sourcemaps: skip (missing ${label})`);
+		return;
+	}
 
-    const maps = await collectMapFiles(targetDir);
-    for (const file of maps) {
-        await unlinkWithRetry(file);
-    }
+	const maps = await collectMapFiles(targetDir);
+	for (const file of maps) {
+		await unlinkWithRetry(file);
+	}
 
-    if (maps.length > 0) {
-        console.log(`clean-js-sourcemaps: removed ${maps.length} file(s) under ${label}`);
-    }
+	if (maps.length > 0) {
+		console.log(`clean-js-sourcemaps: removed ${maps.length} file(s) under ${label}`);
+	}
 }
 
 /**
@@ -90,22 +90,22 @@ async function cleanDir(targetDir, label) {
  * @returns {Promise<void>}
  */
 async function main() {
-    if (pluginName) {
-        const pluginDir = join(rootDir, 'plugins', pluginName);
-        if (!existsSync(pluginDir)) {
-            console.error(`❌ Error: Plugin directory does not exist: ${pluginDir}`);
-            process.exit(1);
-        }
-        const buildDir = join(pluginDir, 'build');
-        await cleanDir(buildDir, `plugins/${pluginName}/build`);
-        return;
-    }
+	if (pluginName) {
+		const pluginDir = join(rootDir, 'plugins', pluginName);
+		if (!existsSync(pluginDir)) {
+			console.error(`❌ Error: Plugin directory does not exist: ${pluginDir}`);
+			process.exit(1);
+		}
+		const buildDir = join(pluginDir, 'build');
+		await cleanDir(buildDir, `plugins/${pluginName}/build`);
+		return;
+	}
 
-    const themeJsDir = join(rootDir, 'theme', 'js');
-    await cleanDir(themeJsDir, 'theme/js');
+	const themeJsDir = join(rootDir, 'theme', 'js');
+	await cleanDir(themeJsDir, 'theme/js');
 }
 
 main().catch((err) => {
-    console.error('clean-js-sourcemaps failed:', err);
-    process.exit(1);
+	console.error('clean-js-sourcemaps failed:', err);
+	process.exit(1);
 });

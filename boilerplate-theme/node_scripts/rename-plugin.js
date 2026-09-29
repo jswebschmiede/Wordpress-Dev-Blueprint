@@ -6,18 +6,18 @@ import { existsSync, readFileSync, renameSync, writeFileSync } from 'fs';
 import { basename, dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
-    applyReplacements,
-    collectTextFiles,
-    companyToNamespace,
-    companyToVendorSlug,
-    replaceWholeToken,
-    rewriteCommentedPluginSlugsLine,
-    slugToConstantPrefix,
-    slugToNamespace,
-    slugToPlaceholderConstantPrefix,
-    slugToTitle,
-    validateCompany,
-    validateSlug,
+	applyReplacements,
+	collectTextFiles,
+	companyToNamespace,
+	companyToVendorSlug,
+	replaceWholeToken,
+	rewriteCommentedPluginSlugsLine,
+	slugToConstantPrefix,
+	slugToNamespace,
+	slugToPlaceholderConstantPrefix,
+	slugToTitle,
+	validateCompany,
+	validateSlug,
 } from './rename-shared.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -44,19 +44,19 @@ Optional:
  * @returns {string | undefined} Flag value when present.
  */
 function getFlagValue(flag) {
-    const index = args.indexOf(flag);
+	const index = args.indexOf(flag);
 
-    if (index === -1) {
-        return undefined;
-    }
+	if (index === -1) {
+		return undefined;
+	}
 
-    const value = args[index + 1];
+	const value = args[index + 1];
 
-    if (!value || value.startsWith('--')) {
-        return undefined;
-    }
+	if (!value || value.startsWith('--')) {
+		return undefined;
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -65,24 +65,24 @@ function getFlagValue(flag) {
  * @returns {Set<string>} Consumed argument tokens.
  */
 function getConsumedFlagTokens() {
-    const consumed = new Set(['--dry-run']);
-    const flagsWithValue = ['--company', '--plugin', '--old-slug', '--namespace'];
+	const consumed = new Set(['--dry-run']);
+	const flagsWithValue = ['--company', '--plugin', '--old-slug', '--namespace'];
 
-    for (const flag of flagsWithValue) {
-        const index = args.indexOf(flag);
+	for (const flag of flagsWithValue) {
+		const index = args.indexOf(flag);
 
-        if (index === -1) {
-            continue;
-        }
+		if (index === -1) {
+			continue;
+		}
 
-        consumed.add(flag);
+		consumed.add(flag);
 
-        if (args[index + 1] && !args[index + 1].startsWith('--')) {
-            consumed.add(args[index + 1]);
-        }
-    }
+		if (args[index + 1] && !args[index + 1].startsWith('--')) {
+			consumed.add(args[index + 1]);
+		}
+	}
 
-    return consumed;
+	return consumed;
 }
 
 /**
@@ -92,10 +92,10 @@ function getConsumedFlagTokens() {
  * @returns {never}
  */
 function exitMissingParameters(missing) {
-    console.error(`Missing required parameters: ${missing.join(', ')}`);
-    console.error('');
-    console.error(usageMessage);
-    process.exit(1);
+	console.error(`Missing required parameters: ${missing.join(', ')}`);
+	console.error('');
+	console.error(usageMessage);
+	process.exit(1);
 }
 
 /**
@@ -105,16 +105,16 @@ function exitMissingParameters(missing) {
  * @returns {void}
  */
 function validateNamespace(value) {
-    if (value === undefined) {
-        return;
-    }
+	if (value === undefined) {
+		return;
+	}
 
-    if (!/^[A-Z][A-Za-z0-9]*$/.test(value)) {
-        console.error('Namespace must be PascalCase (e.g. MvgAktuell).');
-        console.error('');
-        console.error(usageMessage);
-        process.exit(1);
-    }
+	if (!/^[A-Z][A-Za-z0-9]*$/.test(value)) {
+		console.error('Namespace must be PascalCase (e.g. MvgAktuell).');
+		console.error('');
+		console.error(usageMessage);
+		process.exit(1);
+	}
 }
 
 /**
@@ -128,32 +128,32 @@ function validateNamespace(value) {
  * @returns {Record<string, string>} Replacement map.
  */
 function getReplacements(slugValue, oldSlugValue, companyValue, namespaceValue, pluginDirValue) {
-    const oldTitle = slugToTitle(oldSlugValue);
-    const oldNamespace = slugToNamespace(oldSlugValue);
-    const oldConstantPrefix = slugToPlaceholderConstantPrefix(oldSlugValue);
-    const title = slugToTitle(slugValue);
-    const constantPrefix = slugToConstantPrefix(slugValue);
-    const companyNamespace = companyToNamespace(companyValue);
-    const companyVendor = companyToVendorSlug(companyValue);
+	const oldTitle = slugToTitle(oldSlugValue);
+	const oldNamespace = slugToNamespace(oldSlugValue);
+	const oldConstantPrefix = slugToPlaceholderConstantPrefix(oldSlugValue);
+	const title = slugToTitle(slugValue);
+	const constantPrefix = slugToConstantPrefix(slugValue);
+	const companyNamespace = companyToNamespace(companyValue);
+	const companyVendor = companyToVendorSlug(companyValue);
 
-    /** @type {Record<string, string>} */
-    const replacements = {
-        'https://companyname.example': `https://${companyVendor}.example`,
-        [oldTitle]: title,
-        [oldConstantPrefix]: constantPrefix,
-        [oldNamespace]: namespaceValue,
-        [oldSlugValue]: slugValue,
-        [oldSlugValue.replaceAll('-', '_')]: slugValue.replaceAll('-', '_'),
-        CompanyName: companyNamespace,
-        companyname: companyVendor,
-    };
+	/** @type {Record<string, string>} */
+	const replacements = {
+		'https://companyname.example': `https://${companyVendor}.example`,
+		[oldTitle]: title,
+		[oldConstantPrefix]: constantPrefix,
+		[oldNamespace]: namespaceValue,
+		[oldSlugValue]: slugValue,
+		[oldSlugValue.replaceAll('-', '_')]: slugValue.replaceAll('-', '_'),
+		CompanyName: companyNamespace,
+		companyname: companyVendor,
+	};
 
-    if (pluginDirValue !== oldSlugValue && pluginDirValue !== slugValue) {
-        replacements[pluginDirValue] = slugValue;
-        replacements[pluginDirValue.replaceAll('-', '_')] = slugValue.replaceAll('-', '_');
-    }
+	if (pluginDirValue !== oldSlugValue && pluginDirValue !== slugValue) {
+		replacements[pluginDirValue] = slugValue;
+		replacements[pluginDirValue.replaceAll('-', '_')] = slugValue.replaceAll('-', '_');
+	}
 
-    return replacements;
+	return replacements;
 }
 
 /**
@@ -162,16 +162,16 @@ function getReplacements(slugValue, oldSlugValue, companyValue, namespaceValue, 
  * @returns {string[]} Absolute file paths.
  */
 function getRootReferenceFiles() {
-    const candidates = [
-        join(rootDir, 'package.json'),
-        join(rootDir, 'composer.json'),
-        join(rootDir, 'phpcs.xml'),
-        join(rootDir, 'rector.php'),
-        join(rootDir, 'README.md'),
-        join(rootDir, 'docs', 'DEVELOPMENT.md'),
-    ];
+	const candidates = [
+		join(rootDir, 'package.json'),
+		join(rootDir, 'composer.json'),
+		join(rootDir, 'phpcs.xml'),
+		join(rootDir, 'rector.php'),
+		join(rootDir, 'README.md'),
+		join(rootDir, 'docs', 'DEVELOPMENT.md'),
+	];
 
-    return candidates.filter((file) => existsSync(file));
+	return candidates.filter((file) => existsSync(file));
 }
 
 /**
@@ -185,30 +185,41 @@ function getRootReferenceFiles() {
  * @param {string} newNamespace - New main class basename.
  * @returns {void}
  */
-function renamePluginPaths(oldPluginDir, newPluginDir, oldSlugValue, slugValue, oldNamespace, newNamespace) {
-    const oldMainFile = join(oldPluginDir, `${oldSlugValue}.php`);
-    const newMainFile = join(oldPluginDir, `${slugValue}.php`);
-    const oldMainClassFile = join(oldPluginDir, 'includes', `${oldNamespace}.php`);
-    const newMainClassFile = join(oldPluginDir, 'includes', `${newNamespace}.php`);
+function renamePluginPaths(
+	oldPluginDir,
+	newPluginDir,
+	oldSlugValue,
+	slugValue,
+	oldNamespace,
+	newNamespace,
+) {
+	const oldMainFile = join(oldPluginDir, `${oldSlugValue}.php`);
+	const newMainFile = join(oldPluginDir, `${slugValue}.php`);
+	const oldMainClassFile = join(oldPluginDir, 'includes', `${oldNamespace}.php`);
+	const newMainClassFile = join(oldPluginDir, 'includes', `${newNamespace}.php`);
 
-    if (existsSync(oldMainClassFile) && oldMainClassFile !== newMainClassFile) {
-        renameSync(oldMainClassFile, newMainClassFile);
-        console.log(`Renamed class file: ${basename(oldMainClassFile)} -> ${basename(newMainClassFile)}`);
-    }
+	if (existsSync(oldMainClassFile) && oldMainClassFile !== newMainClassFile) {
+		renameSync(oldMainClassFile, newMainClassFile);
+		console.log(
+			`Renamed class file: ${basename(oldMainClassFile)} -> ${basename(newMainClassFile)}`,
+		);
+	}
 
-    if (existsSync(oldMainFile) && oldMainFile !== newMainFile) {
-        renameSync(oldMainFile, newMainFile);
-        console.log(`Renamed bootstrap file: ${basename(oldMainFile)} -> ${basename(newMainFile)}`);
-    }
+	if (existsSync(oldMainFile) && oldMainFile !== newMainFile) {
+		renameSync(oldMainFile, newMainFile);
+		console.log(`Renamed bootstrap file: ${basename(oldMainFile)} -> ${basename(newMainFile)}`);
+	}
 
-    if (oldPluginDir !== newPluginDir) {
-        renameSync(oldPluginDir, newPluginDir);
-        console.log(`Renamed plugin directory: ${basename(oldPluginDir)} -> ${basename(newPluginDir)}`);
-    }
+	if (oldPluginDir !== newPluginDir) {
+		renameSync(oldPluginDir, newPluginDir);
+		console.log(
+			`Renamed plugin directory: ${basename(oldPluginDir)} -> ${basename(newPluginDir)}`,
+		);
+	}
 }
 
 if (args.length === 0) {
-    exitMissingParameters(['<slug>', '--company']);
+	exitMissingParameters(['<slug>', '--company']);
 }
 
 const company = getFlagValue('--company');
@@ -222,15 +233,15 @@ const slug = args.find((arg) => !arg.startsWith('--') && !consumedTokens.has(arg
 const missing = [];
 
 if (!slug) {
-    missing.push('<slug>');
+	missing.push('<slug>');
 }
 
 if (!company) {
-    missing.push('--company');
+	missing.push('--company');
 }
 
 if (missing.length > 0) {
-    exitMissingParameters(missing);
+	exitMissingParameters(missing);
 }
 
 validateSlug(slug, usageMessage);
@@ -240,28 +251,28 @@ validateNamespace(namespaceFlag);
 const namespace = namespaceFlag ?? slugToNamespace(slug);
 
 if (slug === pluginDirName) {
-    console.error('New slug must differ from the plugin directory name.');
-    process.exit(1);
+	console.error('New slug must differ from the plugin directory name.');
+	process.exit(1);
 }
 
 const oldPluginDir = join(rootDir, 'plugins', pluginDirName);
 const newPluginDir = join(rootDir, 'plugins', slug);
 
 if (!existsSync(oldPluginDir)) {
-    console.error(`Plugin directory not found: ${oldPluginDir}`);
-    process.exit(1);
+	console.error(`Plugin directory not found: ${oldPluginDir}`);
+	process.exit(1);
 }
 
 if (existsSync(newPluginDir) && oldPluginDir !== newPluginDir) {
-    console.error(`Target plugin directory already exists: ${newPluginDir}`);
-    process.exit(1);
+	console.error(`Target plugin directory already exists: ${newPluginDir}`);
+	process.exit(1);
 }
 
 const oldNamespace = slugToNamespace(oldSlug);
 const pluginReplacements = getReplacements(slug, oldSlug, company, namespace, pluginDirName);
 const rootReplacements = {
-    [pluginDirName]: slug,
-    [pluginDirName.replaceAll('-', '_')]: slug.replaceAll('-', '_'),
+	[pluginDirName]: slug,
+	[pluginDirName.replaceAll('-', '_')]: slug.replaceAll('-', '_'),
 };
 const pluginFiles = collectTextFiles(oldPluginDir);
 const rootFiles = getRootReferenceFiles();
@@ -285,14 +296,15 @@ console.log(`Constant Prefix: ${slugToConstantPrefix(slug)}`);
  * @returns {string} Updated text.
  */
 function applyTokenReplacements(content, replacements) {
-    const orderedEntries = Object.entries(replacements).sort(
-        ([searchA], [searchB]) => searchB.length - searchA.length,
-    );
+	const orderedEntries = Object.entries(replacements).sort(
+		([searchA], [searchB]) => searchB.length - searchA.length,
+	);
 
-    return orderedEntries.reduce(
-        (updatedContent, [search, replacement]) => replaceWholeToken(updatedContent, search, replacement),
-        content,
-    );
+	return orderedEntries.reduce(
+		(updatedContent, [search, replacement]) =>
+			replaceWholeToken(updatedContent, search, replacement),
+		content,
+	);
 }
 
 /**
@@ -307,22 +319,22 @@ function applyTokenReplacements(content, replacements) {
  * @returns {void}
  */
 function applyReplacementsToFiles(fileList, replacements, wholeToken) {
-    for (const file of fileList) {
-        const originalContent = readFileSync(file, 'utf8');
-        const updatedContent = wholeToken
-            ? applyTokenReplacements(originalContent, replacements)
-            : applyReplacements(originalContent, replacements);
+	for (const file of fileList) {
+		const originalContent = readFileSync(file, 'utf8');
+		const updatedContent = wholeToken
+			? applyTokenReplacements(originalContent, replacements)
+			: applyReplacements(originalContent, replacements);
 
-        if (originalContent === updatedContent) {
-            continue;
-        }
+		if (originalContent === updatedContent) {
+			continue;
+		}
 
-        changedFiles.push(file);
+		changedFiles.push(file);
 
-        if (!isDryRun) {
-            writeFileSync(file, updatedContent, 'utf8');
-        }
-    }
+		if (!isDryRun) {
+			writeFileSync(file, updatedContent, 'utf8');
+		}
+	}
 }
 
 /**
@@ -336,27 +348,27 @@ function applyReplacementsToFiles(fileList, replacements, wholeToken) {
  * @returns {void}
  */
 function updateCommentedPluginSlugs(pluginDirValue, slugValue) {
-    const filePath = join(rootDir, '.env.example');
+	const filePath = join(rootDir, '.env.example');
 
-    if (!existsSync(filePath)) {
-        return;
-    }
+	if (!existsSync(filePath)) {
+		return;
+	}
 
-    const originalContent = readFileSync(filePath, 'utf8');
-    const updatedContent = originalContent
-        .split('\n')
-        .map((line) => rewriteCommentedPluginSlugsLine(line, pluginDirValue, slugValue))
-        .join('\n');
+	const originalContent = readFileSync(filePath, 'utf8');
+	const updatedContent = originalContent
+		.split('\n')
+		.map((line) => rewriteCommentedPluginSlugsLine(line, pluginDirValue, slugValue))
+		.join('\n');
 
-    if (originalContent === updatedContent) {
-        return;
-    }
+	if (originalContent === updatedContent) {
+		return;
+	}
 
-    changedFiles.push(filePath);
+	changedFiles.push(filePath);
 
-    if (!isDryRun) {
-        writeFileSync(filePath, updatedContent, 'utf8');
-    }
+	if (!isDryRun) {
+		writeFileSync(filePath, updatedContent, 'utf8');
+	}
 }
 
 applyReplacementsToFiles(pluginFiles, pluginReplacements, false);
@@ -364,18 +376,18 @@ applyReplacementsToFiles(rootFiles, rootReplacements, true);
 updateCommentedPluginSlugs(pluginDirName, slug);
 
 if (!isDryRun) {
-    renamePluginPaths(oldPluginDir, newPluginDir, oldSlug, slug, oldNamespace, namespace);
+	renamePluginPaths(oldPluginDir, newPluginDir, oldSlug, slug, oldNamespace, namespace);
 } else {
-    console.log('Dry run only. Directory and bootstrap files were not renamed.');
+	console.log('Dry run only. Directory and bootstrap files were not renamed.');
 }
 
 if (isDryRun) {
-    console.log('Dry run only. No files were changed.');
+	console.log('Dry run only. No files were changed.');
 }
 
 console.log(`Affected files: ${changedFiles.length}`);
 for (const file of changedFiles) {
-    console.log(file);
+	console.log(file);
 }
 
 console.log('');

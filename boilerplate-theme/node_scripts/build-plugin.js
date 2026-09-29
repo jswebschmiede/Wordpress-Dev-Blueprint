@@ -17,15 +17,15 @@ const isProduction = args.includes('--minify');
 const isWatch = args.includes('--watch');
 
 if (!pluginName) {
-    console.error('Usage: node node_scripts/build-plugin.js <plugin-name> [--watch] [--minify]');
-    process.exit(1);
+	console.error('Usage: node node_scripts/build-plugin.js <plugin-name> [--watch] [--minify]');
+	process.exit(1);
 }
 
 const pluginDir = join(rootDir, 'plugins', pluginName);
 
 if (!existsSync(pluginDir)) {
-    console.error(`Plugin directory does not exist: ${pluginDir}`);
-    process.exit(1);
+	console.error(`Plugin directory does not exist: ${pluginDir}`);
+	process.exit(1);
 }
 
 /**
@@ -34,15 +34,15 @@ if (!existsSync(pluginDir)) {
  * @type {Record<string, string>}
  */
 const wpGlobals = {
-    '@wordpress/element': 'window.wp.element',
-    '@wordpress/i18n': 'window.wp.i18n',
-    '@wordpress/data': 'window.wp.data',
-    '@wordpress/hooks': 'window.wp.hooks',
-    '@wordpress/dom-ready': 'window.wp.domReady',
-    '@wordpress/api-fetch': 'window.wp.apiFetch',
-    jquery: 'window.jQuery',
-    react: 'window.React',
-    'react-dom': 'window.ReactDOM',
+	'@wordpress/element': 'window.wp.element',
+	'@wordpress/i18n': 'window.wp.i18n',
+	'@wordpress/data': 'window.wp.data',
+	'@wordpress/hooks': 'window.wp.hooks',
+	'@wordpress/dom-ready': 'window.wp.domReady',
+	'@wordpress/api-fetch': 'window.wp.apiFetch',
+	jquery: 'window.jQuery',
+	react: 'window.React',
+	'react-dom': 'window.ReactDOM',
 };
 
 /**
@@ -53,17 +53,17 @@ const wpGlobals = {
  * @returns {string} Absolute entry path.
  */
 function resolvePluginEntry(context, fileName) {
-    return join(pluginDir, 'assets', context, 'js', fileName);
+	return join(pluginDir, 'assets', context, 'js', fileName);
 }
 
 const entryPoints = [
-    resolvePluginEntry('admin', 'dashboard.js'),
-    resolvePluginEntry('frontend', 'frontend.js'),
+	resolvePluginEntry('admin', 'dashboard.js'),
+	resolvePluginEntry('frontend', 'frontend.js'),
 ].filter((path) => existsSync(path));
 
 if (entryPoints.length === 0) {
-    console.log(`No plugin JS entries found for "${pluginName}", skipping build.`);
-    process.exit(0);
+	console.log(`No plugin JS entries found for "${pluginName}", skipping build.`);
+	process.exit(0);
 }
 
 /**
@@ -72,17 +72,17 @@ if (entryPoints.length === 0) {
  * @type {esbuild.BuildOptions}
  */
 const buildOptions = {
-    entryPoints,
-    bundle: true,
-    outdir: join(pluginDir, 'build'),
-    entryNames: '[name]',
-    format: 'iife',
-    target: 'esnext',
-    minify: isProduction,
-    sourcemap: !isProduction,
-    loader: { '.js': 'jsx' },
-    plugins: [externalGlobalPlugin(wpGlobals)],
-    logLevel: 'info',
+	entryPoints,
+	bundle: true,
+	outdir: join(pluginDir, 'build'),
+	entryNames: '[name]',
+	format: 'iife',
+	target: 'esnext',
+	minify: isProduction,
+	sourcemap: !isProduction,
+	loader: { '.js': 'jsx' },
+	plugins: [externalGlobalPlugin(wpGlobals)],
+	logLevel: 'info',
 };
 
 /**
@@ -91,21 +91,21 @@ const buildOptions = {
  * @returns {Promise<void>}
  */
 async function build() {
-    try {
-        if (isWatch) {
-            const context = await esbuild.context(buildOptions);
-            await context.watch();
-            console.log(`Watching plugin "${pluginName}" assets...`);
-            return;
-        }
+	try {
+		if (isWatch) {
+			const context = await esbuild.context(buildOptions);
+			await context.watch();
+			console.log(`Watching plugin "${pluginName}" assets...`);
+			return;
+		}
 
-        await esbuild.build(buildOptions);
-        console.log(`Plugin "${pluginName}" assets built${isProduction ? ' for production' : ''}.`);
-        process.exit(0);
-    } catch (error) {
-        console.error(`Plugin "${pluginName}" build failed:`, error);
-        process.exit(1);
-    }
+		await esbuild.build(buildOptions);
+		console.log(`Plugin "${pluginName}" assets built${isProduction ? ' for production' : ''}.`);
+		process.exit(0);
+	} catch (error) {
+		console.error(`Plugin "${pluginName}" build failed:`, error);
+		process.exit(1);
+	}
 }
 
 build();

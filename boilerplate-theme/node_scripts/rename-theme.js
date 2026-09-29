@@ -20,17 +20,17 @@ import { existsSync, readFileSync, renameSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
-    applyReplacements,
-    collectTextFiles,
-    companyToNamespace,
-    companyToVendorSlug,
-    defaultSkippedDirectories,
-    planChildDirectoryRenames,
-    slugToConstantPrefix,
-    slugToNamespace,
-    slugToTitle,
-    validateCompany,
-    validateSlug,
+	applyReplacements,
+	collectTextFiles,
+	companyToNamespace,
+	companyToVendorSlug,
+	defaultSkippedDirectories,
+	planChildDirectoryRenames,
+	slugToConstantPrefix,
+	slugToNamespace,
+	slugToTitle,
+	validateCompany,
+	validateSlug,
 } from './rename-shared.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -43,10 +43,10 @@ const vscodeSettingsFile = join(repoRoot, '.vscode', 'settings.json');
 const envExampleFile = join(rootDir, '.env.example');
 // Runtime sync reads env files only. Leftover JSON sync files are not rewritten.
 const ignoredSyncOverrides = new Set([
-    join(rootDir, '.env'),
-    join(rootDir, '.env.local'),
-    join(rootDir, 'sync-theme.example.json'),
-    join(rootDir, 'sync-theme.local.json'),
+	join(rootDir, '.env'),
+	join(rootDir, '.env.local'),
+	join(rootDir, 'sync-theme.example.json'),
+	join(rootDir, 'sync-theme.local.json'),
 ]);
 const args = process.argv.slice(2);
 const isDryRun = args.includes('--dry-run');
@@ -68,41 +68,41 @@ A positional <slug> or --company overrides those values.`;
  * @returns {Record<string, string>} Parsed variables. Missing files yield an empty object.
  */
 function parseEnvFile(filePath) {
-    if (!existsSync(filePath)) {
-        return {};
-    }
+	if (!existsSync(filePath)) {
+		return {};
+	}
 
-    const values = {};
+	const values = {};
 
-    for (const line of readFileSync(filePath, 'utf8').split('\n')) {
-        const trimmed = line.trim();
+	for (const line of readFileSync(filePath, 'utf8').split('\n')) {
+		const trimmed = line.trim();
 
-        if (!trimmed || trimmed.startsWith('#')) {
-            continue;
-        }
+		if (!trimmed || trimmed.startsWith('#')) {
+			continue;
+		}
 
-        const separator = trimmed.indexOf('=');
+		const separator = trimmed.indexOf('=');
 
-        if (separator === -1) {
-            continue;
-        }
+		if (separator === -1) {
+			continue;
+		}
 
-        const key = trimmed.slice(0, separator).trim();
-        let value = trimmed.slice(separator + 1).trim();
+		const key = trimmed.slice(0, separator).trim();
+		let value = trimmed.slice(separator + 1).trim();
 
-        if (
-            (value.startsWith('"') && value.endsWith('"')) ||
-            (value.startsWith("'") && value.endsWith("'"))
-        ) {
-            value = value.slice(1, -1);
-        }
+		if (
+			(value.startsWith('"') && value.endsWith('"')) ||
+			(value.startsWith("'") && value.endsWith("'"))
+		) {
+			value = value.slice(1, -1);
+		}
 
-        if (key) {
-            values[key] = value;
-        }
-    }
+		if (key) {
+			values[key] = value;
+		}
+	}
 
-    return values;
+	return values;
 }
 
 /**
@@ -113,10 +113,10 @@ function parseEnvFile(filePath) {
  * @returns {Record<string, string>} Merged file variables.
  */
 function loadFileEnv() {
-    return {
-        ...parseEnvFile(join(rootDir, '.env')),
-        ...parseEnvFile(join(rootDir, '.env.local')),
-    };
+	return {
+		...parseEnvFile(join(rootDir, '.env')),
+		...parseEnvFile(join(rootDir, '.env.local')),
+	};
 }
 
 /**
@@ -126,20 +126,20 @@ function loadFileEnv() {
  * @returns {string | undefined} Slug when passed on the CLI.
  */
 function readCliSlug(cliArgs) {
-    for (let index = 0; index < cliArgs.length; index += 1) {
-        const arg = cliArgs[index];
+	for (let index = 0; index < cliArgs.length; index += 1) {
+		const arg = cliArgs[index];
 
-        if (arg === '--company') {
-            index += 1;
-            continue;
-        }
+		if (arg === '--company') {
+			index += 1;
+			continue;
+		}
 
-        if (!arg.startsWith('--')) {
-            return arg;
-        }
-    }
+		if (!arg.startsWith('--')) {
+			return arg;
+		}
+	}
 
-    return undefined;
+	return undefined;
 }
 
 /**
@@ -151,21 +151,21 @@ function readCliSlug(cliArgs) {
  * @returns {string | undefined} Company when the flag is present and has a value.
  */
 function readCliCompany(cliArgs) {
-    const flagIndex = cliArgs.indexOf('--company');
+	const flagIndex = cliArgs.indexOf('--company');
 
-    if (flagIndex === -1) {
-        return undefined;
-    }
+	if (flagIndex === -1) {
+		return undefined;
+	}
 
-    const value = cliArgs[flagIndex + 1];
+	const value = cliArgs[flagIndex + 1];
 
-    if (!value || value.startsWith('--')) {
-        console.error('Missing value for --company.');
-        console.error(usageMessage);
-        process.exit(1);
-    }
+	if (!value || value.startsWith('--')) {
+		console.error('Missing value for --company.');
+		console.error(usageMessage);
+		process.exit(1);
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -179,27 +179,27 @@ function readCliCompany(cliArgs) {
  * @returns {{ value: string, source: string }} Resolved value and the winning source.
  */
 function resolveSetting(cliValue, keys, fileEnv) {
-    if (typeof cliValue === 'string' && cliValue.trim() !== '') {
-        return { value: cliValue.trim(), source: 'CLI' };
-    }
+	if (typeof cliValue === 'string' && cliValue.trim() !== '') {
+		return { value: cliValue.trim(), source: 'CLI' };
+	}
 
-    for (const key of keys) {
-        const processValue = process.env[key];
+	for (const key of keys) {
+		const processValue = process.env[key];
 
-        if (typeof processValue === 'string' && processValue.trim() !== '') {
-            return { value: processValue.trim(), source: key };
-        }
-    }
+		if (typeof processValue === 'string' && processValue.trim() !== '') {
+			return { value: processValue.trim(), source: key };
+		}
+	}
 
-    for (const key of keys) {
-        const fileValue = fileEnv[key];
+	for (const key of keys) {
+		const fileValue = fileEnv[key];
 
-        if (typeof fileValue === 'string' && fileValue.trim() !== '') {
-            return { value: fileValue.trim(), source: key };
-        }
-    }
+		if (typeof fileValue === 'string' && fileValue.trim() !== '') {
+			return { value: fileValue.trim(), source: key };
+		}
+	}
 
-    return { value: '', source: '' };
+	return { value: '', source: '' };
 }
 
 /**
@@ -210,23 +210,23 @@ function resolveSetting(cliValue, keys, fileEnv) {
  * @returns {void}
  */
 function assertRenameInputs(slugValue, companyValue) {
-    const missing = [];
+	const missing = [];
 
-    if (!slugValue) {
-        missing.push('theme slug (THEME_SLUG or THEME_SYNC_SLUG)');
-    }
+	if (!slugValue) {
+		missing.push('theme slug (THEME_SLUG or THEME_SYNC_SLUG)');
+	}
 
-    if (!companyValue) {
-        missing.push('company (THEME_COMPANY)');
-    }
+	if (!companyValue) {
+		missing.push('company (THEME_COMPANY)');
+	}
 
-    if (missing.length === 0) {
-        return;
-    }
+	if (missing.length === 0) {
+		return;
+	}
 
-    console.error(`Missing required ${missing.join(' and ')}.`);
-    console.error(usageMessage);
-    process.exit(1);
+	console.error(`Missing required ${missing.join(' and ')}.`);
+	console.error(usageMessage);
+	process.exit(1);
 }
 
 /**
@@ -237,23 +237,23 @@ function assertRenameInputs(slugValue, companyValue) {
  * @returns {Record<string, string>} Replacement map.
  */
 function getReplacements(slugValue, companyValue) {
-    const namespace = slugToNamespace(slugValue);
-    const title = slugToTitle(slugValue);
-    const constantPrefix = slugToConstantPrefix(slugValue);
-    const companyNamespace = companyToNamespace(companyValue);
-    const companyVendor = companyToVendorSlug(companyValue);
+	const namespace = slugToNamespace(slugValue);
+	const title = slugToTitle(slugValue);
+	const constantPrefix = slugToConstantPrefix(slugValue);
+	const companyNamespace = companyToNamespace(companyValue);
+	const companyVendor = companyToVendorSlug(companyValue);
 
-    return {
-        'https://companyname.example': `https://${companyVendor}.example`,
-        [oldThemeSlug]: slugValue,
-        [oldThemeSlug.replaceAll('-', '_')]: slugValue.replaceAll('-', '_'),
-        'boilerplate/example-block': `${slugValue}/example-block`,
-        CompanyName: companyNamespace,
-        companyname: companyVendor,
-        BoilerplateTheme: namespace,
-        'Boilerplate Theme': title,
-        BOILERPLATE_THEME_: constantPrefix,
-    };
+	return {
+		'https://companyname.example': `https://${companyVendor}.example`,
+		[oldThemeSlug]: slugValue,
+		[oldThemeSlug.replaceAll('-', '_')]: slugValue.replaceAll('-', '_'),
+		'boilerplate/example-block': `${slugValue}/example-block`,
+		CompanyName: companyNamespace,
+		companyname: companyVendor,
+		BoilerplateTheme: namespace,
+		'Boilerplate Theme': title,
+		BOILERPLATE_THEME_: constantPrefix,
+	};
 }
 
 /**
@@ -263,21 +263,21 @@ function getReplacements(slugValue, companyValue) {
  * @returns {void}
  */
 function assertSkillDirectoryTargets(planned) {
-    const seenTargets = new Set();
+	const seenTargets = new Set();
 
-    for (const item of planned) {
-        if (seenTargets.has(item.to)) {
-            console.error(`Skill directory renames collide on: ${item.toName}`);
-            process.exit(1);
-        }
+	for (const item of planned) {
+		if (seenTargets.has(item.to)) {
+			console.error(`Skill directory renames collide on: ${item.toName}`);
+			process.exit(1);
+		}
 
-        seenTargets.add(item.to);
+		seenTargets.add(item.to);
 
-        if (existsSync(item.to)) {
-            console.error(`Target skill directory already exists: ${item.to}`);
-            process.exit(1);
-        }
-    }
+		if (existsSync(item.to)) {
+			console.error(`Target skill directory already exists: ${item.to}`);
+			process.exit(1);
+		}
+	}
 }
 
 /**
@@ -291,23 +291,23 @@ function assertSkillDirectoryTargets(planned) {
  * @returns {void}
  */
 function renameSkillDirectories(planned, dryRun) {
-    if (planned.length === 0) {
-        return;
-    }
+	if (planned.length === 0) {
+		return;
+	}
 
-    if (dryRun) {
-        for (const item of planned) {
-            console.log(`Would rename skill directory: ${item.fromName} -> ${item.toName}`);
-        }
+	if (dryRun) {
+		for (const item of planned) {
+			console.log(`Would rename skill directory: ${item.fromName} -> ${item.toName}`);
+		}
 
-        console.log('Dry run only. Skill directories were not renamed.');
-        return;
-    }
+		console.log('Dry run only. Skill directories were not renamed.');
+		return;
+	}
 
-    for (const item of planned) {
-        renameSync(item.from, item.to);
-        console.log(`Renamed skill directory: ${item.fromName} -> ${item.toName}`);
-    }
+	for (const item of planned) {
+		renameSync(item.from, item.to);
+		console.log(`Renamed skill directory: ${item.fromName} -> ${item.toName}`);
+	}
 }
 
 const fileEnv = loadFileEnv();
@@ -324,12 +324,12 @@ const replacements = getReplacements(slug, company);
 const plannedSkillRenames = planChildDirectoryRenames(skillsDir, oldThemeSlug, slug);
 assertSkillDirectoryTargets(plannedSkillRenames);
 const files = [
-    ...new Set([
-        ...collectTextFiles(rootDir, '', defaultSkippedDirectories, skippedRelativeDirectories),
-        ...collectTextFiles(cursorDir),
-        ...(existsSync(vscodeSettingsFile) ? [vscodeSettingsFile] : []),
-        ...(existsSync(envExampleFile) ? [envExampleFile] : []),
-    ]),
+	...new Set([
+		...collectTextFiles(rootDir, '', defaultSkippedDirectories, skippedRelativeDirectories),
+		...collectTextFiles(cursorDir),
+		...(existsSync(vscodeSettingsFile) ? [vscodeSettingsFile] : []),
+		...(existsSync(envExampleFile) ? [envExampleFile] : []),
+	]),
 ].filter((file) => !ignoredSyncOverrides.has(file));
 const changedFiles = [];
 
@@ -343,27 +343,27 @@ console.log(`Theme Name: ${replacements['Boilerplate Theme']}`);
 console.log(`Constant Prefix: ${replacements.BOILERPLATE_THEME_}`);
 
 for (const file of files) {
-    const originalContent = readFileSync(file, 'utf8');
-    const updatedContent = applyReplacements(originalContent, replacements);
+	const originalContent = readFileSync(file, 'utf8');
+	const updatedContent = applyReplacements(originalContent, replacements);
 
-    if (originalContent === updatedContent) {
-        continue;
-    }
+	if (originalContent === updatedContent) {
+		continue;
+	}
 
-    changedFiles.push(file);
+	changedFiles.push(file);
 
-    if (!isDryRun) {
-        writeFileSync(file, updatedContent, 'utf8');
-    }
+	if (!isDryRun) {
+		writeFileSync(file, updatedContent, 'utf8');
+	}
 }
 
 renameSkillDirectories(plannedSkillRenames, isDryRun);
 
 if (isDryRun) {
-    console.log('Dry run only. No files were changed.');
+	console.log('Dry run only. No files were changed.');
 }
 
 console.log(`Affected files: ${changedFiles.length}`);
 for (const file of changedFiles) {
-    console.log(file);
+	console.log(file);
 }
