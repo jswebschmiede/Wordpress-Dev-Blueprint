@@ -37,12 +37,14 @@ repository root/
     │   ├── build-blocks.js
     │   ├── build-block-views.js
     │   ├── build-plugin.js
+    │   ├── build-plugin-css.js
     │   ├── clean-js-sourcemaps.js
     │   ├── copy-blocks.js
     │   ├── plugin-slugs.js
     │   ├── rename-theme.js
     │   ├── rename-plugin.js
     │   ├── run-plugin-builds.js
+    │   ├── run-plugin-css-builds.js
     │   ├── sync-theme.js
     │   ├── sync-plugin.js
     │   └── zip.js
@@ -215,9 +217,10 @@ Only `block.json` is copied to `theme/blocks/` — PHP templates and classes sta
 pnpm run development:tailwind:frontend
 pnpm run development:tailwind:editor
 pnpm run production:tailwind:frontend
+pnpm run development:tailwind:plugins
 ```
 
-Component-level block styling lives under `tailwind/custom/components/` using `@apply`.
+Component-level block styling lives under `tailwind/custom/components/` using `@apply`. Standalone plugin CSS (optional) is documented under [Plugin JavaScript and CSS](#plugin-javascript-and-css).
 
 ### Theme JavaScript
 
@@ -230,20 +233,27 @@ pnpm run production:esbuild:blocks
 pnpm run production:esbuild:block-views
 ```
 
-### Plugin JavaScript
+### Plugin JavaScript and CSS
 
-`PLUGIN_SLUGS` drives the dev build, the watch build, and the production minify. An empty or commented key skips all three.
+`PLUGIN_SLUGS` drives the JS and CSS plugin builds (dev, watch, production). An empty or commented key skips all of them. No per-plugin `package.json` watch scripts are needed.
 
 ```bash
 pnpm run development:plugins --slug=scf-boilerplate-plugin
+pnpm run development:tailwind:plugins --slug=scf-boilerplate-plugin
 pnpm run watch:plugins
+pnpm run watch:tailwind:plugins
 pnpm run sync:plugin --slug=scf-boilerplate-plugin
 pnpm run sync:plugins --optional
 pnpm run watch:sync:plugins
 pnpm run production:esbuild:plugins
+pnpm run production:tailwind:plugins
 ```
 
-`pnpm run development` runs `development:plugins` with the theme build, then `sync:theme`, then `sync:plugins`. `pnpm run production` minifies the listed plugins through `production:esbuild:plugins`. Composer, zip, and sourcemap cleanup stay as per-directory scripts.
+JS entries: `plugins/<slug>/assets/{admin,frontend}/js/*.js` → `plugins/<slug>/build/<name>.js`.
+
+CSS entries (optional, standalone Tailwind via the root PostCSS config): drop files at `plugins/<slug>/assets/{frontend,admin}/css/*.css` → `plugins/<slug>/build/<basename>.css` (entry basename = output name, e.g. `frontend.css` → `build/frontend.css`). Missing CSS dirs are skipped. Name files uniquely across `frontend` and `admin` for that plugin.
+
+`pnpm run development` runs `development:plugins` and `development:tailwind:plugins` with the theme build, then `sync:theme`, then `sync:plugins`. `pnpm run production` minifies listed plugin JS through `production:esbuild:plugins` and plugin CSS through `production:tailwind:plugins`. Composer, zip, and sourcemap cleanup stay as per-directory scripts.
 
 ### Linting
 

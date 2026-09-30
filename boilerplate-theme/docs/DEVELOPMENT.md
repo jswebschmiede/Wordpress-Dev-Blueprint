@@ -30,6 +30,7 @@ flowchart LR
     BB[build-blocks]
     BV[build-block-views]
     BP[build-plugin]
+    BPC[build-plugin-css]
     RT[rename-theme]
     ZP[zip]
     CS[clean-js-sourcemaps]
@@ -40,6 +41,7 @@ flowchart LR
     TV[theme/js/blocks-view/*.min.js]
     TJ[theme/js/*.min.js]
     PB[plugins/*/build/*.js]
+    PCS[plugins/*/build/*.css]
     CSS[theme/style.css + style-editor.css]
     ZO[zip/*.zip]
   end
@@ -55,6 +57,8 @@ flowchart LR
   postcss --> CSS
   P --> BP
   BP --> PB
+  P --> BPC
+  BPC --> PCS
   RT --> sources
   RT --> cursorRepo[cursor/]
   TJ --> CS
@@ -65,6 +69,7 @@ flowchart LR
   TJ --> ZP
   CSS --> ZP
   PB --> ZP
+  PCS --> ZP
   ZP --> ZO
 ```
 
@@ -118,6 +123,23 @@ flowchart LR
 ```bash
 node node_scripts/build-plugin.js boilerplate-plugin
 node node_scripts/build-plugin.js boilerplate-plugin --minify
+```
+
+### 3.4.1 `node_scripts/build-plugin-css.js`
+
+**Usage:** `node node_scripts/build-plugin-css.js <plugin-name> [--watch] [--minify]`
+
+**What it does:** Discovers `plugins/<plugin-name>/assets/{frontend,admin}/css/*.css` and runs each file through the package-root PostCSS stack (`postcss.config.js`, `@tailwindcss/postcss`) to `plugins/<plugin-name>/build/<basename>.css`. Entry basename equals output basename (`frontend.css` → `build/frontend.css`). Author the entry CSS by hand (`@import "tailwindcss"`, `@source` for plugin paths, optional theme token imports). PHP continues to enqueue with `file_exists(build/*.css)`.
+
+**Parameters:** `--watch` (PostCSS CLI watch per entry), `--minify` (sets `_TW_ENV=production` so cssnano runs).
+
+**Exit codes:** `1` if plugin name or directory missing, PostCSS CLI missing, duplicate basenames across `frontend`/`admin`, or PostCSS fails; `0` with a skip message if no `.css` files exist under those dirs.
+
+**Called by:** `node_scripts/run-plugin-css-builds.js` (see [§3.10.1](#3101-node_scriptsrun-plugin-css-buildsjs)).
+
+```bash
+node node_scripts/build-plugin-css.js boilerplate-plugin
+node node_scripts/build-plugin-css.js boilerplate-plugin --minify
 ```
 
 ### 3.5 `node_scripts/rename-theme.js`
@@ -275,6 +297,22 @@ pnpm run production:esbuild:plugins
 ```
 
 `development:**` includes `development:plugins`. `watch:**` includes `watch:plugins`. `production:esbuild*` includes `production:esbuild:plugins`, so `production:assets` minifies only the listed slugs. An empty list makes the watch process exit 0; `run-p` keeps the theme watchers running.
+
+### 3.10.1 `node_scripts/run-plugin-css-builds.js`
+
+**Usage:** `node node_scripts/run-plugin-css-builds.js [--watch] [--minify] [--slug=<slug>]`
+
+**What it does:** Same slug resolution as `run-plugin-builds.js`, but runs `build-plugin-css.js` per slug. Empty `PLUGIN_SLUGS` exits 0. Slugs without CSS dirs/files skip quietly. `--watch` keeps PostCSS watchers open; `--minify` enables production CSS (cssnano).
+
+**npm scripts:**
+
+```bash
+pnpm run development:tailwind:plugins --slug=scf-boilerplate-plugin
+pnpm run watch:tailwind:plugins
+pnpm run production:tailwind:plugins
+```
+
+`development:**` / `watch:**` pick these up via the `tailwind:plugins` name. `production:tailwind:*` includes `production:tailwind:plugins`, so `production:assets` builds plugin CSS for listed slugs without per-plugin `package.json` scripts.
 
 ### 3.11 `node_scripts/sync-plugin.js`
 
