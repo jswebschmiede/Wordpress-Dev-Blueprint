@@ -7,7 +7,7 @@
         "development:tailwind:editor": "cross-env _TW_TARGET=editor pnpm exec postcss ./tailwind.css -o ./theme/style-editor.css",
         "development:tailwind:intellisense": "cross-env _TW_TARGET=intellisense pnpm exec postcss ./tailwind.css -o ./tailwind-intellisense.css",
         "development:tailwind:plugins": "node node_scripts/run-plugin-css-builds.js",
-        "development:esbuild": "pnpm exec esbuild ./javascript/script.js ./javascript/block-editor.js --target=esnext --bundle --loader:.js=jsx --outdir=./theme/js --out-extension:.js=.min.js",
+        "development:esbuild": "pnpm exec esbuild ./javascript/script.js ./javascript/block-editor.js block-animations=./javascript/block-animations-runtime.js --target=esnext --bundle --loader:.js=jsx --outdir=./theme/js --out-extension:.js=.min.js",
         "development:esbuild:blocks": "node node_scripts/build-blocks.js",
         "development:esbuild:block-views": "node node_scripts/build-block-views.js",
         "development:plugins": "node node_scripts/run-plugin-builds.js",
@@ -21,7 +21,7 @@
         "watch:tailwind:editor": "cross-env _TW_TARGET=editor pnpm exec postcss ./tailwind.css -o ./theme/style-editor.css --watch",
         "watch:tailwind:intellisense": "cross-env _TW_TARGET=intellisense pnpm exec postcss ./tailwind.css -o ./tailwind-intellisense.css --watch",
         "watch:tailwind:plugins": "node node_scripts/run-plugin-css-builds.js --watch",
-        "watch:esbuild": "pnpm exec esbuild ./javascript/script.js ./javascript/block-editor.js --target=esnext --bundle --loader:.js=jsx --outdir=./theme/js --out-extension:.js=.min.js --watch",
+        "watch:esbuild": "pnpm exec esbuild ./javascript/script.js ./javascript/block-editor.js block-animations=./javascript/block-animations-runtime.js --target=esnext --bundle --loader:.js=jsx --outdir=./theme/js --out-extension:.js=.min.js --watch",
         "watch:esbuild:blocks": "node node_scripts/build-blocks.js --watch",
         "watch:esbuild:block-views": "node node_scripts/build-block-views.js --watch",
         "watch:plugins": "node node_scripts/run-plugin-builds.js --watch",
@@ -38,7 +38,7 @@
         "production:tailwind:frontend": "cross-env _TW_ENV=production pnpm run development:tailwind:frontend",
         "production:tailwind:editor": "cross-env _TW_ENV=production pnpm run development:tailwind:editor",
         "production:tailwind:plugins": "node node_scripts/run-plugin-css-builds.js --minify",
-        "production:esbuild": "pnpm exec esbuild ./javascript/script.js ./javascript/block-editor.js --target=esnext --bundle --loader:.js=jsx --outdir=./theme/js --out-extension:.js=.min.js --minify",
+        "production:esbuild": "pnpm exec esbuild ./javascript/script.js ./javascript/block-editor.js block-animations=./javascript/block-animations-runtime.js --target=esnext --bundle --loader:.js=jsx --outdir=./theme/js --out-extension:.js=.min.js --minify",
         "production:esbuild:blocks": "node node_scripts/build-blocks.js --minify",
         "production:esbuild:block-views": "node node_scripts/build-block-views.js --minify",
         "production:esbuild:plugins": "node node_scripts/run-plugin-builds.js --minify",
@@ -93,5 +93,8 @@
         "prettier-plugin-tailwindcss": "^0.7.2",
         "tailwind-scrollbar": "^4.0.2",
         "tailwindcss": "^4.2.1"
+    },
+    "dependencies": {
+        "gsap": "^3.15.0"
     }
 }

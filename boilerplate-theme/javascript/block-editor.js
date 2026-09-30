@@ -19,23 +19,33 @@
  */
 import '@_tw/typography/block-editor-classes';
 
-wp.domReady(() => {
-	/**
-	 * Block styles to register
-	 */
-	const blockStyles = [
-		{ blockType: 'core/paragraph', name: 'lead', label: 'Lead' },
-		{ blockType: 'core/image', name: 'rounded', label: 'Rounded' },
-		{ blockType: 'core/media-text', name: 'rounded', label: 'Rounded' },
-	];
+/**
+ * Block animations — adds animation controls to all blocks.
+ */
+import './block-animations';
 
-	/**
-	 * Register all block styles
-	 */
-	blockStyles.forEach(style => {
-		wp.blocks.registerBlockStyle(style.blockType, {
-			name: style.name,
-			label: style.label,
-		});
-	});
+/**
+ * Block visibility — adds viewport hide controls to all blocks.
+ */
+import './block-visibility';
+
+wp.domReady(() => {
+    /**
+     * Block styles to register
+     */
+    const blockStyles = [
+        { blockType: 'core/paragraph', name: 'lead', label: 'Lead' },
+        { blockType: 'core/image', name: 'rounded', label: 'Rounded' },
+        { blockType: 'core/media-text', name: 'rounded', label: 'Rounded' },
+    ];
+
+    /**
+     * Register all block styles
+     */
+    blockStyles.forEach(style => {
+        wp.blocks.registerBlockStyle(style.blockType, {
+            name: style.name,
+            label: style.label,
+        });
+    });
 });

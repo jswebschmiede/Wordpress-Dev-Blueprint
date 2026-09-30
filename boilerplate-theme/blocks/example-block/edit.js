@@ -2,6 +2,8 @@ import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, TextControl, TextareaControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
+import { SpacingControl, getSpacingClassName } from '../_shared/index.js';
+
 /**
  * Editor component for the example block.
  *
@@ -10,13 +12,14 @@ import { __ } from '@wordpress/i18n';
  * @param {string} props.attributes.title - Block title.
  * @param {string} props.attributes.description - Block description.
  * @param {string} props.attributes.url - Optional link URL.
+ * @param {Object} props.attributes.spacing - Preset padding and margin per device.
  * @param {Function} props.setAttributes - Updates block attributes.
  * @returns {JSX.Element} Block editor markup.
  */
 export default function Edit({ attributes, setAttributes }) {
-    const { title, description, url } = attributes;
+    const { title, description, url, spacing } = attributes;
     const blockProps = useBlockProps({
-        className: 'example-block not-prose',
+        className: ['example-block not-prose', getSpacingClassName(spacing)].filter(Boolean).join(' '),
     });
 
     return (
@@ -38,6 +41,12 @@ export default function Edit({ attributes, setAttributes }) {
                         type="url"
                         value={url}
                         onChange={(value) => setAttributes({ url: value })}
+                    />
+                </PanelBody>
+                <PanelBody title={__('Spacing', 'boilerplate-theme')}>
+                    <SpacingControl
+                        value={spacing}
+                        onChange={(value) => setAttributes({ spacing: value })}
                     />
                 </PanelBody>
             </InspectorControls>

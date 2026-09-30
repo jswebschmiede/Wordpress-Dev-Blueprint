@@ -113,12 +113,26 @@ class BlockManager {
 				'wp-blocks',
 				'wp-element',
 				'wp-editor',
+				'wp-data',
 				'wp-components',
 				'wp-i18n',
 				'wp-block-editor',
 			),
 			\defined( 'BOILERPLATE_THEME_VERSION' ) ? BOILERPLATE_THEME_VERSION : (string) filemtime( $asset_file ),
 			true
+		);
+
+		$style_file = get_template_directory() . '/css/editor-shared-controls.css';
+
+		if ( ! file_exists( $style_file ) ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'boilerplate-theme-editor-shared-controls',
+			get_template_directory_uri() . '/css/editor-shared-controls.css',
+			array(),
+			\defined( 'BOILERPLATE_THEME_VERSION' ) ? BOILERPLATE_THEME_VERSION : (string) filemtime( $style_file )
 		);
 	}
 }

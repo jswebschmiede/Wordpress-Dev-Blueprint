@@ -75,6 +75,10 @@
 		"shadow": {
 			"defaultPresets": false
 		},
+		"viewport": {
+			"mobile": "480px",
+			"tablet": "782px"
+		},
 		"layout": {
 			"contentSize": "60rem",
 			"wideSize": "80rem"
@@ -82,7 +86,7 @@
 		"spacing": {
 			"margin": true,
 			"padding": true,
-			"customSpacingSizes": true,
+			"customSpacingSizes": false,
 			"defaultSpacingSizes": false,
 			"spacingSizes": [
 				{

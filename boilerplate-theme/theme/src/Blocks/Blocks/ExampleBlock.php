@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace CompanyName\BoilerplateTheme\Blocks\Blocks;
 
 use CompanyName\BoilerplateTheme\Blocks\BlockInterface;
+use CompanyName\BoilerplateTheme\Blocks\Spacing;
 use CompanyName\BoilerplateTheme\Theme\TimberIntegration;
 use CompanyName\BoilerplateTheme\Timber\Timber;
 
@@ -42,14 +43,21 @@ class ExampleBlock implements BlockInterface {
 				'description' => __( 'Use this block as a starting point for new dynamic blocks.', 'boilerplate-theme' ),
 				'url'         => '',
 				'className'   => '',
+				'spacing'     => array(),
 			)
 		);
 
 		$wrapper_classes = array( 'example-block not-prose' );
 		$class_name      = $this->get_string_attribute( $attributes, 'className' );
+		$spacing         = isset( $attributes['spacing'] ) && is_array( $attributes['spacing'] ) ? $attributes['spacing'] : array();
+		$spacing_classes = Spacing::classes( $spacing );
 
 		if ( '' !== $class_name ) {
 			$wrapper_classes[] = $class_name;
+		}
+
+		if ( '' !== $spacing_classes ) {
+			$wrapper_classes[] = $spacing_classes;
 		}
 
 		$context = array(

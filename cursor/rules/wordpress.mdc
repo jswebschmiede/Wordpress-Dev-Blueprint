@@ -7,48 +7,50 @@ description: WordPress-specific rules and best practices
 
 ## WordPress Functions & Hooks
 
--   Use WordPress functions and hooks correctly
--   Follow WordPress coding patterns and conventions
--   Use WordPress action and filter hooks appropriately
--   Register hooks in appropriate places (e.g., `after_setup_theme`, `init`, `wp_enqueue_scripts`)
+- We use WordPress 7.x.x, no upwards compatibility is needed
+- Use WordPress functions and hooks correctly
+- Use the WordPress API to interact with the WordPress database and core functionality
+- Follow WordPress coding patterns and conventions
+- Use WordPress action and filter hooks appropriately
+- Register hooks in appropriate places (e.g., `after_setup_theme`, `init`, `wp_enqueue_scripts`)
 
 ## Text Domain
 
--   Text domain: `boilerplate-theme` for all translation functions
--   Always use `__()`, `_e()`, `_x()`, `esc_html__()`, `esc_html_e()`, etc. with text domain `boilerplate-theme`
--   Example: `__( 'Text', 'boilerplate-theme' )`
+- Text domain: `boilerplate-theme` for all translation functions
+- Always use `__()`, `_e()`, `_x()`, `esc_html__()`, `esc_html_e()`, etc. with text domain `boilerplate-theme`
+- Example: `__( 'Text', 'boilerplate-theme' )`
 
 ## Block Editor Integration
 
--   Use WordPress Block API for custom blocks
--   Register blocks in `boilerplate-theme/blocks/`
--   Block JSON files should follow WordPress block.json schema
--   Use WordPress block editor components and utilities
--   Support block editor features (alignments, colors, etc.)
+- Use WordPress Block API for custom blocks
+- Register blocks in `boilerplate-theme/blocks/`
+- Block JSON files should follow WordPress block.json schema
+- Use WordPress block editor components and utilities
+- Support block editor features (alignments, colors, etc.)
 
 ## Theme Support Features
 
--   Register theme support features correctly
--   Use `add_theme_support()` for WordPress features
--   Common features: `title-tag`, `post-thumbnails`, `editor-styles`, `html5`, etc.
--   Remove unsupported features: `remove_theme_support( 'block-templates' )`
+- Register theme support features correctly
+- Use `add_theme_support()` for WordPress features
+- Common features: `title-tag`, `post-thumbnails`, `editor-styles`, `html5`, etc.
+- Remove unsupported features: `remove_theme_support( 'block-templates' )`
 
 ## Theme Templates (Timber)
 
 Frontend markup is Twig under `boilerplate-theme/theme/views/`, rendered with Timber 2. PHP templates only supply context and call `Timber::render()` or `Timber::compile()`. Follow [Timber v2](https://timber.github.io/docs/v2/), including [template inheritance](https://timber.github.io/docs/v2/getting-started/template-inheritance-and-includes/) and [menus](https://timber.github.io/docs/v2/guides/menus/), with this theme's paths and prefixed classes (see `general.mdc`).
 
--   Import `CompanyName\BoilerplateTheme\Timber\Timber`, not `Timber\Timber`
--   Page templates extend `layouts/base.twig`. Reuse `partials/`. Block frontend markup is `views/blocks/<slug>.twig`
--   Do not add a `Walker_Nav_Menu` or call `wp_nav_menu()` for theme navigation. Menus are `Timber\Menu` objects in context (`header_menu`, `footer_menu_*`), rendered by `partials/menu.twig` and `partials/footer-menu.twig`
--   In Twig, escape with `|esc_html`, `|esc_attr`, `|esc_url`, or `|wp_kses_post` ([escaping](https://timber.github.io/docs/v2/guides/escaping/)). Autoescape is off. PHP `esc_*()` still applies to any output that stays in PHP
+- Import `CompanyName\BoilerplateTheme\Timber\Timber`, not `Timber\Timber`
+- Page templates extend `layouts/base.twig`. Reuse `partials/`. Block frontend markup is `views/blocks/<slug>.twig`
+- Do not add a `Walker_Nav_Menu` or call `wp_nav_menu()` for theme navigation. Menus are `Timber\Menu` objects in context (`header_menu`, `footer_menu_*`), rendered by `partials/menu.twig` and `partials/footer-menu.twig`
+- In Twig, escape with `|esc_html`, `|esc_attr`, `|esc_url`, or `|wp_kses_post` ([escaping](https://timber.github.io/docs/v2/guides/escaping/)). Autoescape is off. PHP `esc_*()` still applies to any output that stays in PHP
 
 ## Security Functions
 
--   Always escape output: `esc_html()`, `esc_attr()`, `esc_url()`, `esc_textarea()`
--   Always sanitize input: `sanitize_text_field()`, `sanitize_email()`, `sanitize_url()`, etc.
--   Use nonces for form submissions and AJAX requests
--   Validate and sanitize user input before database operations
--   Use prepared statements for database queries
+- Always escape output: `esc_html()`, `esc_attr()`, `esc_url()`, `esc_textarea()`
+- Always sanitize input: `sanitize_text_field()`, `sanitize_email()`, `sanitize_url()`, etc.
+- Use nonces for form submissions and AJAX requests
+- Validate and sanitize user input before database operations
+- Use prepared statements for database queries
 
 ## Example: Secure Function
 

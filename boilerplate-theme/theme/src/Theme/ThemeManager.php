@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace CompanyName\BoilerplateTheme\Theme;
 
+use CompanyName\BoilerplateTheme\Blocks\BlockAnimations;
+use CompanyName\BoilerplateTheme\Blocks\BlockVisibility;
 use CompanyName\BoilerplateTheme\Blocks\BlockManager;
 use CompanyName\BoilerplateTheme\PostTypes\ExamplePostType;
 use CompanyName\BoilerplateTheme\Utils\SvgSupport;
@@ -93,6 +95,12 @@ class ThemeManager {
 
 		$block_manager = new BlockManager();
 		$block_manager->init();
+
+		$block_animations = new BlockAnimations();
+		$block_animations->init();
+
+		$block_visibility = new BlockVisibility();
+		$block_visibility->init();
 
 		if ( class_exists( 'Redux' ) ) {
 			$theme_options = new ThemeOptions();

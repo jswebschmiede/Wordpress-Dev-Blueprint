@@ -47,6 +47,12 @@
 	--breakpoint-xl: 1280px;
 	--breakpoint-2xl: 1536px;
 	--breakpoint-3xl: 1920px;
+	/*
+	 * Block visibility and spacing. Keep these literals identical to
+	 * settings.viewport in theme.json. Media queries cannot read CSS variables.
+	 */
+	--breakpoint-mobile: 480px;
+	--breakpoint-tablet: 782px;
 	--radius-form: 36px;
 
 	--container-content: var(--wp--style--global--content-size);
@@ -56,4 +62,16 @@
 	--width-p-2: calc(100% - 4rem);
 
 	--container-site: 1920px;
+
+	/*
+	 * Named spacing steps for the shared block spacing control.
+	 * Sizes come from theme.json presets. `none` is an explicit zero so a
+	 * larger viewport can override a smaller one.
+	 */
+	--spacing-none: 0;
+	--spacing-xs: var(--wp--preset--spacing--xs);
+	--spacing-sm: var(--wp--preset--spacing--sm);
+	--spacing-md: var(--wp--preset--spacing--md);
+	--spacing-lg: var(--wp--preset--spacing--lg);
+	--spacing-xl: var(--wp--preset--spacing--xl);
 }

@@ -1,0 +1,36 @@
+/**
+ * Block Animation Styles
+ *
+ * Initial visibility states for animated blocks.
+ * The actual animations are handled by GSAP ScrollTrigger.
+ */
+
+@if $target != editor {
+	/* Hide animated blocks initially to prevent a flash of content. */
+	[data-ei-animation] {
+		@apply invisible;
+	}
+
+	/* Keep content visible when JavaScript does not run. */
+	@media (scripting: none) {
+		[data-ei-animation] {
+			@apply visible! opacity-100! transform-none!;
+		}
+	}
+
+	/* Reduced motion: show the final state and skip animation. */
+	@media (prefers-reduced-motion: reduce) {
+		[data-ei-animation] {
+			@apply visible! opacity-100! transform-none! transition-none! animate-none!;
+		}
+	}
+}
+
+/* Animation indicator in the editor. */
+.editor-styles-wrapper [data-ei-animation] {
+	@apply relative;
+}
+
+.editor-styles-wrapper [data-ei-animation]::before {
+	@apply content-['⚡'] absolute top-[-15px] right-[8px] z-[100] h-[20px] w-[20px] text-center text-[12px] leading-[20px] bg-(--wp-admin-theme-color,#007cba) rounded-full pointer-events-none shadow-[0_2px_4px_rgba(0,0,0,0.2)];
+}

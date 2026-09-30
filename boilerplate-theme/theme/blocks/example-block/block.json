@@ -26,6 +26,10 @@
         "url": {
             "type": "string",
             "default": ""
+        },
+        "spacing": {
+            "type": "object",
+            "default": {}
         }
     },
     "editorScript": "boilerplate-theme-blocks-editor"

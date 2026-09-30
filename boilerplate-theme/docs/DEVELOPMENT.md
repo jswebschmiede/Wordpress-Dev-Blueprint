@@ -98,6 +98,16 @@ flowchart LR
 
 **Extension point:** If a new block imports an `@wordpress/*` package not yet listed, add it to `wpGlobals` in this file or the build will fail or bundle incorrectly.
 
+### 3.2.1 Shared editor controls (`blocks/_shared`)
+
+Reusable Inspector controls live in `blocks/_shared/<control>/`. `blocks/_shared/index.js` is the public barrel. A block `edit.js` imports named exports from `../_shared/index.js`. The editor bundle includes only the controls a block actually imports.
+
+`_shared` is editor-only. Do not import it from `blocks/<slug>/view.js`. The view build does not map `@wordpress/*` onto `window.wp`.
+
+Directories whose names start with `_` are not blocks. `copy-blocks.js` and `build-block-views.js` skip them, so `_shared` is neither copied to `theme/blocks/` nor emitted as a view bundle. The barrel exports the public control, hook, or class helper. Other helper modules stay inside their control folder.
+
+`EditorDeviceSwitcher` / `useEditorDevice` resize the editor canvas for any block. `SpacingControl` stores preset padding and margin per device. Frontend output is utility classes from `Spacing::classes()` on the block wrapper (`{{ wrapper_attributes }}` in Twig), not a view import. Wiring samples live in the block skill `reference.md`.
+
 ### 3.3 `node_scripts/build-block-views.js`
 
 **What it does:** Discovers `blocks/<slug>/view.js` automatically and builds each file to `theme/js/blocks-view/<slug>.min.js`.

@@ -147,6 +147,78 @@ import '../blocks/<slug>/index.js';
 $this->register_block( '<slug>', new Blocks\<Name>Block() );
 ```
 
+## Spacing attribute (block.json)
+
+```json
+"spacing": {
+    "type": "object",
+    "default": {}
+}
+```
+
+Stored shape: `padding.mobile.top = "sm"`. Viewport keys are `mobile`, `tablet`, and `desktop`. Side keys are `top`, `right`, `bottom`, and `left`. Slugs are `none`, `xs`, `sm`, `md`, `lg`, and `xl`.
+
+## edit.js (spacing)
+
+```javascript
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+
+import { SpacingControl, getSpacingClassName } from '../_shared/index.js';
+
+export default function Edit({ attributes, setAttributes }) {
+    const blockProps = useBlockProps({
+        className: ['<slug>', getSpacingClassName(attributes.spacing)].filter(Boolean).join(' '),
+    });
+
+    return (
+        <>
+            <InspectorControls>
+                <PanelBody title={__('Spacing', 'boilerplate-theme')}>
+                    <SpacingControl
+                        value={attributes.spacing}
+                        onChange={(spacing) => setAttributes({ spacing })}
+                    />
+                </PanelBody>
+            </InspectorControls>
+            <div {...blockProps}>Block content</div>
+        </>
+    );
+}
+```
+
+## PHP wrapper classes (spacing)
+
+Append the result to the classes passed into `get_block_wrapper_attributes()`. The Twig view stays `{{ wrapper_attributes }}`.
+
+```php
+use CompanyName\BoilerplateTheme\Blocks\Spacing;
+
+$spacing = isset( $attributes['spacing'] ) && is_array( $attributes['spacing'] ) ? $attributes['spacing'] : array();
+$spacing_classes = Spacing::classes( $spacing );
+
+if ( '' !== $spacing_classes ) {
+    $wrapper_classes[] = $spacing_classes;
+}
+```
+
+## edit.js (device switcher only)
+
+The switcher resizes the editor canvas. It does not add frontend classes. Read `deviceKey` and store this block's own values.
+
+```javascript
+import { EditorDeviceSwitcher, useEditorDevice } from '../_shared/index.js';
+
+export default function Edit() {
+    const { deviceKey } = useEditorDevice();
+
+    return <EditorDeviceSwitcher />;
+}
+```
+
+`deviceKey` is `desktop`, `tablet`, or `mobile`.
+
 ## Official documentation
 
 - [Timber v2](https://timber.github.io/docs/v2/) (compile a block view with the prefixed `Timber` class; [escaping](https://timber.github.io/docs/v2/guides/escaping/))

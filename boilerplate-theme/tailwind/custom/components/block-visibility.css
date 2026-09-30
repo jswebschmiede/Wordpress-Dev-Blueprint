@@ -1,0 +1,19 @@
+/**
+ * Hide a block on one viewport.
+ *
+ * Breakpoints are the `mobile` and `tablet` tokens in tailwind-theme.css.
+ * `hidden` applies only inside the matching media query, so flex and grid
+ * on the block stay intact at other sizes.
+ */
+
+.ei-hide-mobile {
+	@apply max-mobile:hidden;
+}
+
+.ei-hide-tablet {
+	@apply mobile:max-tablet:hidden;
+}
+
+.ei-hide-desktop {
+	@apply tablet:hidden;
+}

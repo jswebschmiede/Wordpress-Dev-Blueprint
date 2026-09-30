@@ -100,6 +100,7 @@ class ThemeAssets {
 					'wp-block-editor',
 					'wp-components',
 					'wp-element',
+					'wp-i18n',
 				),
 				BOILERPLATE_THEME_VERSION,
 				true,
