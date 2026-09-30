@@ -1,5 +1,5 @@
 /**
- * Reads PLUGIN_SLUGS for plugin build, watch, and sync.
+ * Reads PLUGIN_SLUGS for plugin JS/CSS build, watch, and sync.
  *
  * Precedence is the process environment, then `.env.local`, then `.env`.
  * Blank lines and `#` comments are ignored. An empty, missing, or
