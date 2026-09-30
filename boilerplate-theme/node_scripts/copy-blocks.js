@@ -17,42 +17,42 @@ const blocksTarget = join(rootDir, 'theme', 'blocks');
  * @returns {void}
  */
 function copyBlockFiles() {
-    if (!existsSync(blocksSource)) {
-        console.error('Source blocks directory not found:', blocksSource);
-        process.exit(1);
-    }
+	if (!existsSync(blocksSource)) {
+		console.error('Source blocks directory not found:', blocksSource);
+		process.exit(1);
+	}
 
-    if (!existsSync(blocksTarget)) {
-        mkdirSync(blocksTarget, { recursive: true });
-    }
+	if (!existsSync(blocksTarget)) {
+		mkdirSync(blocksTarget, { recursive: true });
+	}
 
-    const blockDirs = readdirSync(blocksSource).filter((name) => {
-        const fullPath = join(blocksSource, name);
-        return statSync(fullPath).isDirectory() && !name.startsWith('_');
-    });
+	const blockDirs = readdirSync(blocksSource).filter((name) => {
+		const fullPath = join(blocksSource, name);
+		return statSync(fullPath).isDirectory() && !name.startsWith('_');
+	});
 
-    let copiedCount = 0;
+	let copiedCount = 0;
 
-    for (const blockName of blockDirs) {
-        const sourceBlockJson = join(blocksSource, blockName, 'block.json');
-        const targetBlockDir = join(blocksTarget, blockName);
-        const targetBlockJson = join(targetBlockDir, 'block.json');
+	for (const blockName of blockDirs) {
+		const sourceBlockJson = join(blocksSource, blockName, 'block.json');
+		const targetBlockDir = join(blocksTarget, blockName);
+		const targetBlockJson = join(targetBlockDir, 'block.json');
 
-        if (!existsSync(sourceBlockJson)) {
-            console.warn(`No block.json found for block: ${blockName}`);
-            continue;
-        }
+		if (!existsSync(sourceBlockJson)) {
+			console.warn(`No block.json found for block: ${blockName}`);
+			continue;
+		}
 
-        if (!existsSync(targetBlockDir)) {
-            mkdirSync(targetBlockDir, { recursive: true });
-        }
+		if (!existsSync(targetBlockDir)) {
+			mkdirSync(targetBlockDir, { recursive: true });
+		}
 
-        cpSync(sourceBlockJson, targetBlockJson);
-        copiedCount++;
-        console.log(`Copied ${blockName}/block.json`);
-    }
+		cpSync(sourceBlockJson, targetBlockJson);
+		copiedCount++;
+		console.log(`Copied ${blockName}/block.json`);
+	}
 
-    console.log(`Copied ${copiedCount} block.json file(s) to theme/blocks/`);
+	console.log(`Copied ${copiedCount} block.json file(s) to theme/blocks/`);
 }
 
 copyBlockFiles();

@@ -27,27 +27,27 @@ const knownFlags = new Set(['--watch', '--minify', '--slug']);
  * @returns {string | undefined} Flag value when present.
  */
 function getFlagValue(flag) {
-    const withEquals = `${flag}=`;
+	const withEquals = `${flag}=`;
 
-    for (let index = 0; index < args.length; index += 1) {
-        const arg = args[index];
+	for (let index = 0; index < args.length; index += 1) {
+		const arg = args[index];
 
-        if (arg.startsWith(withEquals)) {
-            return arg.slice(withEquals.length);
-        }
+		if (arg.startsWith(withEquals)) {
+			return arg.slice(withEquals.length);
+		}
 
-        if (arg === flag) {
-            const value = args[index + 1];
+		if (arg === flag) {
+			const value = args[index + 1];
 
-            if (!value || value.startsWith('--')) {
-                throw new Error(`Missing value for ${flag}.`);
-            }
+			if (!value || value.startsWith('--')) {
+				throw new Error(`Missing value for ${flag}.`);
+			}
 
-            return value;
-        }
-    }
+			return value;
+		}
+	}
 
-    return undefined;
+	return undefined;
 }
 
 /**
@@ -56,27 +56,27 @@ function getFlagValue(flag) {
  * @returns {void}
  */
 function assertKnownFlags() {
-    for (let index = 0; index < args.length; index += 1) {
-        const arg = args[index];
+	for (let index = 0; index < args.length; index += 1) {
+		const arg = args[index];
 
-        if (!arg.startsWith('--')) {
-            throw new Error(`Unexpected argument "${arg}". Use --slug=<slug>.`);
-        }
+		if (!arg.startsWith('--')) {
+			throw new Error(`Unexpected argument "${arg}". Use --slug=<slug>.`);
+		}
 
-        const flag = arg.split('=')[0];
+		const flag = arg.split('=')[0];
 
-        if (!knownFlags.has(flag)) {
-            throw new Error(`Unknown option: ${flag}`);
-        }
+		if (!knownFlags.has(flag)) {
+			throw new Error(`Unknown option: ${flag}`);
+		}
 
-        if (flag === '--slug' && arg === '--slug') {
-            const value = args[index + 1];
+		if (flag === '--slug' && arg === '--slug') {
+			const value = args[index + 1];
 
-            if (value && !value.startsWith('--')) {
-                index += 1;
-            }
-        }
-    }
+			if (value && !value.startsWith('--')) {
+				index += 1;
+			}
+		}
+	}
 }
 
 /**
@@ -85,18 +85,18 @@ function assertKnownFlags() {
  * @returns {string[]} `--watch` and/or `--minify` when requested.
  */
 function forwardedFlags() {
-    /** @type {string[]} */
-    const flags = [];
+	/** @type {string[]} */
+	const flags = [];
 
-    if (args.includes('--watch')) {
-        flags.push('--watch');
-    }
+	if (args.includes('--watch')) {
+		flags.push('--watch');
+	}
 
-    if (args.includes('--minify')) {
-        flags.push('--minify');
-    }
+	if (args.includes('--minify')) {
+		flags.push('--minify');
+	}
 
-    return flags;
+	return flags;
 }
 
 /**
@@ -107,20 +107,20 @@ function forwardedFlags() {
  * @returns {void}
  */
 function buildSequentially(slugs, flags) {
-    for (const slug of slugs) {
-        const result = spawnSync(process.execPath, [buildScript, slug, ...flags], {
-            cwd: rootDir,
-            stdio: 'inherit',
-        });
+	for (const slug of slugs) {
+		const result = spawnSync(process.execPath, [buildScript, slug, ...flags], {
+			cwd: rootDir,
+			stdio: 'inherit',
+		});
 
-        if (result.error) {
-            throw result.error;
-        }
+		if (result.error) {
+			throw result.error;
+		}
 
-        if ((result.status ?? 1) !== 0) {
-            process.exit(result.status ?? 1);
-        }
-    }
+		if ((result.status ?? 1) !== 0) {
+			process.exit(result.status ?? 1);
+		}
+	}
 }
 
 /**
@@ -134,67 +134,67 @@ function buildSequentially(slugs, flags) {
  * @returns {void}
  */
 function buildWatching(slugs, flags) {
-    const children = slugs.map((slug) =>
-        spawn(process.execPath, [buildScript, slug, ...flags], {
-            cwd: rootDir,
-            stdio: 'inherit',
-        }),
-    );
-    let running = children.length;
-    let failed = false;
+	const children = slugs.map((slug) =>
+		spawn(process.execPath, [buildScript, slug, ...flags], {
+			cwd: rootDir,
+			stdio: 'inherit',
+		}),
+	);
+	let running = children.length;
+	let failed = false;
 
-    /**
-     * Stops sibling watchers after one build fails.
-     *
-     * @param {import('child_process').ChildProcess} failedChild - Process that exited with an error.
-     * @returns {void}
-     */
-    function stopSiblings(failedChild) {
-        for (const child of children) {
-            if (child === failedChild || child.exitCode !== null || child.signalCode !== null) {
-                continue;
-            }
+	/**
+	 * Stops sibling watchers after one build fails.
+	 *
+	 * @param {import('child_process').ChildProcess} failedChild - Process that exited with an error.
+	 * @returns {void}
+	 */
+	function stopSiblings(failedChild) {
+		for (const child of children) {
+			if (child === failedChild || child.exitCode !== null || child.signalCode !== null) {
+				continue;
+			}
 
-            child.kill('SIGTERM');
-        }
-    }
+			child.kill('SIGTERM');
+		}
+	}
 
-    /**
-     * Records one child as finished. `error` and `exit` can both fire.
-     *
-     * @param {import('child_process').ChildProcess & { settled?: boolean }} child - Watched process.
-     * @param {number | null} code - Exit code. Null counts as a failure.
-     * @returns {void}
-     */
-    function settle(child, code) {
-        if (child.settled) {
-            return;
-        }
+	/**
+	 * Records one child as finished. `error` and `exit` can both fire.
+	 *
+	 * @param {import('child_process').ChildProcess & { settled?: boolean }} child - Watched process.
+	 * @param {number | null} code - Exit code. Null counts as a failure.
+	 * @returns {void}
+	 */
+	function settle(child, code) {
+		if (child.settled) {
+			return;
+		}
 
-        child.settled = true;
+		child.settled = true;
 
-        if ((code ?? 1) !== 0) {
-            failed = true;
-            stopSiblings(child);
-        }
+		if ((code ?? 1) !== 0) {
+			failed = true;
+			stopSiblings(child);
+		}
 
-        running -= 1;
+		running -= 1;
 
-        if (running === 0) {
-            process.exit(failed ? 1 : 0);
-        }
-    }
+		if (running === 0) {
+			process.exit(failed ? 1 : 0);
+		}
+	}
 
-    for (const child of children) {
-        child.on('error', (error) => {
-            console.error(error instanceof Error ? error.message : String(error));
-            settle(child, 1);
-        });
+	for (const child of children) {
+		child.on('error', (error) => {
+			console.error(error instanceof Error ? error.message : String(error));
+			settle(child, 1);
+		});
 
-        child.on('exit', (code) => {
-            settle(child, code);
-        });
-    }
+		child.on('exit', (code) => {
+			settle(child, code);
+		});
+	}
 }
 
 /**
@@ -203,33 +203,33 @@ function buildWatching(slugs, flags) {
  * @returns {void}
  */
 function main() {
-    try {
-        assertKnownFlags();
+	try {
+		assertKnownFlags();
 
-        const slugs = resolvePluginSlugs(rootDir, getFlagValue('--slug'));
+		const slugs = resolvePluginSlugs(rootDir, getFlagValue('--slug'));
 
-        if (slugs.length === 0) {
-            console.log('Plugin builds skipped: PLUGIN_SLUGS is empty.');
-            return;
-        }
+		if (slugs.length === 0) {
+			console.log('Plugin builds skipped: PLUGIN_SLUGS is empty.');
+			return;
+		}
 
-        for (const slug of slugs) {
-            assertPluginSlug(slug);
-        }
+		for (const slug of slugs) {
+			assertPluginSlug(slug);
+		}
 
-        const flags = forwardedFlags();
+		const flags = forwardedFlags();
 
-        if (flags.includes('--watch')) {
-            buildWatching(slugs, flags);
-            return;
-        }
+		if (flags.includes('--watch')) {
+			buildWatching(slugs, flags);
+			return;
+		}
 
-        buildSequentially(slugs, flags);
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error(message);
-        process.exit(1);
-    }
+		buildSequentially(slugs, flags);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(message);
+		process.exit(1);
+	}
 }
 
 main();

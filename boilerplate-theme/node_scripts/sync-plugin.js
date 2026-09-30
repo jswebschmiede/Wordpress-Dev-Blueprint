@@ -33,27 +33,27 @@ const EXCLUDED_FILE_NAMES = new Set(['.DS_Store', 'Thumbs.db']);
  * @returns {string | undefined} Flag value when present.
  */
 function getFlagValue(flag) {
-    const withEquals = `${flag}=`;
+	const withEquals = `${flag}=`;
 
-    for (let index = 0; index < args.length; index += 1) {
-        const arg = args[index];
+	for (let index = 0; index < args.length; index += 1) {
+		const arg = args[index];
 
-        if (arg.startsWith(withEquals)) {
-            return arg.slice(withEquals.length);
-        }
+		if (arg.startsWith(withEquals)) {
+			return arg.slice(withEquals.length);
+		}
 
-        if (arg === flag) {
-            const value = args[index + 1];
+		if (arg === flag) {
+			const value = args[index + 1];
 
-            if (!value || value.startsWith('--')) {
-                throw new Error(`Missing value for ${flag}.`);
-            }
+			if (!value || value.startsWith('--')) {
+				throw new Error(`Missing value for ${flag}.`);
+			}
 
-            return value;
-        }
-    }
+			return value;
+		}
+	}
 
-    return undefined;
+	return undefined;
 }
 
 /**
@@ -65,19 +65,19 @@ function getFlagValue(flag) {
  * @returns {boolean} True when the path is excluded.
  */
 function isExcludedRelative(relativePath) {
-    const parts = relativePath.split('/');
+	const parts = relativePath.split('/');
 
-    if (parts.some((part) => EXCLUDED_DIRECTORIES.has(part))) {
-        return true;
-    }
+	if (parts.some((part) => EXCLUDED_DIRECTORIES.has(part))) {
+		return true;
+	}
 
-    const baseName = parts.at(-1) ?? '';
+	const baseName = parts.at(-1) ?? '';
 
-    if (EXCLUDED_FILE_NAMES.has(baseName) || baseName.endsWith('.map')) {
-        return true;
-    }
+	if (EXCLUDED_FILE_NAMES.has(baseName) || baseName.endsWith('.map')) {
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 /**
@@ -87,11 +87,11 @@ function isExcludedRelative(relativePath) {
  * @returns {boolean} True when every segment is a single path component.
  */
 function isSafeRelative(relativePath) {
-    if (!relativePath || relativePath === '.') {
-        return false;
-    }
+	if (!relativePath || relativePath === '.') {
+		return false;
+	}
 
-    return relativePath.split('/').every((part) => part !== '' && part !== '.' && part !== '..');
+	return relativePath.split('/').every((part) => part !== '' && part !== '.' && part !== '..');
 }
 
 /**
@@ -102,14 +102,14 @@ function isSafeRelative(relativePath) {
  * @returns {void}
  */
 function assertWslPath(value, label) {
-    if (!/^[A-Za-z]:[\\/]/.test(value)) {
-        return;
-    }
+	if (!/^[A-Za-z]:[\\/]/.test(value)) {
+		return;
+	}
 
-    const drive = value[0].toLowerCase();
-    const rest = value.slice(2).replaceAll('\\', '/');
+	const drive = value[0].toLowerCase();
+	const rest = value.slice(2).replaceAll('\\', '/');
 
-    throw new Error(`${label} is a Windows path (${value}). From WSL use /mnt/${drive}${rest}`);
+	throw new Error(`${label} is a Windows path (${value}). From WSL use /mnt/${drive}${rest}`);
 }
 
 /**
@@ -120,35 +120,35 @@ function assertWslPath(value, label) {
  * @returns {void}
  */
 function assertSafeDestination(destination, pluginSource) {
-    const dest = resolve(destination);
-    const source = resolve(pluginSource);
-    const packageRoot = resolve(rootDir);
-    const repositoryRoot = resolve(repoRoot);
+	const dest = resolve(destination);
+	const source = resolve(pluginSource);
+	const packageRoot = resolve(rootDir);
+	const repositoryRoot = resolve(repoRoot);
 
-    if (dest === source || dest.startsWith(`${source}${sep}`)) {
-        throw new Error(`Refusing to sync into the plugin source (${dest}).`);
-    }
+	if (dest === source || dest.startsWith(`${source}${sep}`)) {
+		throw new Error(`Refusing to sync into the plugin source (${dest}).`);
+	}
 
-    if (
-        dest === packageRoot ||
-        dest.startsWith(`${packageRoot}${sep}`) ||
-        dest === repositoryRoot ||
-        dest.startsWith(`${repositoryRoot}${sep}`)
-    ) {
-        throw new Error(`Refusing to sync into the repository (${dest}).`);
-    }
+	if (
+		dest === packageRoot ||
+		dest.startsWith(`${packageRoot}${sep}`) ||
+		dest === repositoryRoot ||
+		dest.startsWith(`${repositoryRoot}${sep}`)
+	) {
+		throw new Error(`Refusing to sync into the repository (${dest}).`);
+	}
 
-    const baseName = dest.split(sep).at(-1)?.toLowerCase() ?? '';
+	const baseName = dest.split(sep).at(-1)?.toLowerCase() ?? '';
 
-    if (baseName === 'plugins' || baseName === 'wp-content') {
-        throw new Error(
-            `Refusing to sync into "${dest}". Point WP_CONTENT_PATH at wp-content so the copy lands in plugins/<slug>.`,
-        );
-    }
+	if (baseName === 'plugins' || baseName === 'wp-content') {
+		throw new Error(
+			`Refusing to sync into "${dest}". Point WP_CONTENT_PATH at wp-content so the copy lands in plugins/<slug>.`,
+		);
+	}
 
-    if (dest.split(sep).filter(Boolean).length < 3) {
-        throw new Error(`Refusing to sync to a short path (${dest}).`);
-    }
+	if (dest.split(sep).filter(Boolean).length < 3) {
+		throw new Error(`Refusing to sync to a short path (${dest}).`);
+	}
 }
 
 /**
@@ -159,32 +159,36 @@ function assertSafeDestination(destination, pluginSource) {
  * @returns {string[]} Forward-slash paths relative to the plugin directory.
  */
 function collectRelativeFiles(directory, pluginRoot) {
-    if (!existsSync(directory)) {
-        return [];
-    }
+	if (!existsSync(directory)) {
+		return [];
+	}
 
-    /** @type {string[]} */
-    const files = [];
+	/** @type {string[]} */
+	const files = [];
 
-    for (const entry of readdirSync(directory, { withFileTypes: true })) {
-        const absolutePath = join(directory, entry.name);
-        const relativePath = relative(pluginRoot, absolutePath).split(sep).join('/');
+	for (const entry of readdirSync(directory, { withFileTypes: true })) {
+		const absolutePath = join(directory, entry.name);
+		const relativePath = relative(pluginRoot, absolutePath).split(sep).join('/');
 
-        if (!isSafeRelative(relativePath) || isExcludedRelative(relativePath) || entry.isSymbolicLink()) {
-            continue;
-        }
+		if (
+			!isSafeRelative(relativePath) ||
+			isExcludedRelative(relativePath) ||
+			entry.isSymbolicLink()
+		) {
+			continue;
+		}
 
-        if (entry.isDirectory()) {
-            files.push(...collectRelativeFiles(absolutePath, pluginRoot));
-            continue;
-        }
+		if (entry.isDirectory()) {
+			files.push(...collectRelativeFiles(absolutePath, pluginRoot));
+			continue;
+		}
 
-        if (entry.isFile()) {
-            files.push(relativePath);
-        }
-    }
+		if (entry.isFile()) {
+			files.push(relativePath);
+		}
+	}
 
-    return files;
+	return files;
 }
 
 /**
@@ -195,18 +199,20 @@ function collectRelativeFiles(directory, pluginRoot) {
  * @returns {boolean} True when the destination already matches the source.
  */
 function isUnchanged(from, to) {
-    if (!existsSync(to)) {
-        return false;
-    }
+	if (!existsSync(to)) {
+		return false;
+	}
 
-    const sourceStat = statSync(from);
-    const targetStat = statSync(to);
+	const sourceStat = statSync(from);
+	const targetStat = statSync(to);
 
-    if (!targetStat.isFile()) {
-        return false;
-    }
+	if (!targetStat.isFile()) {
+		return false;
+	}
 
-    return sourceStat.size === targetStat.size && Math.abs(sourceStat.mtimeMs - targetStat.mtimeMs) < 1;
+	return (
+		sourceStat.size === targetStat.size && Math.abs(sourceStat.mtimeMs - targetStat.mtimeMs) < 1
+	);
 }
 
 /**
@@ -219,19 +225,19 @@ function isUnchanged(from, to) {
  * @returns {'copied' | 'skipped'} Whether the file was written.
  */
 function copyPluginFile(pluginSource, destination, relativePath, options) {
-    const from = join(pluginSource, relativePath);
-    const to = join(destination, relativePath);
+	const from = join(pluginSource, relativePath);
+	const to = join(destination, relativePath);
 
-    if (!options.force && isUnchanged(from, to)) {
-        return 'skipped';
-    }
+	if (!options.force && isUnchanged(from, to)) {
+		return 'skipped';
+	}
 
-    if (!options.dryRun) {
-        mkdirSync(dirname(to), { recursive: true });
-        cpSync(from, to, { preserveTimestamps: true });
-    }
+	if (!options.dryRun) {
+		mkdirSync(dirname(to), { recursive: true });
+		cpSync(from, to, { preserveTimestamps: true });
+	}
 
-    return 'copied';
+	return 'copied';
 }
 
 /**
@@ -243,21 +249,21 @@ function copyPluginFile(pluginSource, destination, relativePath, options) {
  * @returns {boolean} True when a path was removed or would be removed.
  */
 function removeDestinationPath(destination, relativePath, dryRun) {
-    if (!isSafeRelative(relativePath) || isExcludedRelative(relativePath)) {
-        return false;
-    }
+	if (!isSafeRelative(relativePath) || isExcludedRelative(relativePath)) {
+		return false;
+	}
 
-    const target = join(destination, relativePath);
+	const target = join(destination, relativePath);
 
-    if (!existsSync(target)) {
-        return false;
-    }
+	if (!existsSync(target)) {
+		return false;
+	}
 
-    if (!dryRun) {
-        rmSync(target, { recursive: true, force: true });
-    }
+	if (!dryRun) {
+		rmSync(target, { recursive: true, force: true });
+	}
 
-    return true;
+	return true;
 }
 
 /**
@@ -269,37 +275,40 @@ function removeDestinationPath(destination, relativePath, dryRun) {
  * @returns {{ copied: number, skipped: number, removed: string[] }} Sync counts and removed paths.
  */
 function syncAll(pluginSource, destination, dryRun) {
-    const sourceFiles = collectRelativeFiles(pluginSource, pluginSource);
-    const sourceSet = new Set(sourceFiles);
-    let copied = 0;
-    let skipped = 0;
+	const sourceFiles = collectRelativeFiles(pluginSource, pluginSource);
+	const sourceSet = new Set(sourceFiles);
+	let copied = 0;
+	let skipped = 0;
 
-    for (const relativePath of sourceFiles) {
-        const result = copyPluginFile(pluginSource, destination, relativePath, { dryRun, force: false });
+	for (const relativePath of sourceFiles) {
+		const result = copyPluginFile(pluginSource, destination, relativePath, {
+			dryRun,
+			force: false,
+		});
 
-        if (result === 'copied') {
-            copied += 1;
-        } else {
-            skipped += 1;
-        }
-    }
+		if (result === 'copied') {
+			copied += 1;
+		} else {
+			skipped += 1;
+		}
+	}
 
-    /** @type {string[]} */
-    const removed = [];
+	/** @type {string[]} */
+	const removed = [];
 
-    if (existsSync(destination)) {
-        for (const relativePath of collectRelativeFiles(destination, destination)) {
-            if (sourceSet.has(relativePath)) {
-                continue;
-            }
+	if (existsSync(destination)) {
+		for (const relativePath of collectRelativeFiles(destination, destination)) {
+			if (sourceSet.has(relativePath)) {
+				continue;
+			}
 
-            if (removeDestinationPath(destination, relativePath, dryRun)) {
-                removed.push(relativePath);
-            }
-        }
-    }
+			if (removeDestinationPath(destination, relativePath, dryRun)) {
+				removed.push(relativePath);
+			}
+		}
+	}
 
-    return { copied, skipped, removed };
+	return { copied, skipped, removed };
 }
 
 /**
@@ -313,44 +322,47 @@ function syncAll(pluginSource, destination, dryRun) {
  * @returns {void}
  */
 function syncChangedPath(slug, pluginSource, destination, relativePath, dryRun) {
-    if (!isSafeRelative(relativePath) || isExcludedRelative(relativePath)) {
-        return;
-    }
+	if (!isSafeRelative(relativePath) || isExcludedRelative(relativePath)) {
+		return;
+	}
 
-    const from = join(pluginSource, relativePath);
+	const from = join(pluginSource, relativePath);
 
-    if (!existsSync(from)) {
-        if (removeDestinationPath(destination, relativePath, dryRun)) {
-            console.log(`${dryRun ? 'would remove' : 'removed'} ${slug}: ${relativePath}`);
-        }
+	if (!existsSync(from)) {
+		if (removeDestinationPath(destination, relativePath, dryRun)) {
+			console.log(`${dryRun ? 'would remove' : 'removed'} ${slug}: ${relativePath}`);
+		}
 
-        return;
-    }
+		return;
+	}
 
-    const stats = lstatSync(from);
+	const stats = lstatSync(from);
 
-    if (stats.isSymbolicLink()) {
-        return;
-    }
+	if (stats.isSymbolicLink()) {
+		return;
+	}
 
-    if (stats.isDirectory()) {
-        for (const child of collectRelativeFiles(from, pluginSource)) {
-            const result = copyPluginFile(pluginSource, destination, child, { dryRun, force: true });
+	if (stats.isDirectory()) {
+		for (const child of collectRelativeFiles(from, pluginSource)) {
+			const result = copyPluginFile(pluginSource, destination, child, {
+				dryRun,
+				force: true,
+			});
 
-            if (result === 'copied') {
-                console.log(`${dryRun ? 'would sync' : 'synced'} ${slug}: ${child}`);
-            }
-        }
+			if (result === 'copied') {
+				console.log(`${dryRun ? 'would sync' : 'synced'} ${slug}: ${child}`);
+			}
+		}
 
-        return;
-    }
+		return;
+	}
 
-    if (!stats.isFile()) {
-        return;
-    }
+	if (!stats.isFile()) {
+		return;
+	}
 
-    copyPluginFile(pluginSource, destination, relativePath, { dryRun, force: true });
-    console.log(`${dryRun ? 'would sync' : 'synced'} ${slug}: ${relativePath}`);
+	copyPluginFile(pluginSource, destination, relativePath, { dryRun, force: true });
+	console.log(`${dryRun ? 'would sync' : 'synced'} ${slug}: ${relativePath}`);
 }
 
 /**
@@ -370,26 +382,26 @@ function syncChangedPath(slug, pluginSource, destination, relativePath, dryRun) 
  * @returns {PluginSyncJob[]} Jobs in list order.
  */
 function resolveJobs(slugs, wpContentPath) {
-    /** @type {PluginSyncJob[]} */
-    const jobs = [];
+	/** @type {PluginSyncJob[]} */
+	const jobs = [];
 
-    for (const slug of slugs) {
-        assertPluginSlug(slug);
+	for (const slug of slugs) {
+		assertPluginSlug(slug);
 
-        const source = join(rootDir, 'plugins', slug);
+		const source = join(rootDir, 'plugins', slug);
 
-        if (!existsSync(source) || !statSync(source).isDirectory()) {
-            throw new Error(`Plugin source not found: ${source}`);
-        }
+		if (!existsSync(source) || !statSync(source).isDirectory()) {
+			throw new Error(`Plugin source not found: ${source}`);
+		}
 
-        const destination = resolve(wpContentPath, 'plugins', slug);
+		const destination = resolve(wpContentPath, 'plugins', slug);
 
-        assertWslPath(destination, 'Sync target');
-        assertSafeDestination(destination, source);
-        jobs.push({ slug, source, destination });
-    }
+		assertWslPath(destination, 'Sync target');
+		assertSafeDestination(destination, source);
+		jobs.push({ slug, source, destination });
+	}
 
-    return jobs;
+	return jobs;
 }
 
 /**
@@ -402,84 +414,84 @@ function resolveJobs(slugs, wpContentPath) {
  * @returns {{ markReady: () => void }} Control handle.
  */
 function startWatcher(job) {
-    /** @type {Set<string>} */
-    const pending = new Set();
-    let timer;
-    let ready = false;
+	/** @type {Set<string>} */
+	const pending = new Set();
+	let timer;
+	let ready = false;
 
-    /**
-     * Copies the paths gathered from the latest watch burst.
-     *
-     * @returns {void}
-     */
-    function flush() {
-        const paths = [...pending];
-        pending.clear();
+	/**
+	 * Copies the paths gathered from the latest watch burst.
+	 *
+	 * @returns {void}
+	 */
+	function flush() {
+		const paths = [...pending];
+		pending.clear();
 
-        for (const relativePath of paths) {
-            try {
-                syncChangedPath(job.slug, job.source, job.destination, relativePath, false);
-            } catch (error) {
-                const message = error instanceof Error ? error.message : String(error);
-                console.error(`Plugin sync failed for ${job.slug}: ${relativePath}: ${message}`);
-            }
-        }
-    }
+		for (const relativePath of paths) {
+			try {
+				syncChangedPath(job.slug, job.source, job.destination, relativePath, false);
+			} catch (error) {
+				const message = error instanceof Error ? error.message : String(error);
+				console.error(`Plugin sync failed for ${job.slug}: ${relativePath}: ${message}`);
+			}
+		}
+	}
 
-    /**
-     * Queues one watch path. Before `markReady`, the queue waits.
-     *
-     * @param {string | Buffer | null} filename - Path reported by `fs.watch`.
-     * @returns {void}
-     */
-    function enqueue(filename) {
-        if (!filename) {
-            return;
-        }
+	/**
+	 * Queues one watch path. Before `markReady`, the queue waits.
+	 *
+	 * @param {string | Buffer | null} filename - Path reported by `fs.watch`.
+	 * @returns {void}
+	 */
+	function enqueue(filename) {
+		if (!filename) {
+			return;
+		}
 
-        const relativePath = String(filename).split(sep).join('/');
+		const relativePath = String(filename).split(sep).join('/');
 
-        if (!isSafeRelative(relativePath) || isExcludedRelative(relativePath)) {
-            return;
-        }
+		if (!isSafeRelative(relativePath) || isExcludedRelative(relativePath)) {
+			return;
+		}
 
-        pending.add(relativePath);
+		pending.add(relativePath);
 
-        if (!ready) {
-            return;
-        }
+		if (!ready) {
+			return;
+		}
 
-        clearTimeout(timer);
-        timer = setTimeout(flush, 100);
-    }
+		clearTimeout(timer);
+		timer = setTimeout(flush, 100);
+	}
 
-    const watcher = watch(job.source, { recursive: true }, (_eventType, filename) => {
-        enqueue(filename);
-    });
+	const watcher = watch(job.source, { recursive: true }, (_eventType, filename) => {
+		enqueue(filename);
+	});
 
-    watcher.on('error', (error) => {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error(`Plugin sync watch error (${job.slug}): ${message}`);
-    });
+	watcher.on('error', (error) => {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(`Plugin sync watch error (${job.slug}): ${message}`);
+	});
 
-    return {
-        /**
-         * Flushes paths saved during the initial sync and accepts further changes.
-         *
-         * @returns {void}
-         */
-        markReady() {
-            ready = true;
-            console.log(`Watching plugins/${job.slug}/ — syncing changed files only.`);
+	return {
+		/**
+		 * Flushes paths saved during the initial sync and accepts further changes.
+		 *
+		 * @returns {void}
+		 */
+		markReady() {
+			ready = true;
+			console.log(`Watching plugins/${job.slug}/ — syncing changed files only.`);
 
-            if (pending.size === 0) {
-                return;
-            }
+			if (pending.size === 0) {
+				return;
+			}
 
-            clearTimeout(timer);
-            timer = setTimeout(flush, 100);
-        },
-    };
+			clearTimeout(timer);
+			timer = setTimeout(flush, 100);
+		},
+	};
 }
 
 /**
@@ -491,14 +503,14 @@ function startWatcher(job) {
  * @returns {void}
  */
 function logSummary(slug, result, dryRun) {
-    const verb = dryRun ? 'Would sync' : 'Synced';
-    console.log(
-        `${verb} ${slug}: ${result.copied} file(s), skipped ${result.skipped} unchanged, removed ${result.removed.length}.`,
-    );
+	const verb = dryRun ? 'Would sync' : 'Synced';
+	console.log(
+		`${verb} ${slug}: ${result.copied} file(s), skipped ${result.skipped} unchanged, removed ${result.removed.length}.`,
+	);
 
-    for (const relativePath of result.removed) {
-        console.log(`${dryRun ? 'would remove' : 'removed'} ${slug}: ${relativePath}`);
-    }
+	for (const relativePath of result.removed) {
+		console.log(`${dryRun ? 'would remove' : 'removed'} ${slug}: ${relativePath}`);
+	}
 }
 
 /**
@@ -507,95 +519,95 @@ function logSummary(slug, result, dryRun) {
  * @returns {void}
  */
 function main() {
-    const dryRun = args.includes('--dry-run');
-    const optional = args.includes('--optional');
-    const watchMode = args.includes('--watch');
-    const knownFlags = new Set(['--dry-run', '--optional', '--watch', '--slug']);
+	const dryRun = args.includes('--dry-run');
+	const optional = args.includes('--optional');
+	const watchMode = args.includes('--watch');
+	const knownFlags = new Set(['--dry-run', '--optional', '--watch', '--slug']);
 
-    try {
-        for (let index = 0; index < args.length; index += 1) {
-            const arg = args[index];
+	try {
+		for (let index = 0; index < args.length; index += 1) {
+			const arg = args[index];
 
-            if (!arg.startsWith('--')) {
-                throw new Error(`Unexpected argument "${arg}". Use --slug=<slug>.`);
-            }
+			if (!arg.startsWith('--')) {
+				throw new Error(`Unexpected argument "${arg}". Use --slug=<slug>.`);
+			}
 
-            const flag = arg.split('=')[0];
+			const flag = arg.split('=')[0];
 
-            if (!knownFlags.has(flag)) {
-                throw new Error(`Unknown option: ${flag}`);
-            }
+			if (!knownFlags.has(flag)) {
+				throw new Error(`Unknown option: ${flag}`);
+			}
 
-            if (flag === '--slug' && arg === '--slug') {
-                const value = args[index + 1];
+			if (flag === '--slug' && arg === '--slug') {
+				const value = args[index + 1];
 
-                if (value && !value.startsWith('--')) {
-                    index += 1;
-                }
-            }
-        }
+				if (value && !value.startsWith('--')) {
+					index += 1;
+				}
+			}
+		}
 
-        const slugs = resolvePluginSlugs(rootDir, getFlagValue('--slug'));
+		const slugs = resolvePluginSlugs(rootDir, getFlagValue('--slug'));
 
-        if (slugs.length === 0) {
-            console.log('Plugin sync skipped: PLUGIN_SLUGS is empty.');
-            return;
-        }
+		if (slugs.length === 0) {
+			console.log('Plugin sync skipped: PLUGIN_SLUGS is empty.');
+			return;
+		}
 
-        const wpContentPath = readEnv('WP_CONTENT_PATH', loadFileEnv(rootDir));
+		const wpContentPath = readEnv('WP_CONTENT_PATH', loadFileEnv(rootDir));
 
-        if (!wpContentPath) {
-            const message = 'Set WP_CONTENT_PATH. See .env.example.';
+		if (!wpContentPath) {
+			const message = 'Set WP_CONTENT_PATH. See .env.example.';
 
-            if (optional) {
-                console.log(`Plugin sync skipped: ${message}`);
-                return;
-            }
+			if (optional) {
+				console.log(`Plugin sync skipped: ${message}`);
+				return;
+			}
 
-            throw new Error(`Plugin sync needs WP_CONTENT_PATH. ${message}`);
-        }
+			throw new Error(`Plugin sync needs WP_CONTENT_PATH. ${message}`);
+		}
 
-        assertWslPath(wpContentPath, 'WP_CONTENT_PATH');
+		assertWslPath(wpContentPath, 'WP_CONTENT_PATH');
 
-        if (!existsSync(wpContentPath)) {
-            throw new Error(
-                `wp-content path does not exist: ${wpContentPath}. Map the Windows path to /mnt/<drive>/...`,
-            );
-        }
+		if (!existsSync(wpContentPath)) {
+			throw new Error(
+				`wp-content path does not exist: ${wpContentPath}. Map the Windows path to /mnt/<drive>/...`,
+			);
+		}
 
-        const jobs = resolveJobs(slugs, wpContentPath);
+		const jobs = resolveJobs(slugs, wpContentPath);
 
-        for (const job of jobs) {
-            console.log(`Plugin sync (${job.slug}): ${job.source} → ${job.destination}`);
+		for (const job of jobs) {
+			console.log(`Plugin sync (${job.slug}): ${job.source} → ${job.destination}`);
 
-            if (!dryRun) {
-                mkdirSync(job.destination, { recursive: true });
-            }
-        }
+			if (!dryRun) {
+				mkdirSync(job.destination, { recursive: true });
+			}
+		}
 
-        const watchers = watchMode && !dryRun ? jobs.map((job) => startWatcher(job)) : [];
+		const watchers = watchMode && !dryRun ? jobs.map((job) => startWatcher(job)) : [];
 
-        for (const job of jobs) {
-            logSummary(job.slug, syncAll(job.source, job.destination, dryRun), dryRun);
-        }
+		for (const job of jobs) {
+			logSummary(job.slug, syncAll(job.source, job.destination, dryRun), dryRun);
+		}
 
-        if (!watchMode) {
-            return;
-        }
+		if (!watchMode) {
+			return;
+		}
 
-        if (dryRun) {
-            console.log('Dry run: watch was not started.');
-            return;
-        }
+		if (dryRun) {
+			console.log('Dry run: watch was not started.');
+			return;
+		}
 
-        for (const watcher of watchers) {
-            watcher.markReady();
-        }
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error(message);
-        process.exit(1);
-    }
+		for (const watcher of watchers) {
+			watcher.markReady();
+		}
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(message);
+		process.exit(1);
+	}
 }
 
 main();

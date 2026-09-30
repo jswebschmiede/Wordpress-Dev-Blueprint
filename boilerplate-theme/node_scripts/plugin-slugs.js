@@ -16,42 +16,42 @@ import { join } from 'path';
  * @returns {Record<string, string>} Parsed variables. Missing files yield an empty object.
  */
 export function parseEnvFile(filePath) {
-    if (!existsSync(filePath)) {
-        return {};
-    }
+	if (!existsSync(filePath)) {
+		return {};
+	}
 
-    /** @type {Record<string, string>} */
-    const values = {};
+	/** @type {Record<string, string>} */
+	const values = {};
 
-    for (const line of readFileSync(filePath, 'utf8').split('\n')) {
-        const trimmed = line.trim();
+	for (const line of readFileSync(filePath, 'utf8').split('\n')) {
+		const trimmed = line.trim();
 
-        if (!trimmed || trimmed.startsWith('#')) {
-            continue;
-        }
+		if (!trimmed || trimmed.startsWith('#')) {
+			continue;
+		}
 
-        const separator = trimmed.indexOf('=');
+		const separator = trimmed.indexOf('=');
 
-        if (separator === -1) {
-            continue;
-        }
+		if (separator === -1) {
+			continue;
+		}
 
-        const key = trimmed.slice(0, separator).trim();
-        let value = trimmed.slice(separator + 1).trim();
+		const key = trimmed.slice(0, separator).trim();
+		let value = trimmed.slice(separator + 1).trim();
 
-        if (
-            (value.startsWith('"') && value.endsWith('"')) ||
-            (value.startsWith("'") && value.endsWith("'"))
-        ) {
-            value = value.slice(1, -1);
-        }
+		if (
+			(value.startsWith('"') && value.endsWith('"')) ||
+			(value.startsWith("'") && value.endsWith("'"))
+		) {
+			value = value.slice(1, -1);
+		}
 
-        if (key) {
-            values[key] = value;
-        }
-    }
+		if (key) {
+			values[key] = value;
+		}
+	}
 
-    return values;
+	return values;
 }
 
 /**
@@ -63,10 +63,10 @@ export function parseEnvFile(filePath) {
  * @returns {Record<string, string>} Merged file variables.
  */
 export function loadFileEnv(rootDir) {
-    return {
-        ...parseEnvFile(join(rootDir, '.env')),
-        ...parseEnvFile(join(rootDir, '.env.local')),
-    };
+	return {
+		...parseEnvFile(join(rootDir, '.env')),
+		...parseEnvFile(join(rootDir, '.env.local')),
+	};
 }
 
 /**
@@ -79,17 +79,17 @@ export function loadFileEnv(rootDir) {
  * @returns {string} Trimmed value, or an empty string.
  */
 export function readEnv(key, fileEnv) {
-    const fromProcess = process.env[key];
+	const fromProcess = process.env[key];
 
-    if (typeof fromProcess === 'string' && fromProcess.trim() !== '') {
-        return fromProcess.trim();
-    }
+	if (typeof fromProcess === 'string' && fromProcess.trim() !== '') {
+		return fromProcess.trim();
+	}
 
-    if (typeof fileEnv[key] === 'string' && fileEnv[key].trim() !== '') {
-        return fileEnv[key].trim();
-    }
+	if (typeof fileEnv[key] === 'string' && fileEnv[key].trim() !== '') {
+		return fileEnv[key].trim();
+	}
 
-    return '';
+	return '';
 }
 
 /**
@@ -99,26 +99,26 @@ export function readEnv(key, fileEnv) {
  * @returns {string[]} Slugs in order, without duplicates.
  */
 export function parsePluginSlugList(value) {
-    if (typeof value !== 'string' || value.trim() === '') {
-        return [];
-    }
+	if (typeof value !== 'string' || value.trim() === '') {
+		return [];
+	}
 
-    /** @type {string[]} */
-    const slugs = [];
-    const seen = new Set();
+	/** @type {string[]} */
+	const slugs = [];
+	const seen = new Set();
 
-    for (const part of value.split(',')) {
-        const slug = part.trim();
+	for (const part of value.split(',')) {
+		const slug = part.trim();
 
-        if (!slug || seen.has(slug)) {
-            continue;
-        }
+		if (!slug || seen.has(slug)) {
+			continue;
+		}
 
-        seen.add(slug);
-        slugs.push(slug);
-    }
+		seen.add(slug);
+		slugs.push(slug);
+	}
 
-    return slugs;
+	return slugs;
 }
 
 /**
@@ -128,7 +128,7 @@ export function parsePluginSlugList(value) {
  * @returns {string[]} Configured slugs. Empty when the key is missing or blank.
  */
 export function readPluginSlugs(rootDir) {
-    return parsePluginSlugList(readEnv('PLUGIN_SLUGS', loadFileEnv(rootDir)));
+	return parsePluginSlugList(readEnv('PLUGIN_SLUGS', loadFileEnv(rootDir)));
 }
 
 /**
@@ -141,11 +141,11 @@ export function readPluginSlugs(rootDir) {
  * @returns {string[]} Slugs to build or sync.
  */
 export function resolvePluginSlugs(rootDir, cliSlug) {
-    if (typeof cliSlug === 'string' && cliSlug.trim() !== '') {
-        return [cliSlug.trim()];
-    }
+	if (typeof cliSlug === 'string' && cliSlug.trim() !== '') {
+		return [cliSlug.trim()];
+	}
 
-    return readPluginSlugs(rootDir);
+	return readPluginSlugs(rootDir);
 }
 
 /**
@@ -155,9 +155,9 @@ export function resolvePluginSlugs(rootDir, cliSlug) {
  * @returns {void}
  */
 export function assertPluginSlug(slug) {
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-        throw new Error(
-            `Plugin slug must contain only lowercase letters, numbers, and single hyphens (${slug}).`,
-        );
-    }
+	if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+		throw new Error(
+			`Plugin slug must contain only lowercase letters, numbers, and single hyphens (${slug}).`,
+		);
+	}
 }

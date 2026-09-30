@@ -19,24 +19,24 @@ const isWatch = process.argv.includes('--watch');
  * @type {Record<string, string>}
  */
 const wpGlobals = {
-    '@wordpress/blocks': 'window.wp.blocks',
-    '@wordpress/element': 'window.wp.element',
-    '@wordpress/block-editor': 'window.wp.blockEditor',
-    '@wordpress/components': 'window.wp.components',
-    '@wordpress/i18n': 'window.wp.i18n',
-    '@wordpress/editor': 'window.wp.editor',
-    '@wordpress/data': 'window.wp.data',
-    '@wordpress/compose': 'window.wp.compose',
-    '@wordpress/hooks': 'window.wp.hooks',
-    '@wordpress/primitives': 'window.wp.primitives',
-    '@wordpress/dom-ready': 'window.wp.domReady',
-    '@wordpress/icons': 'window.wp.icons',
-    '@wordpress/api-fetch': 'window.wp.apiFetch',
-    '@wordpress/core-data': 'window.wp.coreData',
-    '@wordpress/html-entities': 'window.wp.htmlEntities',
-    '@wordpress/server-side-render': 'window.wp.serverSideRender',
-    react: 'window.React',
-    'react-dom': 'window.ReactDOM',
+	'@wordpress/blocks': 'window.wp.blocks',
+	'@wordpress/element': 'window.wp.element',
+	'@wordpress/block-editor': 'window.wp.blockEditor',
+	'@wordpress/components': 'window.wp.components',
+	'@wordpress/i18n': 'window.wp.i18n',
+	'@wordpress/editor': 'window.wp.editor',
+	'@wordpress/data': 'window.wp.data',
+	'@wordpress/compose': 'window.wp.compose',
+	'@wordpress/hooks': 'window.wp.hooks',
+	'@wordpress/primitives': 'window.wp.primitives',
+	'@wordpress/dom-ready': 'window.wp.domReady',
+	'@wordpress/icons': 'window.wp.icons',
+	'@wordpress/api-fetch': 'window.wp.apiFetch',
+	'@wordpress/core-data': 'window.wp.coreData',
+	'@wordpress/html-entities': 'window.wp.htmlEntities',
+	'@wordpress/server-side-render': 'window.wp.serverSideRender',
+	react: 'window.React',
+	'react-dom': 'window.ReactDOM',
 };
 
 /**
@@ -45,16 +45,16 @@ const wpGlobals = {
  * @type {esbuild.BuildOptions}
  */
 const buildOptions = {
-    entryPoints: [join(rootDir, 'javascript', 'blocks.js')],
-    bundle: true,
-    outfile: join(rootDir, 'theme', 'js', 'blocks.min.js'),
-    format: 'iife',
-    target: 'esnext',
-    minify: isProduction,
-    sourcemap: !isProduction,
-    loader: { '.js': 'jsx' },
-    plugins: [externalGlobalPlugin(wpGlobals)],
-    logLevel: 'info',
+	entryPoints: [join(rootDir, 'javascript', 'blocks.js')],
+	bundle: true,
+	outfile: join(rootDir, 'theme', 'js', 'blocks.min.js'),
+	format: 'iife',
+	target: 'esnext',
+	minify: isProduction,
+	sourcemap: !isProduction,
+	loader: { '.js': 'jsx' },
+	plugins: [externalGlobalPlugin(wpGlobals)],
+	logLevel: 'info',
 };
 
 /**
@@ -63,21 +63,21 @@ const buildOptions = {
  * @returns {Promise<void>}
  */
 async function build() {
-    try {
-        if (isWatch) {
-            const context = await esbuild.context(buildOptions);
-            await context.watch();
-            console.log('Watching boilerplate blocks...');
-            return;
-        }
+	try {
+		if (isWatch) {
+			const context = await esbuild.context(buildOptions);
+			await context.watch();
+			console.log('Watching boilerplate blocks...');
+			return;
+		}
 
-        await esbuild.build(buildOptions);
-        console.log(`Boilerplate blocks built${isProduction ? ' for production' : ''}.`);
-        process.exit(0);
-    } catch (error) {
-        console.error('Boilerplate block build failed:', error);
-        process.exit(1);
-    }
+		await esbuild.build(buildOptions);
+		console.log(`Boilerplate blocks built${isProduction ? ' for production' : ''}.`);
+		process.exit(0);
+	} catch (error) {
+		console.error('Boilerplate block build failed:', error);
+		process.exit(1);
+	}
 }
 
 build();

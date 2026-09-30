@@ -8,12 +8,12 @@ import { extname, join } from 'path';
 export const allowedExtensions = new Set(['.php', '.json', '.js', '.css', '.md', '.mdc', '.twig']);
 
 export const defaultSkippedDirectories = new Set([
-    'vendor',
-    'vendor-prefixed',
-    'node_modules',
-    '.git',
-    'build',
-    'zip',
+	'vendor',
+	'vendor-prefixed',
+	'node_modules',
+	'.git',
+	'build',
+	'zip',
 ]);
 
 /**
@@ -23,7 +23,7 @@ export const defaultSkippedDirectories = new Set([
  * @returns {string} Normalized path.
  */
 export function toPosixPath(value) {
-    return value.replaceAll('\\', '/');
+	return value.replaceAll('\\', '/');
 }
 
 /**
@@ -33,11 +33,11 @@ export function toPosixPath(value) {
  * @returns {string} Human-readable title.
  */
 export function slugToTitle(value) {
-    return value
-        .split('-')
-        .filter(Boolean)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' ');
+	return value
+		.split('-')
+		.filter(Boolean)
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join(' ');
 }
 
 /**
@@ -47,11 +47,11 @@ export function slugToTitle(value) {
  * @returns {string} PHP namespace segment.
  */
 export function slugToNamespace(value) {
-    return value
-        .split('-')
-        .filter(Boolean)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join('');
+	return value
+		.split('-')
+		.filter(Boolean)
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join('');
 }
 
 /**
@@ -61,7 +61,7 @@ export function slugToNamespace(value) {
  * @returns {string} Constant prefix with trailing underscore.
  */
 export function slugToConstantPrefix(value) {
-    return `${value.replaceAll('-', '').toUpperCase()}_`;
+	return `${value.replaceAll('-', '').toUpperCase()}_`;
 }
 
 /**
@@ -71,7 +71,7 @@ export function slugToConstantPrefix(value) {
  * @returns {string} Placeholder constant prefix with trailing underscore.
  */
 export function slugToPlaceholderConstantPrefix(value) {
-    return `${value.replaceAll('-', '_').toUpperCase()}_`;
+	return `${value.replaceAll('-', '_').toUpperCase()}_`;
 }
 
 /**
@@ -82,15 +82,15 @@ export function slugToPlaceholderConstantPrefix(value) {
  * @returns {void}
  */
 export function validateSlug(value, usageMessage) {
-    if (!value) {
-        console.error(usageMessage);
-        process.exit(1);
-    }
+	if (!value) {
+		console.error(usageMessage);
+		process.exit(1);
+	}
 
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
-        console.error('Slug must contain only lowercase letters, numbers, and single hyphens.');
-        process.exit(1);
-    }
+	if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+		console.error('Slug must contain only lowercase letters, numbers, and single hyphens.');
+		process.exit(1);
+	}
 }
 
 /**
@@ -100,11 +100,11 @@ export function validateSlug(value, usageMessage) {
  * @returns {string} PHP namespace segment.
  */
 export function companyToNamespace(value) {
-    if (value.includes('-')) {
-        return slugToNamespace(value);
-    }
+	if (value.includes('-')) {
+		return slugToNamespace(value);
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -114,7 +114,7 @@ export function companyToNamespace(value) {
  * @returns {string} Lowercase vendor slug without hyphens.
  */
 export function companyToVendorSlug(value) {
-    return companyToNamespace(value).toLowerCase();
+	return companyToNamespace(value).toLowerCase();
 }
 
 /**
@@ -125,19 +125,21 @@ export function companyToVendorSlug(value) {
  * @returns {void}
  */
 export function validateCompany(value, usageMessage) {
-    if (!value || value.startsWith('--')) {
-        console.error('Missing required --company flag.');
-        console.error(usageMessage);
-        process.exit(1);
-    }
+	if (!value || value.startsWith('--')) {
+		console.error('Missing required --company flag.');
+		console.error(usageMessage);
+		process.exit(1);
+	}
 
-    const isKebabCase = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
-    const isPascalCase = /^[A-Z][A-Za-z0-9]*$/.test(value);
+	const isKebabCase = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
+	const isPascalCase = /^[A-Z][A-Za-z0-9]*$/.test(value);
 
-    if (!isKebabCase && !isPascalCase) {
-        console.error('Company must be kebab-case (e.g. smart-media-24) or PascalCase (e.g. SmartMedia24).');
-        process.exit(1);
-    }
+	if (!isKebabCase && !isPascalCase) {
+		console.error(
+			'Company must be kebab-case (e.g. smart-media-24) or PascalCase (e.g. SmartMedia24).',
+		);
+		process.exit(1);
+	}
 }
 
 /**
@@ -150,25 +152,25 @@ export function validateCompany(value, usageMessage) {
  * @returns {boolean} Whether the path should be skipped.
  */
 export function shouldSkipPath(
-    absolutePath,
-    relativePath,
-    skippedDirectories,
-    skippedRelativeDirectories = new Set()
+	absolutePath,
+	relativePath,
+	skippedDirectories,
+	skippedRelativeDirectories = new Set(),
 ) {
-    const baseName = absolutePath.split(/[\\/]/).at(-1);
-    const normalizedRelativePath = toPosixPath(relativePath);
+	const baseName = absolutePath.split(/[\\/]/).at(-1);
+	const normalizedRelativePath = toPosixPath(relativePath);
 
-    if (baseName && skippedDirectories.has(baseName)) {
-        return true;
-    }
+	if (baseName && skippedDirectories.has(baseName)) {
+		return true;
+	}
 
-    return [...skippedRelativeDirectories].some((directory) => {
-        const normalizedDirectory = toPosixPath(directory);
-        return (
-            normalizedRelativePath === normalizedDirectory ||
-            normalizedRelativePath.startsWith(`${normalizedDirectory}/`)
-        );
-    });
+	return [...skippedRelativeDirectories].some((directory) => {
+		const normalizedDirectory = toPosixPath(directory);
+		return (
+			normalizedRelativePath === normalizedDirectory ||
+			normalizedRelativePath.startsWith(`${normalizedDirectory}/`)
+		);
+	});
 }
 
 /**
@@ -183,35 +185,35 @@ export function shouldSkipPath(
  * @returns {{ from: string, to: string, fromName: string, toName: string }[]} Planned renames, sorted by current name.
  */
 export function planChildDirectoryRenames(parentDir, oldSlug, newSlug) {
-    if (!existsSync(parentDir) || !oldSlug || oldSlug === newSlug) {
-        return [];
-    }
+	if (!existsSync(parentDir) || !oldSlug || oldSlug === newSlug) {
+		return [];
+	}
 
-    /** @type {{ from: string, to: string, fromName: string, toName: string }[]} */
-    const planned = [];
+	/** @type {{ from: string, to: string, fromName: string, toName: string }[]} */
+	const planned = [];
 
-    for (const entry of readdirSync(parentDir, { withFileTypes: true })) {
-        if (!entry.isDirectory() || !entry.name.includes(oldSlug)) {
-            continue;
-        }
+	for (const entry of readdirSync(parentDir, { withFileTypes: true })) {
+		if (!entry.isDirectory() || !entry.name.includes(oldSlug)) {
+			continue;
+		}
 
-        const toName = entry.name.replaceAll(oldSlug, newSlug);
+		const toName = entry.name.replaceAll(oldSlug, newSlug);
 
-        if (toName === entry.name) {
-            continue;
-        }
+		if (toName === entry.name) {
+			continue;
+		}
 
-        planned.push({
-            from: join(parentDir, entry.name),
-            to: join(parentDir, toName),
-            fromName: entry.name,
-            toName,
-        });
-    }
+		planned.push({
+			from: join(parentDir, entry.name),
+			to: join(parentDir, toName),
+			fromName: entry.name,
+			toName,
+		});
+	}
 
-    planned.sort((left, right) => left.fromName.localeCompare(right.fromName));
+	planned.sort((left, right) => left.fromName.localeCompare(right.fromName));
 
-    return planned;
+	return planned;
 }
 
 /**
@@ -224,45 +226,52 @@ export function planChildDirectoryRenames(parentDir, oldSlug, newSlug) {
  * @returns {string[]} Absolute file paths.
  */
 export function collectTextFiles(
-    directory,
-    relativeBase = '',
-    skippedDirectories = defaultSkippedDirectories,
-    skippedRelativeDirectories = new Set()
+	directory,
+	relativeBase = '',
+	skippedDirectories = defaultSkippedDirectories,
+	skippedRelativeDirectories = new Set(),
 ) {
-    if (!existsSync(directory)) {
-        return [];
-    }
+	if (!existsSync(directory)) {
+		return [];
+	}
 
-    const files = [];
+	const files = [];
 
-    for (const entry of readdirSync(directory)) {
-        const absolutePath = join(directory, entry);
-        const relativePath = relativeBase ? join(relativeBase, entry) : entry;
+	for (const entry of readdirSync(directory)) {
+		const absolutePath = join(directory, entry);
+		const relativePath = relativeBase ? join(relativeBase, entry) : entry;
 
-        if (shouldSkipPath(absolutePath, relativePath, skippedDirectories, skippedRelativeDirectories)) {
-            continue;
-        }
+		if (
+			shouldSkipPath(
+				absolutePath,
+				relativePath,
+				skippedDirectories,
+				skippedRelativeDirectories,
+			)
+		) {
+			continue;
+		}
 
-        const stats = statSync(absolutePath);
+		const stats = statSync(absolutePath);
 
-        if (stats.isDirectory()) {
-            files.push(
-                ...collectTextFiles(
-                    absolutePath,
-                    relativePath,
-                    skippedDirectories,
-                    skippedRelativeDirectories
-                )
-            );
-            continue;
-        }
+		if (stats.isDirectory()) {
+			files.push(
+				...collectTextFiles(
+					absolutePath,
+					relativePath,
+					skippedDirectories,
+					skippedRelativeDirectories,
+				),
+			);
+			continue;
+		}
 
-        if (stats.isFile() && allowedExtensions.has(extname(entry))) {
-            files.push(absolutePath);
-        }
-    }
+		if (stats.isFile() && allowedExtensions.has(extname(entry))) {
+			files.push(absolutePath);
+		}
+	}
 
-    return files;
+	return files;
 }
 
 /**
@@ -272,7 +281,7 @@ export function collectTextFiles(
  * @returns {string} Expression-safe text.
  */
 function escapeRegExp(value) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
@@ -287,14 +296,14 @@ function escapeRegExp(value) {
  * @returns {string} Updated text.
  */
 export function replaceWholeToken(content, token, replacement) {
-    if (!token || token === replacement) {
-        return content;
-    }
+	if (!token || token === replacement) {
+		return content;
+	}
 
-    const interior = token.includes('_') && !token.includes('-') ? 'A-Za-z0-9_' : 'A-Za-z0-9-';
-    const pattern = new RegExp(`(?<![${interior}])${escapeRegExp(token)}(?![${interior}])`, 'g');
+	const interior = token.includes('_') && !token.includes('-') ? 'A-Za-z0-9_' : 'A-Za-z0-9-';
+	const pattern = new RegExp(`(?<![${interior}])${escapeRegExp(token)}(?![${interior}])`, 'g');
 
-    return content.replace(pattern, () => replacement);
+	return content.replace(pattern, () => replacement);
 }
 
 /**
@@ -309,30 +318,30 @@ export function replaceWholeToken(content, token, replacement) {
  * @returns {string} Updated line.
  */
 export function rewriteCommentedPluginSlugsLine(line, fromSlug, toSlug) {
-    const match = line.match(/^(\s*#\s*PLUGIN_SLUGS=)(.*)$/);
+	const match = line.match(/^(\s*#\s*PLUGIN_SLUGS=)(.*)$/);
 
-    if (!match || !fromSlug || fromSlug === toSlug) {
-        return line;
-    }
+	if (!match || !fromSlug || fromSlug === toSlug) {
+		return line;
+	}
 
-    let changed = false;
-    const fields = match[2].split(',').map((field) => {
-        if (field.trim() !== fromSlug) {
-            return field;
-        }
+	let changed = false;
+	const fields = match[2].split(',').map((field) => {
+		if (field.trim() !== fromSlug) {
+			return field;
+		}
 
-        changed = true;
-        const leading = field.match(/^\s*/)?.[0] ?? '';
-        const trailing = field.match(/\s*$/)?.[0] ?? '';
+		changed = true;
+		const leading = field.match(/^\s*/)?.[0] ?? '';
+		const trailing = field.match(/\s*$/)?.[0] ?? '';
 
-        return `${leading}${toSlug}${trailing}`;
-    });
+		return `${leading}${toSlug}${trailing}`;
+	});
 
-    if (!changed) {
-        return line;
-    }
+	if (!changed) {
+		return line;
+	}
 
-    return `${match[1]}${fields.join(',')}`;
+	return `${match[1]}${fields.join(',')}`;
 }
 
 /**
@@ -343,12 +352,12 @@ export function rewriteCommentedPluginSlugsLine(line, fromSlug, toSlug) {
  * @returns {string} Updated file content.
  */
 export function applyReplacements(content, replacements) {
-    const orderedEntries = Object.entries(replacements).sort(
-        ([searchA], [searchB]) => searchB.length - searchA.length
-    );
+	const orderedEntries = Object.entries(replacements).sort(
+		([searchA], [searchB]) => searchB.length - searchA.length,
+	);
 
-    return orderedEntries.reduce(
-        (updatedContent, [search, replacement]) => updatedContent.replaceAll(search, replacement),
-        content
-    );
+	return orderedEntries.reduce(
+		(updatedContent, [search, replacement]) => updatedContent.replaceAll(search, replacement),
+		content,
+	);
 }
