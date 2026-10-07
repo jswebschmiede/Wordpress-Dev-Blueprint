@@ -1,0 +1,16 @@
+{#
+ # Columns block (boilerplate/columns).
+ # Data is prepared in Blocks\Blocks\ColumnsBlock::render(); `wrapper_attributes` is already escaped by WordPress.
+ # `content` is the rendered boilerplate/column inner blocks (block HTML) and is output unescaped.
+ #}
+<section {{ wrapper_attributes }}>
+	{% if heading %}
+		<div class="columns__heading-wrapper">
+			<h2 class="columns__heading">{{ heading|esc_html|nl2br }}</h2>
+		</div>
+	{% endif %}
+
+	<div class="columns__grid">
+		{{ content }}
+	</div>
+</section>

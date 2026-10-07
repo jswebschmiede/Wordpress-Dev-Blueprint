@@ -1,0 +1,59 @@
+{#
+ # Hero block (boilerplate/hero).
+ # Data is prepared in Blocks\Blocks\HeroBlock::render(); `wrapper_attributes` is already escaped by WordPress.
+ # `title` and `text` are already filtered with wp_kses() (only <br> allowed).
+ # `variant` is `image` (background image behind the content) or `split` (image right of the content).
+ #}
+{% set is_split = variant == 'split' %}
+{% set sizes = is_split ? desktop_media ~ ' 50vw, 100vw' : '100vw' %}
+
+{% set media %}
+	{% if image_mobile %}
+		<picture class="hero__media">
+			<source
+				media="{{ desktop_media|esc_attr }}"
+				srcset="{{ (image_desktop.srcset ?: image_desktop.src)|esc_attr }}"
+				sizes="{{ sizes|esc_attr }}"
+				width="{{ image_desktop.width|esc_attr }}"
+				height="{{ image_desktop.height|esc_attr }}"
+			>
+			<img
+				class="hero__image"
+				src="{{ image_mobile.src|esc_url }}"
+				{% if image_mobile.srcset %}srcset="{{ image_mobile.srcset|esc_attr }}"
+				sizes="{{ sizes|esc_attr }}"{% endif %}
+				width="{{ image_mobile.width|esc_attr }}"
+				height="{{ image_mobile.height|esc_attr }}"
+				alt="{{ image_mobile.alt|esc_attr }}"
+				fetchpriority="high"
+				decoding="async"
+			>
+		</picture>
+	{% endif %}
+{% endset %}
+
+<section {{ wrapper_attributes }}>
+	{% if not is_split %}
+		{{ media }}
+	{% endif %}
+
+	<div class="hero__inner">
+		<div class="hero__content">
+			{% if title %}
+				<h1 class="hero__title">{{ title }}</h1>
+			{% endif %}
+
+			{% if text %}
+				<p class="hero__text">{{ text }}</p>
+			{% endif %}
+
+			{% if button_url and button_label %}
+				<a class="btn btn-primary" href="{{ button_url|esc_url }}">{{ button_label|esc_html }}</a>
+			{% endif %}
+		</div>
+
+		{% if is_split %}
+			{{ media }}
+		{% endif %}
+	</div>
+</section>

@@ -10,20 +10,20 @@ import { useEditorDevice } from './use-editor-device.js';
  * @returns {Array<{ value: string, label: string }>} Menu choices.
  */
 function getDeviceChoices() {
-    return [
-        {
-            value: 'Desktop',
-            label: __('Desktop', 'boilerplate-theme'),
-        },
-        {
-            value: 'Tablet',
-            label: __('Tablet', 'boilerplate-theme'),
-        },
-        {
-            value: 'Mobile',
-            label: __('Mobile', 'boilerplate-theme'),
-        },
-    ];
+	return [
+		{
+			value: 'Desktop',
+			label: __('Desktop', 'boilerplate-theme'),
+		},
+		{
+			value: 'Tablet',
+			label: __('Tablet', 'boilerplate-theme'),
+		},
+		{
+			value: 'Mobile',
+			label: __('Mobile', 'boilerplate-theme'),
+		},
+	];
 }
 
 /**
@@ -34,15 +34,15 @@ function getDeviceChoices() {
  * @returns {JSX.Element} Device icon.
  */
 function DeviceIcon({ deviceType }) {
-    if (deviceType === 'Tablet') {
-        return <TabletIcon />;
-    }
+	if (deviceType === 'Tablet') {
+		return <TabletIcon />;
+	}
 
-    if (deviceType === 'Mobile') {
-        return <MobileIcon />;
-    }
+	if (deviceType === 'Mobile') {
+		return <MobileIcon />;
+	}
 
-    return <DesktopIcon />;
+	return <DesktopIcon />;
 }
 
 /**
@@ -54,36 +54,36 @@ function DeviceIcon({ deviceType }) {
  * @returns {JSX.Element} Device menu button.
  */
 export function EditorDeviceSwitcher() {
-    const { deviceType, setDeviceType } = useEditorDevice();
-    const choices = getDeviceChoices();
-    const current = choices.find((choice) => choice.value === deviceType) ?? choices[0];
+	const { deviceType, setDeviceType } = useEditorDevice();
+	const choices = getDeviceChoices();
+	const current = choices.find((choice) => choice.value === deviceType) ?? choices[0];
 
-    return (
-        <Dropdown
-            popoverProps={{ placement: 'bottom-start' }}
-            renderToggle={({ isOpen, onToggle }) => (
-                <Button
-                    className="boilerplate-device-switcher"
-                    icon={<DeviceIcon deviceType={deviceType} />}
-                    label={current.label}
-                    showTooltip
-                    size="small"
-                    aria-expanded={isOpen}
-                    onClick={onToggle}
-                />
-            )}
-            renderContent={({ onClose }) => (
-                <MenuGroup>
-                    <MenuItemsChoice
-                        choices={choices}
-                        value={deviceType}
-                        onSelect={(nextDeviceType) => {
-                            setDeviceType(nextDeviceType);
-                            onClose();
-                        }}
-                    />
-                </MenuGroup>
-            )}
-        />
-    );
+	return (
+		<Dropdown
+			popoverProps={{ placement: 'bottom-start' }}
+			renderToggle={({ isOpen, onToggle }) => (
+				<Button
+					className="sp__device"
+					icon={<DeviceIcon deviceType={deviceType} />}
+					label={current.label}
+					showTooltip
+					size="small"
+					aria-expanded={isOpen}
+					onClick={onToggle}
+				/>
+			)}
+			renderContent={({ onClose }) => (
+				<MenuGroup>
+					<MenuItemsChoice
+						choices={choices}
+						value={deviceType}
+						onSelect={(nextDeviceType) => {
+							setDeviceType(nextDeviceType);
+							onClose();
+						}}
+					/>
+				</MenuGroup>
+			)}
+		/>
+	);
 }

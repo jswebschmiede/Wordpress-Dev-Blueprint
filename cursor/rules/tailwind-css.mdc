@@ -1,0 +1,69 @@
+---
+description: Use Tailwind CSS everywhere `@apply` and nesting in CSS files, Tailwind utilities in PHP/HTML templates
+globs: **/*.css,**/*.php,**/*.html
+alwaysApply: false
+---
+
+# Tailwind CSS
+
+Always use Tailwind CSS. Do not add raw visual CSS or non-Tailwind custom classes.
+
+## CSS files
+
+- Set visual styles with Tailwind utilities via `@apply`. Never write raw properties such as `display`, `margin`, `padding`, `color`, `position`, or `width`.
+- Use native CSS nesting for child selectors and pseudo-elements (`svg { }`, `&::before`, `&:hover`). Do not use SCSS parent concatenation (`&--modifier`); write BEM modifier classes as full selectors.
+- Use Tailwind breakpoints (`md:` inside `@apply`, or `@variant md`). Do not use raw `@media`.
+- Allowed without `@apply`: custom properties (`--foo`), plus `@import`, `@theme`, and `@layer`.
+
+### Tailwind v4 syntax
+
+- Use bare values instead of unnecessary brackets: `z-45`, not `z-[45]`.
+- Reference CSS variables with parentheses: `left-(--railx)`, not `left-[var(--railx)]`. Use a type hint when ambiguous: `border-(length:--dot-border)`.
+- In `@apply` calc values, do not encode spaces as underscores. Write `top-[calc((var(--a)-var(--b))/2)]`, not `top-[calc((var(--a)_-_var(--b))/2)]`. Underscores are only for HTML class attributes when a space is required.
+- Place `!important` as a suffix: `mt-0!`, not `!mt-0`. Same in HTML classes and `@apply` (e.g. `lg:mt-0!`).
+
+```css
+/* ❌ BAD */
+.scroll-line-pin {
+    pointer-events: none;
+    position: absolute;
+    z-index: 45;
+}
+.scroll-line-pin svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.scroll-line-pin--footer {
+    z-index: 20;
+}
+
+/* ✅ GOOD */
+.scroll-line-pin {
+    @apply pointer-events-none absolute z-45 left-(--railx)
+        top-[calc((var(--f-header-height)-var(--scroll-line-pin-height))/2)];
+
+    svg {
+        @apply block size-full;
+    }
+}
+
+.scroll-line-pin--footer {
+    @apply z-20;
+}
+```
+
+## PHP/HTML templates
+
+- Use Tailwind utility classes for layout and appearance.
+- Component classes (`scroll-line`, `btn`) are allowed only when they are defined with `@apply` in CSS.
+- Do not use inline `style` for visual CSS properties. CSS custom properties in `style` are allowed when needed (e.g. `--cl-headline-before`).
+
+```html
+<!-- ❌ BAD -->
+<div style="display: flex; margin-top: 2rem;"></div>
+
+<!-- ✅ GOOD -->
+<div class="flex mt-8"></div>
+<div class="scroll-line"></div>
+```

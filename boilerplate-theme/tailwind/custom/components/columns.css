@@ -1,0 +1,164 @@
+/**
+ * Columns block (boilerplate/columns) with boilerplate/column children.
+ *
+ * Modifiers (set in ColumnsBlock::render() and blocks/columns/edit.js):
+ * - `columns--count-{1..4}`: 1 column on mobile, max. 2 from `mobile`, chosen count from `tablet`.
+ * - `columns--layout-{30-70,70-30,25-50-25}`: fixed unequal widths from `tablet`, omitted
+ *   for equal widths. Layout names are kept in sync with blocks/columns/layouts.js.
+ * - `columns--align-center`: column contents vertically centered.
+ * - `columns--bg-{primary,secondary,dark,light}`: background, omitted for "none".
+ * - `columns--text-{dark,light}`: text color incl. Tailwind Typography colors of inner blocks.
+ *
+ * More column blocks than columns (attribute `rows` > 1) wrap into further grid rows.
+ *
+ * The gaps come from inline custom properties set per device (pixels, default 24px):
+ * `--columns-gap` (mobile), `--columns-gap-tablet` (from `mobile`), `--columns-gap-desktop`
+ * (from `tablet`) between columns, and the same with `--columns-row-gap*` between rows
+ * (falls back to the column gap). All are always set, so nested columns blocks do not inherit them.
+ * Child combinators keep nested columns blocks independent.
+ */
+
+.columns {
+	@apply mt-md mobile:mt-lg;
+}
+
+.columns > .columns__grid {
+	@apply grid grid-cols-1;
+
+	column-gap: var(--columns-gap, 24px);
+	row-gap: var(--columns-row-gap, var(--columns-gap, 24px));
+
+	@variant mobile {
+		column-gap: var(--columns-gap-tablet, var(--columns-gap, 24px));
+		row-gap: var(--columns-row-gap-tablet, var(--columns-gap-tablet, var(--columns-gap, 24px)));
+	}
+
+	@variant tablet {
+		column-gap: var(--columns-gap-desktop, var(--columns-gap-tablet, var(--columns-gap, 24px)));
+		row-gap: var(
+			--columns-row-gap-desktop,
+			var(--columns-gap-desktop, var(--columns-gap-tablet, var(--columns-gap, 24px)))
+		);
+	}
+}
+
+.columns--count-2 > .columns__grid {
+	@apply tablet:grid-cols-2;
+}
+
+.columns--count-3 > .columns__grid {
+	@apply tablet:grid-cols-3;
+}
+
+.columns--count-4 > .columns__grid {
+	@apply mobile:grid-cols-2 lg:grid-cols-4;
+}
+
+.columns--layout-30-70 > .columns__grid {
+	@apply tablet:grid-cols-[4fr_7fr];
+}
+
+.columns--layout-70-30 > .columns__grid {
+	@apply tablet:grid-cols-[7fr_4fr];
+}
+
+.columns--layout-25-50-25 > .columns__grid {
+	@apply tablet:grid-cols-[1fr_2fr_1fr];
+}
+
+.columns--align-center > .columns__grid {
+	@apply items-center;
+}
+
+/* Optional heading above the columns, same type scale as `.services-grid__heading`. */
+.columns .columns__heading {
+	@apply m-0! mb-12!;
+}
+
+/* Wide alignment gets width and gutter from `.entry-content > *`; full width needs its own. */
+.columns.alignfull > .columns__heading-wrapper,
+.columns.alignfull > .columns__heading,
+.columns.alignfull > .columns__grid {
+	@apply mx-auto max-w-wide w-p-1 xs:w-p-2;
+}
+
+/* Default inner padding with a background. Spacing control utilities override it. */
+.columns--bg-primary,
+.columns--bg-secondary,
+.columns--bg-dark,
+.columns--bg-light {
+	@apply pt-md pb-md mobile:pt-lg mobile:pb-lg;
+
+	&:not(.alignfull) {
+		@apply px-6 tablet:px-10;
+	}
+}
+
+.columns--bg-primary {
+	@apply bg-primary;
+}
+
+.columns--bg-secondary {
+	@apply bg-secondary;
+}
+
+.columns--bg-dark {
+	@apply bg-dark;
+}
+
+.columns--bg-light {
+	@apply bg-light;
+}
+
+/*
+ * Text colors. Prose elements resolve `--tw-prose-*` on the element itself, so the
+ * variables set here win over `prose-boilerplate-theme` for all inner blocks. Explicit accent
+ * colors of custom blocks and button utilities stay unchanged.
+ */
+.columns--text-dark {
+	@apply text-foreground;
+
+	--tw-prose-body: var(--color-foreground);
+	--tw-prose-headings: var(--color-foreground);
+	--tw-prose-lead: var(--color-foreground);
+	--tw-prose-links: var(--color-primary);
+	--tw-prose-bold: var(--color-foreground);
+	--tw-prose-counters: var(--color-foreground);
+	--tw-prose-bullets: var(--color-foreground);
+	--tw-prose-hr: var(--color-foreground);
+	--tw-prose-quotes: var(--color-foreground);
+	--tw-prose-quote-borders: var(--color-primary);
+	--tw-prose-captions: var(--color-foreground);
+	--tw-prose-th-borders: var(--color-foreground);
+	--tw-prose-td-borders: var(--color-foreground);
+}
+
+.columns--text-light {
+	@apply text-white;
+
+	--tw-prose-body: var(--color-white);
+	--tw-prose-headings: var(--color-white);
+	--tw-prose-lead: var(--color-white);
+	--tw-prose-links: var(--color-white);
+	--tw-prose-bold: var(--color-white);
+	--tw-prose-counters: var(--color-white);
+	--tw-prose-bullets: var(--color-white);
+	--tw-prose-hr: var(--color-white);
+	--tw-prose-quotes: var(--color-white);
+	--tw-prose-quote-borders: var(--color-white);
+	--tw-prose-captions: var(--color-white);
+	--tw-prose-th-borders: var(--color-white);
+	--tw-prose-td-borders: var(--color-white);
+}
+
+.columns__column {
+	@apply min-w-0;
+
+	& > :first-child {
+		@apply mt-0;
+	}
+
+	& > :last-child {
+		@apply mb-0;
+	}
+}

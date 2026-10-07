@@ -1,36 +1,40 @@
 <!doctype html>
 <html {{ site.language_attributes }}>
-<head>
-	{% block head %}
-		{% include 'partials/head.twig' %}
-	{% endblock %}
-</head>
+	<head>
+		{% block head %}
+			{% include 'partials/head.twig' %}
+		{% endblock %}
+	</head>
 
-<body class="{{ body_class }}">
+	<body class="{{ body_class }}">
 
-{{ function('wp_body_open') }}
+		{{ function('wp_body_open') }}
 
-<div id="page" class="flex flex-col grow">
-	{% include 'partials/skip-link.twig' %}
+		<div id="page" class="flex flex-col grow">
+			{% include 'partials/skip-link.twig' %}
 
-	{% block header %}
-		{% include 'partials/header.twig' %}
-	{% endblock %}
+			{% block header %}
+				{% include 'partials/header.twig' %}
+			{% endblock %}
 
-	<div id="content" class="grow">
-		{% block content %}{% endblock %}
-	</div><!-- #content -->
+			<div id="content" class="grow">
+				{% block content %}{% endblock %}
+			</div><!-- #content -->
 
-	{% block footer %}
-		{% include 'partials/footer.twig' %}
-	{% endblock %}
-</div><!-- #page -->
+			{% block footer %}
+				{% include 'partials/footer.twig' %}
+			{% endblock %}
+		</div><!-- #page -->
 
-{% if options.show_preloader %}
-	{% include 'partials/preloader.twig' %}
-{% endif %}
+		{% if options.show_preloader %}
+			{% include 'partials/preloader.twig' %}
+		{% endif %}
 
-{{ function('wp_footer') }}
+		{% if options.show_backtotop %}
+			{% include 'partials/backtotop.twig' %}
+		{% endif %}
 
-</body>
+		{{ function('wp_footer') }}
+
+	</body>
 </html>

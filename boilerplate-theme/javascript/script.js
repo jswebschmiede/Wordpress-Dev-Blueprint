@@ -20,8 +20,10 @@
  */
 
 
+import ProgressToTopV2 from './components/progress-to-top';
+
 document.addEventListener('DOMContentLoaded', () => {
-	init();
+    init();
 });
 
 /**
@@ -29,10 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
  * @returns {void}
  */
 function init() {
-	to_top_button();
-	preloader();
+    to_top_button();
+    preloader();
 
-	console.log('%cWe ❤️ WordPress!', 'color: #059669; font-weight: bold;');
+    console.log('%cWe ❤️ WordPress!', 'color: #059669; font-weight: bold;');
 }
 
 /**
@@ -40,15 +42,10 @@ function init() {
  * @returns {void}
  */
 function to_top_button() {
-	const toTopButton = document.getElementById('scrollToTopBtn');
-	if (toTopButton) {
-		toTopButton.addEventListener('click', () => {
-			window.scrollTo({
-				top: 0,
-				behavior: 'smooth',
-			});
-		});
-	}
+    const progressToTop = document.querySelector('#scroll-top');
+    if (progressToTop) {
+        new ProgressToTopV2(progressToTop);
+    }
 }
 
 /**
@@ -57,22 +54,22 @@ function to_top_button() {
  * @returns {void}
  */
 function preloader(onComplete) {
-	const loaderElement = document.getElementById('loader');
+    const loaderElement = document.getElementById('loader');
 
-	// If no preloader exists, run callback immediately
-	if (!loaderElement) {
-		onComplete?.();
-		return;
-	}
+    // If no preloader exists, run callback immediately
+    if (!loaderElement) {
+        onComplete?.();
+        return;
+    }
 
-	setTimeout(() => {
-		loaderElement.classList.add('done');
+    setTimeout(() => {
+        loaderElement.classList.add('done');
 
-		// Remove preloader after fade-out animation
-		setTimeout(() => {
-			loaderElement.remove();
-			onComplete?.();
-		}, 300);
+        // Remove preloader after fade-out animation
+        setTimeout(() => {
+            loaderElement.remove();
+            onComplete?.();
+        }, 300);
 
-	}, 1500);
+    }, 1500);
 }

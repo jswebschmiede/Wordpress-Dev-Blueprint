@@ -101,6 +101,7 @@ class ThemeAssets {
 					'wp-components',
 					'wp-element',
 					'wp-i18n',
+					'wp-rich-text',
 				),
 				BOILERPLATE_THEME_VERSION,
 				true,

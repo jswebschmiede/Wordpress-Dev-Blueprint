@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "boilerplate/hero",
+    "version": "1.0.0",
+    "title": "Hero",
+    "category": "boilerplate-theme",
+    "icon": "cover-image",
+    "description": "Hero-Bereich mit Überschrift, Text, Button und separaten Bildern für Desktop und Mobil, als Hintergrundbild oder rechts neben dem Text auf einer Farbfläche.",
+    "keywords": ["hero", "header", "banner", "stage"],
+    "textdomain": "boilerplate-theme",
+    "supports": {
+        "html": false,
+        "anchor": true,
+        "className": true,
+        "align": ["wide", "full"]
+    },
+    "attributes": {
+        "align": {
+            "type": "string",
+            "default": "full"
+        },
+        "title": {
+            "type": "string",
+            "default": ""
+        },
+        "text": {
+            "type": "string",
+            "default": ""
+        },
+        "buttonLabel": {
+            "type": "string",
+            "default": "Mehr erfahren"
+        },
+        "buttonUrl": {
+            "type": "string",
+            "default": ""
+        },
+        "imageDesktopId": {
+            "type": "number",
+            "default": 0
+        },
+        "imageMobileId": {
+            "type": "number",
+            "default": 0
+        },
+        "overlayColor": {
+            "type": "string"
+        },
+        "customOverlayColor": {
+            "type": "string"
+        },
+        "overlayOpacity": {
+            "type": "number",
+            "default": 70
+        },
+        "overlayStyle": {
+            "type": "string",
+            "enum": ["gradient", "solid"],
+            "default": "gradient"
+        },
+        "variant": {
+            "type": "string",
+            "enum": ["image", "split"],
+            "default": "image"
+        },
+        "background": {
+            "type": "string",
+            "enum": ["none", "primary", "secondary", "dark", "light"],
+            "default": "none"
+        },
+        "textColor": {
+            "type": "string",
+            "enum": ["auto", "dark", "light"],
+            "default": "auto"
+        },
+        "spacing": {
+            "type": "object",
+            "default": {}
+        }
+    },
+    "editorScript": "boilerplate-theme-blocks-editor"
+}

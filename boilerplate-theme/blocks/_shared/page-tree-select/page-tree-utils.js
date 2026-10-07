@@ -7,14 +7,14 @@ import { __ } from '@wordpress/i18n';
  * @returns {string} Decoded text value.
  */
 function decodeHtmlEntities(value) {
-    if (!value || typeof document === 'undefined') {
-        return String(value || '');
-    }
+	if (!value || typeof document === 'undefined') {
+		return String(value || '');
+	}
 
-    const textArea = document.createElement('textarea');
-    textArea.innerHTML = value;
+	const textArea = document.createElement('textarea');
+	textArea.innerHTML = value;
 
-    return textArea.value;
+	return textArea.value;
 }
 
 /**
@@ -24,13 +24,13 @@ function decodeHtmlEntities(value) {
  * @returns {string} Normalized URL without a trailing slash.
  */
 function normalizeUrl(value) {
-    const normalizedValue = String(value || '').trim();
+	const normalizedValue = String(value || '').trim();
 
-    if (!normalizedValue) {
-        return '';
-    }
+	if (!normalizedValue) {
+		return '';
+	}
 
-    return normalizedValue.replace(/\/+$/, '');
+	return normalizedValue.replace(/\/+$/, '');
 }
 
 /**
@@ -40,17 +40,17 @@ function normalizeUrl(value) {
  * @returns {string} Decoded page title.
  */
 function getPageTitle(page) {
-    const untitled = __('Untitled', 'boilerplate-theme');
+	const untitled = __('Untitled', 'boilerplate-theme');
 
-    if (!page?.title) {
-        return untitled;
-    }
+	if (!page?.title) {
+		return untitled;
+	}
 
-    if (typeof page.title === 'string') {
-        return decodeHtmlEntities(page.title);
-    }
+	if (typeof page.title === 'string') {
+		return decodeHtmlEntities(page.title);
+	}
 
-    return decodeHtmlEntities(page.title.rendered || untitled);
+	return decodeHtmlEntities(page.title.rendered || untitled);
 }
 
 /**
@@ -61,14 +61,14 @@ function getPageTitle(page) {
  * @returns {number} Sorting result.
  */
 function sortPages(firstPage, secondPage) {
-    const firstMenuOrder = Number(firstPage?.menu_order) || 0;
-    const secondMenuOrder = Number(secondPage?.menu_order) || 0;
+	const firstMenuOrder = Number(firstPage?.menu_order) || 0;
+	const secondMenuOrder = Number(secondPage?.menu_order) || 0;
 
-    if (firstMenuOrder !== secondMenuOrder) {
-        return firstMenuOrder - secondMenuOrder;
-    }
+	if (firstMenuOrder !== secondMenuOrder) {
+		return firstMenuOrder - secondMenuOrder;
+	}
 
-    return getPageTitle(firstPage).localeCompare(getPageTitle(secondPage));
+	return getPageTitle(firstPage).localeCompare(getPageTitle(secondPage));
 }
 
 /**
@@ -78,40 +78,40 @@ function sortPages(firstPage, secondPage) {
  * @returns {Array<Object>} TreeSelect tree nodes.
  */
 export function buildPageTree(pages) {
-    const pagesByParent = new Map();
+	const pagesByParent = new Map();
 
-    pages.forEach((page) => {
-        const parentId = Number(page?.parent) || 0;
-        const siblings = pagesByParent.get(parentId) || [];
-        siblings.push(page);
-        pagesByParent.set(parentId, siblings);
-    });
+	pages.forEach((page) => {
+		const parentId = Number(page?.parent) || 0;
+		const siblings = pagesByParent.get(parentId) || [];
+		siblings.push(page);
+		pagesByParent.set(parentId, siblings);
+	});
 
-    /**
-     * Builds tree nodes recursively for one parent.
-     *
-     * @param {number} parentId Parent page ID.
-     * @returns {Array<Object>} Tree nodes for the parent.
-     */
-    function getNodes(parentId) {
-        const siblingPages = [...(pagesByParent.get(Number(parentId)) || [])].sort(sortPages);
+	/**
+	 * Builds tree nodes recursively for one parent.
+	 *
+	 * @param {number} parentId Parent page ID.
+	 * @returns {Array<Object>} Tree nodes for the parent.
+	 */
+	function getNodes(parentId) {
+		const siblingPages = [...(pagesByParent.get(Number(parentId)) || [])].sort(sortPages);
 
-        return siblingPages.map((page) => {
-            const children = getNodes(page.id);
-            const node = {
-                id: String(page.id),
-                name: getPageTitle(page),
-            };
+		return siblingPages.map((page) => {
+			const children = getNodes(page.id);
+			const node = {
+				id: String(page.id),
+				name: getPageTitle(page),
+			};
 
-            if (children.length > 0) {
-                node.children = children;
-            }
+			if (children.length > 0) {
+				node.children = children;
+			}
 
-            return node;
-        });
-    }
+			return node;
+		});
+	}
 
-    return getNodes(0);
+	return getNodes(0);
 }
 
 /**
@@ -122,13 +122,57 @@ export function buildPageTree(pages) {
  * @returns {string|undefined} Selected page ID for TreeSelect.
  */
 export function getSelectedPageId(pages, urlValue) {
-    const normalizedTargetUrl = normalizeUrl(urlValue);
+	const normalizedTargetUrl = normalizeUrl(urlValue);
 
-    if (!normalizedTargetUrl) {
-        return undefined;
-    }
+	if (!normalizedTargetUrl) {
+		return undefined;
+	}
 
-    const selectedPage = pages.find((page) => normalizeUrl(page?.link) === normalizedTargetUrl);
+	const selectedPage = pages.find((page) => normalizeUrl(page?.link) === normalizedTargetUrl);
 
-    return selectedPage ? String(selectedPage.id) : undefined;
+	return selectedPage ? String(selectedPage.id) : undefined;
+}
+
+/**
+ * Prefixes tree node names recursively.
+ *
+ * @param {Array<Object>} nodes TreeSelect tree nodes.
+ * @param {string} prefix Prefix to prepend, e.g. the post type label.
+ * @returns {Array<Object>} Prefixed tree nodes.
+ */
+function prefixNodeNames(nodes, prefix) {
+	return nodes.map((node) => {
+		const prefixedNode = { ...node, name: `${prefix}: ${node.name}` };
+
+		if (node.children) {
+			prefixedNode.children = prefixNodeNames(node.children, prefix);
+		}
+
+		return prefixedNode;
+	});
+}
+
+/**
+ * Builds one TreeSelect structure from several post types.
+ *
+ * Pages are listed unprefixed; entries of other post types follow, prefixed
+ * with their singular post type label so they stay distinguishable.
+ *
+ * @param {Array<string>} postTypes Post type slugs in display order.
+ * @param {Object<string, Array<Object>|null>} recordsByType REST entities keyed by post type.
+ * @param {Object<string, string>} labelsByType Singular post type labels keyed by post type.
+ * @returns {Array<Object>} TreeSelect tree nodes.
+ */
+export function buildPostTree(postTypes, recordsByType, labelsByType) {
+	return postTypes.flatMap((postType) => {
+		const records = Array.isArray(recordsByType?.[postType]) ? recordsByType[postType] : [];
+		const nodes = buildPageTree(records);
+		const prefix = labelsByType?.[postType];
+
+		if (postType === 'page' || !prefix) {
+			return nodes;
+		}
+
+		return prefixNodeNames(nodes, prefix);
+	});
 }

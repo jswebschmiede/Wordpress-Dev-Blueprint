@@ -29,6 +29,11 @@ import './block-animations';
  */
 import './block-visibility';
 
+/**
+ * Inline text color — adds a text color button to the rich text toolbar.
+ */
+import './text-color-format';
+
 wp.domReady(() => {
     /**
      * Block styles to register

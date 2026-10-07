@@ -1,3 +1,4 @@
+import { resolveDeviceValue } from '../editor-device/resolve-device-value.js';
 import { SPACING_CLASS_NAMES } from './spacing-class-names.js';
 
 /**
@@ -6,22 +7,22 @@ import { SPACING_CLASS_NAMES } from './spacing-class-names.js';
  * @type {Record<'padding'|'margin', Record<'top'|'right'|'bottom'|'left', string>>}
  */
 const SIDE_UTILITY = {
-    padding: { top: 'pt', right: 'pr', bottom: 'pb', left: 'pl' },
-    margin: { top: 'mt', right: 'mr', bottom: 'mb', left: 'ml' },
+	padding: { top: 'pt', right: 'pr', bottom: 'pb', left: 'pl' },
+	margin: { top: 'mt', right: 'mr', bottom: 'mb', left: 'ml' },
 };
 
 /**
- * Mobile-first prefixes.
+ * Desktop-first prefixes, so an unset device leaves larger devices untouched.
  *
- * Tablet starts at the `mobile` token (`settings.viewport.mobile`).
- * Desktop starts at the `tablet` token (`settings.viewport.tablet`).
+ * Tablet ends below the `tablet` token (`settings.viewport.tablet`).
+ * Mobile ends below the `mobile` token (`settings.viewport.mobile`).
  *
  * @type {Record<'mobile'|'tablet'|'desktop', string>}
  */
 const DEVICE_PREFIX = {
-    mobile: '',
-    tablet: 'mobile:',
-    desktop: 'tablet:',
+	desktop: '',
+	tablet: 'max-tablet:',
+	mobile: 'max-mobile:',
 };
 
 const SPACING_CLASS_SET = new Set(SPACING_CLASS_NAMES);
@@ -33,7 +34,7 @@ const SPACING_CLASS_SET = new Set(SPACING_CLASS_NAMES);
  * @returns {string} Allowed class name.
  */
 function matchSpacingClass(className) {
-    return SPACING_CLASS_SET.has(className) ? className : '';
+	return SPACING_CLASS_SET.has(className) ? className : '';
 }
 
 /**
@@ -46,54 +47,76 @@ function matchSpacingClass(className) {
  * @returns {string} Utility class, or an empty string.
  */
 function classForSide(property, device, side, slug) {
-    const utility = SIDE_UTILITY[property]?.[side];
-    const prefix = DEVICE_PREFIX[device];
+	const utility = SIDE_UTILITY[property]?.[side];
+	const prefix = DEVICE_PREFIX[device];
 
-    if (!utility || prefix === undefined || typeof slug !== 'string' || slug === '') {
-        return '';
-    }
+	if (!utility || prefix === undefined || typeof slug !== 'string' || slug === '') {
+		return '';
+	}
 
-    return matchSpacingClass(`${prefix}${utility}-${slug}`);
+	return matchSpacingClass(`${prefix}${utility}-${slug}`);
+}
+
+/**
+ * Returns whether a side value is a stored slug.
+ *
+ * @param {*} slug Candidate value.
+ * @returns {boolean} True for a non-empty string.
+ */
+function isSlug(slug) {
+	return typeof slug === 'string' && slug !== '';
 }
 
 /**
  * Turns a spacing attribute into a class string for the block wrapper.
  *
- * Empty viewports are omitted so they inherit the next smaller viewport.
+ * Each side resolves per viewport with resolveDeviceValue(): an empty viewport
+ * takes the next larger set viewport. A viewport class is only printed when it
+ * differs from the next larger viewport.
  *
  * @param {Object|undefined} spacing Spacing attribute.
  * @returns {string} Space-separated utility classes.
  */
 export function getSpacingClassName(spacing) {
-    if (!spacing || typeof spacing !== 'object') {
-        return '';
-    }
+	if (!spacing || typeof spacing !== 'object') {
+		return '';
+	}
 
-    const classes = [];
+	const classes = [];
 
-    for (const property of ['padding', 'margin']) {
-        const group = spacing[property];
+	for (const property of ['padding', 'margin']) {
+		const group = spacing[property];
 
-        if (!group || typeof group !== 'object') {
-            continue;
-        }
+		if (!group || typeof group !== 'object') {
+			continue;
+		}
 
-        for (const device of ['mobile', 'tablet', 'desktop']) {
-            const sides = group[device];
+		for (const side of ['top', 'right', 'bottom', 'left']) {
+			const values = {};
 
-            if (!sides || typeof sides !== 'object') {
-                continue;
-            }
+			for (const device of ['mobile', 'tablet', 'desktop']) {
+				const sides = group[device];
 
-            for (const side of ['top', 'right', 'bottom', 'left']) {
-                const className = classForSide(property, device, side, sides[side]);
+				values[device] = sides && typeof sides === 'object' ? sides[side] : undefined;
+			}
 
-                if (className) {
-                    classes.push(className);
-                }
-            }
-        }
-    }
+			let previous = '';
 
-    return classes.join(' ');
+			for (const device of ['desktop', 'tablet', 'mobile']) {
+				const slug = resolveDeviceValue(values, device, isSlug) ?? '';
+
+				if (slug !== previous) {
+					const className = classForSide(property, device, side, slug);
+
+					if (className) {
+						classes.push(className);
+					}
+				}
+
+				previous = slug;
+			}
+		}
+	}
+
+	return classes.join(' ');
 }

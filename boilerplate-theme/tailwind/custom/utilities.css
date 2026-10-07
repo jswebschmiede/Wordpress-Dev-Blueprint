@@ -58,3 +58,204 @@
 @utility list-circle {
 	@apply before:content-["\f111"] before:font-normal;
 }
+
+/*
+ * Block spacing control steps (blocks/_shared/spacing, theme/src/Blocks/Spacing.php).
+ *
+ * Explicit utilities instead of `--spacing-*` theme tokens: named spacing tokens
+ * would also feed w-*, max-w-*, gap-* etc. and shadow built-ins such as
+ * `max-w-xl` or `max-w-none`. Sizes come from the theme.json spacing presets.
+ * `none` is an explicit zero, so a larger viewport can override a smaller one.
+ */
+
+@utility pt-none {
+	padding-top: 0;
+}
+
+@utility pt-xs {
+	padding-top: var(--wp--preset--spacing--xs);
+}
+
+@utility pt-sm {
+	padding-top: var(--wp--preset--spacing--sm);
+}
+
+@utility pt-md {
+	padding-top: var(--wp--preset--spacing--md);
+}
+
+@utility pt-lg {
+	padding-top: var(--wp--preset--spacing--lg);
+}
+
+@utility pt-xl {
+	padding-top: var(--wp--preset--spacing--xl);
+}
+
+@utility pr-none {
+	padding-right: 0;
+}
+
+@utility pr-xs {
+	padding-right: var(--wp--preset--spacing--xs);
+}
+
+@utility pr-sm {
+	padding-right: var(--wp--preset--spacing--sm);
+}
+
+@utility pr-md {
+	padding-right: var(--wp--preset--spacing--md);
+}
+
+@utility pr-lg {
+	padding-right: var(--wp--preset--spacing--lg);
+}
+
+@utility pr-xl {
+	padding-right: var(--wp--preset--spacing--xl);
+}
+
+@utility pb-none {
+	padding-bottom: 0;
+}
+
+@utility pb-xs {
+	padding-bottom: var(--wp--preset--spacing--xs);
+}
+
+@utility pb-sm {
+	padding-bottom: var(--wp--preset--spacing--sm);
+}
+
+@utility pb-md {
+	padding-bottom: var(--wp--preset--spacing--md);
+}
+
+@utility pb-lg {
+	padding-bottom: var(--wp--preset--spacing--lg);
+}
+
+@utility pb-xl {
+	padding-bottom: var(--wp--preset--spacing--xl);
+}
+
+@utility pl-none {
+	padding-left: 0;
+}
+
+@utility pl-xs {
+	padding-left: var(--wp--preset--spacing--xs);
+}
+
+@utility pl-sm {
+	padding-left: var(--wp--preset--spacing--sm);
+}
+
+@utility pl-md {
+	padding-left: var(--wp--preset--spacing--md);
+}
+
+@utility pl-lg {
+	padding-left: var(--wp--preset--spacing--lg);
+}
+
+@utility pl-xl {
+	padding-left: var(--wp--preset--spacing--xl);
+}
+
+@utility mt-none {
+	margin-top: 0;
+}
+
+@utility mt-xs {
+	margin-top: var(--wp--preset--spacing--xs);
+}
+
+@utility mt-sm {
+	margin-top: var(--wp--preset--spacing--sm);
+}
+
+@utility mt-md {
+	margin-top: var(--wp--preset--spacing--md);
+}
+
+@utility mt-lg {
+	margin-top: var(--wp--preset--spacing--lg);
+}
+
+@utility mt-xl {
+	margin-top: var(--wp--preset--spacing--xl);
+}
+
+@utility mr-none {
+	margin-right: 0;
+}
+
+@utility mr-xs {
+	margin-right: var(--wp--preset--spacing--xs);
+}
+
+@utility mr-sm {
+	margin-right: var(--wp--preset--spacing--sm);
+}
+
+@utility mr-md {
+	margin-right: var(--wp--preset--spacing--md);
+}
+
+@utility mr-lg {
+	margin-right: var(--wp--preset--spacing--lg);
+}
+
+@utility mr-xl {
+	margin-right: var(--wp--preset--spacing--xl);
+}
+
+@utility mb-none {
+	margin-bottom: 0;
+}
+
+@utility mb-xs {
+	margin-bottom: var(--wp--preset--spacing--xs);
+}
+
+@utility mb-sm {
+	margin-bottom: var(--wp--preset--spacing--sm);
+}
+
+@utility mb-md {
+	margin-bottom: var(--wp--preset--spacing--md);
+}
+
+@utility mb-lg {
+	margin-bottom: var(--wp--preset--spacing--lg);
+}
+
+@utility mb-xl {
+	margin-bottom: var(--wp--preset--spacing--xl);
+}
+
+@utility ml-none {
+	margin-left: 0;
+}
+
+@utility ml-xs {
+	margin-left: var(--wp--preset--spacing--xs);
+}
+
+@utility ml-sm {
+	margin-left: var(--wp--preset--spacing--sm);
+}
+
+@utility ml-md {
+	margin-left: var(--wp--preset--spacing--md);
+}
+
+@utility ml-lg {
+	margin-left: var(--wp--preset--spacing--lg);
+}
+
+@utility ml-xl {
+	margin-left: var(--wp--preset--spacing--xl);
+}

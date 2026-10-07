@@ -52,7 +52,7 @@ repository root/
     │   ├── blocks.js
     │   ├── block-editor.js
     │   └── script.js
-    ├── blocks/example-block/
+    ├── blocks/                    # example-block, hero, columns, column, _shared
     ├── plugins/boilerplate-plugin/
     ├── plugins/scf-boilerplate-plugin/
     ├── tailwind/custom/components/example-block.css
@@ -63,14 +63,14 @@ repository root/
         ├── composer.json
         ├── index.php, page.php, single.php, archive.php, 404.php   # thin Timber stubs
         ├── templates/template-search.php                          # WP page template (stub)
-        ├── blocks/example-block/block.json
+        ├── blocks/                # copied block.json (example-block, hero, columns, column)
         ├── inc/template-functions.php
         ├── src/
         └── views/                                                  # Twig (Timber)
             ├── layouts/base.twig
             ├── partials/
             ├── templates/
-            └── blocks/example-block.twig
+            └── blocks/            # example-block, hero, columns, column
 ```
 
 The package directory is the development package. The deployable WordPress theme lives in `theme/`; plugin boilerplates live in `plugins/`. The Cursor AI template lives in `cursor/` at the repository root.
@@ -171,7 +171,7 @@ If you rename manually, replace:
 - `BoilerplateTheme` -> your PHP namespace segment (replaced by `pnpm run rename:theme`).
 - `Boilerplate Theme` -> your display name.
 - `BOILERPLATE_THEME_` -> your constant prefix.
-- `boilerplate/example-block` -> your block namespace.
+- `boilerplate/` -> your block namespace (`boilerplate/hero` becomes `<slug>/hero`). `rename:theme` also rewrites `wp-block-boilerplate-` in `postcss.config.js`.
 
 After a manual rename, run `pnpm run composer:install:dev`. Replacing strings in `composer.json` does not rebuild `vendor-prefixed/`.
 

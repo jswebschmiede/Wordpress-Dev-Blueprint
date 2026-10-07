@@ -13,9 +13,9 @@ export const EDITOR_DEVICE_TYPES = ['Desktop', 'Tablet', 'Mobile'];
  * @type {Record<'Desktop' | 'Tablet' | 'Mobile', 'desktop' | 'tablet' | 'mobile'>}
  */
 const DEVICE_KEYS = {
-    Desktop: 'desktop',
-    Tablet: 'tablet',
-    Mobile: 'mobile',
+	Desktop: 'desktop',
+	Tablet: 'tablet',
+	Mobile: 'mobile',
 };
 
 /**
@@ -31,22 +31,22 @@ const DEVICE_KEYS = {
  * }} Current device and a setter.
  */
 export function useEditorDevice() {
-    const deviceType = useSelect((select) => {
-        const current = select('core/editor').getDeviceType?.();
+	const deviceType = useSelect((select) => {
+		const current = select('core/editor').getDeviceType?.();
 
-        return DEVICE_KEYS[current] ? current : 'Desktop';
-    }, []);
-    const { setDeviceType } = useDispatch('core/editor');
+		return DEVICE_KEYS[current] ? current : 'Desktop';
+	}, []);
+	const { setDeviceType } = useDispatch('core/editor');
 
-    return {
-        deviceType,
-        deviceKey: DEVICE_KEYS[deviceType],
-        setDeviceType: (nextDeviceType) => {
-            if (!DEVICE_KEYS[nextDeviceType] || typeof setDeviceType !== 'function') {
-                return;
-            }
+	return {
+		deviceType,
+		deviceKey: DEVICE_KEYS[deviceType],
+		setDeviceType: (nextDeviceType) => {
+			if (!DEVICE_KEYS[nextDeviceType] || typeof setDeviceType !== 'function') {
+				return;
+			}
 
-            setDeviceType(nextDeviceType);
-        },
-    };
+			setDeviceType(nextDeviceType);
+		},
+	};
 }

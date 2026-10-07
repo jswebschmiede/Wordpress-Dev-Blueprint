@@ -8,7 +8,7 @@ Minimal templates for new blocks. Replace `<slug>`, `<Name>`, and placeholders a
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "boilerplate-theme/<slug>",
+    "name": "boilerplate/<slug>",
     "version": "1.0.0",
     "title": "Block Title",
     "category": "boilerplate-theme",
@@ -218,6 +218,27 @@ export default function Edit() {
 ```
 
 `deviceKey` is `desktop`, `tablet`, or `mobile`.
+
+
+## edit.js (editor hover outline)
+
+Editor-only classes from `tailwind/tailwind-editor.css`. Set them in `edit.js` only, never in PHP or Twig.
+
+```javascript
+// Inline field edited in the canvas
+<RichText
+    tagName="h2"
+    className="hero__title editor-outline-field"
+    value={title}
+    onChange={(value) => setAttributes({ title: value })}
+/>
+
+// Container: outlines its inner blocks on hover
+const blockProps = useBlockProps({ className: 'columns editor-outline-children' });
+
+// Structural inner block (e.g. a column): no outline itself, its children still get one
+useInnerBlocksProps(useBlockProps({ className: 'columns__column editor-outline-skip' }), { ... });
+```
 
 ## Official documentation
 

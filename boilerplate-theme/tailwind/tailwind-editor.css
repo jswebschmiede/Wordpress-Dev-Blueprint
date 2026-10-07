@@ -35,6 +35,34 @@ body#tinymce {
 /**
  * Add your editor styles below:
  */
+
+/*
+ * Dotted hover outline for content edited directly in the canvas. The classes
+ * are only set in a block's edit.js, never in PHP/Twig, so they do not reach
+ * the frontend. Focused elements keep the editor's own selection outline.
+ *
+ * - `editor-outline-field`: on a RichText/PlainText element.
+ * - `editor-outline-children`: on a container block; outlines its inner blocks.
+ * - `editor-outline-skip`: on an inner block wrapper that should not get an
+ *   outline itself, e.g. a structural column (its children still do).
+ */
+.editor-outline-field:not(:focus):hover {
+	outline: 2px dotted var(--wp-admin-theme-color, #3858e9);
+	outline-offset: 2px;
+}
+
+/* Drawn with ::after so the outline does not change the layout. */
+.editor-outline-children [data-block]:not(.editor-outline-skip):not(:focus)::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.editor-outline-children [data-block]:not(.editor-outline-skip):not(:focus):hover::after {
+	outline: 2px dotted var(--wp-admin-theme-color, #3858e9);
+}
+
 .editor-visual-editor__post-title-wrapper,
 .block-editor-block-list__layout.is-root-container
 	> :where(:not(.alignleft):not(.alignright):not(.alignfull)) {

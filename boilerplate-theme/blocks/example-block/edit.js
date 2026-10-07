@@ -2,7 +2,7 @@ import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, TextControl, TextareaControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import { SpacingControl, getSpacingClassName } from '../_shared/index.js';
+import { PageTreeSelectControl, SpacingControl, getSpacingClassName } from '../_shared/index.js';
 
 /**
  * Editor component for the example block.
@@ -36,9 +36,9 @@ export default function Edit({ attributes, setAttributes }) {
                         value={description}
                         onChange={(value) => setAttributes({ description: value })}
                     />
-                    <TextControl
+                    <PageTreeSelectControl
                         label={__('URL', 'boilerplate-theme')}
-                        type="url"
+                        noOptionLabel={__('No link', 'boilerplate-theme')}
                         value={url}
                         onChange={(value) => setAttributes({ url: value })}
                     />
@@ -53,9 +53,9 @@ export default function Edit({ attributes, setAttributes }) {
 
             <section {...blockProps}>
                 <div className="example-block__inner">
-                    {title && <h2 className="example-block__title">{title}</h2>}
+                    {title && <h2 className="example-block__title editor-outline-field">{title}</h2>}
                     {description && (
-                        <p className="example-block__description">{description}</p>
+                        <p className="example-block__description editor-outline-field">{description}</p>
                     )}
                     {url && (
                         <span className="example-block__link">

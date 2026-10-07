@@ -1,0 +1,24 @@
+/**
+ * Inspector styles for the shared image control.
+ *
+ * Injected into the editor chrome, outside the canvas iframe.
+ */
+
+.image-control__preview.components-button {
+	display: block;
+	width: 100%;
+	height: auto;
+	margin-bottom: 8px;
+	padding: 0;
+	border-radius: 2px;
+	background: #f0f0f0;
+	overflow: hidden;
+}
+
+.image-control__preview img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 200px;
+	object-fit: contain;
+}

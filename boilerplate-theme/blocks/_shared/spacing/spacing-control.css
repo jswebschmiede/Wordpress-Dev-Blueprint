@@ -1,0 +1,72 @@
+/**
+ * Inspector styles for the spacing control.
+ *
+ * Injected into the editor chrome, outside the canvas iframe.
+ */
+
+.sp__section + .sp__section {
+	margin-top: 16px;
+}
+
+.sp__header {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	margin-bottom: 8px;
+}
+
+.sp__title {
+	flex: 1;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.sp__device.components-button,
+.sp__link.components-button,
+.sp__reset.components-button {
+	width: 24px;
+	min-width: 24px;
+	height: 24px;
+	padding: 0;
+}
+
+.sp__reset.components-button {
+	color: #cc1818;
+}
+
+.sp__row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.sp__row .components-range-control {
+	flex: 1;
+	min-width: 0;
+	margin-bottom: 0;
+}
+
+.sp__side {
+	box-sizing: border-box;
+	flex: none;
+	width: 16px;
+	height: 16px;
+	border: 1px solid #c3c4c7;
+	border-radius: 2px;
+}
+
+.sp__side--top {
+	border-top: 2px solid #1e1e1e;
+}
+
+.sp__side--right {
+	border-right: 2px solid #1e1e1e;
+}
+
+.sp__side--bottom {
+	border-bottom: 2px solid #1e1e1e;
+}
+
+.sp__side--left {
+	border-left: 2px solid #1e1e1e;
+}

@@ -1,0 +1,107 @@
+/**
+ * Hero block (boilerplate/hero).
+ *
+ * The height is fixed by aspect ratio per viewport, matching the image formats.
+ * With aspect-ratio the box still grows when the content is taller.
+ *
+ * Overlay (optional, set in HeroBlock::render() and blocks/hero/edit.js): `hero--overlay` with
+ * `--hero-overlay-color` and `--hero-overlay-opacity` on the wrapper; `hero--overlay-gradient`
+ * fades it out from left to right, otherwise it covers the image evenly.
+ *
+ * Split variant (`hero--split`): the image sits right of the content (below it on mobile),
+ * uncropped, and the height follows the content. Colors use the same presets as the columns
+ * block: `hero--bg-{primary,secondary,dark,light}` (omitted for "none") and `hero--text-{dark,light}`.
+ */
+.hero {
+	@apply relative isolate overflow-hidden bg-dark text-white h-[700px] sm:h-[530px] tablet:h-[470px];
+}
+
+.home .hero {
+	@apply h-[720px] sm:h-[930px] tablet:h-[650px];
+}
+
+.hero__media,
+.hero__image {
+	@apply absolute inset-0 -z-10 size-full object-cover object-bottom tablet:object-center;
+}
+
+/* The opacity applies to the left edge; the gradient mask keeps the teaser's 70/40/0 ratio. */
+.hero--overlay .hero__media::after {
+	@apply absolute inset-0 bg-(--hero-overlay-color) opacity-(--hero-overlay-opacity) content-[''];
+}
+
+.hero--overlay-gradient .hero__media::after {
+	@apply [mask-image:linear-gradient(to_right,#000,rgb(0_0_0/0.57),transparent)];
+}
+
+.hero__inner {
+	@apply relative mx-auto flex h-full max-w-wide w-p-1 xs:w-p-2 py-10 tablet:items-center;
+}
+
+.hero__content {
+	@apply max-w-xl;
+}
+
+.hero__title {
+	@apply mb-3 text-3xl mobile:text-5xl font-semibold leading-tight text-white tablet:text-6xl hyphens-auto wrap-break-word min-[360px]:hyphens-none min-[360px]:wrap-normal;
+}
+
+.hero__text {
+	@apply mb-8 text-xl mobile:text-2xl leading-snug hyphens-auto wrap-break-word mobile:hyphens-none mobile:wrap-normal;
+
+	:where(br) {
+		@apply hidden mobile:block;
+	}
+}
+
+/* Split variant: content left, image right. Overrides the fixed heights and absolute image above. */
+.hero--split {
+	@apply bg-transparent;
+}
+
+/* Only the height: `.home` would otherwise outrank the `hero--bg-*` classes. */
+.hero--split,
+.home .hero--split {
+	@apply h-auto;
+}
+
+.hero--split .hero__inner {
+	@apply grid grid-cols-1 items-center gap-8 py-0 tablet:grid-cols-2 tablet:gap-12;
+}
+
+.hero--split .hero__content {
+	@apply pt-md pb-md mobile:pt-lg mobile:pb-lg;
+}
+
+.hero--split .hero__media,
+.hero--split .hero__image {
+	@apply static z-auto block h-auto w-full object-contain;
+}
+
+.hero--split .hero__title {
+	@apply text-inherit;
+}
+
+.hero--bg-primary {
+	@apply bg-primary;
+}
+
+.hero--bg-secondary {
+	@apply bg-secondary;
+}
+
+.hero--bg-dark {
+	@apply bg-dark;
+}
+
+.hero--bg-light {
+	@apply bg-light;
+}
+
+.hero--text-dark {
+	@apply text-foreground;
+}
+
+.hero--text-light {
+	@apply text-white;
+}

@@ -21,6 +21,8 @@
 	--color-foreground: var(--wp--preset--color--foreground);
 	--color-primary: var(--wp--preset--color--primary);
 	--color-secondary: var(--wp--preset--color--secondary);
+	--color-dark: var(--wp--preset--color--dark);
+	--color-light: var(--wp--preset--color--light);
 	--container-content: var(--wp--style--global--content-size);
 	--container-wide: var(--wp--style--global--wide-size);
 
@@ -64,14 +66,10 @@
 	--container-site: 1920px;
 
 	/*
-	 * Named spacing steps for the shared block spacing control.
-	 * Sizes come from theme.json presets. `none` is an explicit zero so a
-	 * larger viewport can override a smaller one.
+	 * Do not add named `--spacing-*` tokens (xs, sm, md, lg, xl, none, ...).
+	 * Tailwind resolves w-*, min-w-* and max-w-* from `--spacing-*` before
+	 * `--container-*`, so e.g. `--spacing-xl` would turn the built-in
+	 * `max-w-xl` (36rem) into the spacing value. The block spacing control
+	 * uses explicit utilities in custom/utilities.css instead.
 	 */
-	--spacing-none: 0;
-	--spacing-xs: var(--wp--preset--spacing--xs);
-	--spacing-sm: var(--wp--preset--spacing--sm);
-	--spacing-md: var(--wp--preset--spacing--md);
-	--spacing-lg: var(--wp--preset--spacing--lg);
-	--spacing-xl: var(--wp--preset--spacing--xl);
 }

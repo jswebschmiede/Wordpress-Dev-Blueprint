@@ -11,7 +11,8 @@ Technical reference for the asset pipeline, block system, and Node scripts.
 
 **Key ideas:**
 
-- **Dual-path blocks:** Authoritative block _metadata_ is synced into `theme/blocks/` for WordPress; editor code is bundled separately; optional **view** bundles load only when the block is present on the page.
+- **Dual-path blocks:** Authoritative block _metadata_ is synced into `theme/blocks/` for WordPress; editor code is bundled separately; optional **view** bundles load only when the block is present on the page. Starter blocks are `example-block`, `hero`, `columns`, and `column`. Shared editor controls live in `blocks/_shared/`.
+- **Desktop-first spacing:** `SpacingControl` stores preset slugs. Desktop classes have no prefix; tablet and mobile use `max-tablet:` and `max-mobile:`. Sizes are the `theme.json` spacing presets, emitted as `@utility` rules in `tailwind/custom/utilities.css`. Do not add `--spacing-*` tokens to `tailwind/tailwind-theme.css`. `node node_scripts/write-spacing-php.js` rewrites `Spacing.php` from the JS whitelist.
 - **Global `@wordpress/*` in bundles:** Editor and plugin builds use `esbuild-plugin-external-global` so npm imports resolve to `window.wp.*` (and `window.jQuery` where configured) instead of duplicating packages.
 - **Boilerplate placeholders:** Run `pnpm run rename:theme`, then `pnpm run rename:plugin`, before starting a real project (workflow in [`../README.md`](../README.md#rename-theme-placeholders)). `rename:theme` reads `THEME_SLUG` and `THEME_COMPANY` from `.env`.
 
@@ -174,7 +175,8 @@ Set `THEME_SLUG` (or its alias `THEME_SYNC_SLUG`) and `THEME_COMPANY` in `.env`.
 | `BoilerplateTheme` | `Swsoltau` (full namespace: `SmartMedia24\Swsoltau`) |
 | `Boilerplate Theme` | `Sw Soltau` |
 | `BOILERPLATE_THEME_` | `SWSOLTAU_` |
-| `boilerplate/example-block` | `sw-soltau/example-block` |
+| `wp-block-boilerplate-` | `wp-block-sw-soltau-` |
+| `boilerplate/` | `sw-soltau/` (block names such as `boilerplate/hero` and `boilerplate/text-color`) |
 
 **Edge cases:**
 

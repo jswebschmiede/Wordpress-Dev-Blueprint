@@ -13,12 +13,12 @@ export const SPACING_SIDES = ['top', 'right', 'bottom', 'left'];
  * @type {Array<{ slug: string, label: string }>}
  */
 export const SPACING_PRESETS = [
-    { slug: 'none', label: __('None', 'boilerplate-theme') },
-    { slug: 'xs', label: __('Extra Small', 'boilerplate-theme') },
-    { slug: 'sm', label: __('Small', 'boilerplate-theme') },
-    { slug: 'md', label: __('Medium', 'boilerplate-theme') },
-    { slug: 'lg', label: __('Large', 'boilerplate-theme') },
-    { slug: 'xl', label: __('Extra Large', 'boilerplate-theme') },
+	{ slug: 'none', label: __('None', 'boilerplate-theme') },
+	{ slug: 'xs', label: __('Extra Small', 'boilerplate-theme') },
+	{ slug: 'sm', label: __('Small', 'boilerplate-theme') },
+	{ slug: 'md', label: __('Medium', 'boilerplate-theme') },
+	{ slug: 'lg', label: __('Large', 'boilerplate-theme') },
+	{ slug: 'xl', label: __('Extra Large', 'boilerplate-theme') },
 ];
 
 /**
@@ -28,9 +28,9 @@ export const SPACING_PRESETS = [
  * @returns {number} Preset index.
  */
 export function getPresetIndex(slug) {
-    const index = SPACING_PRESETS.findIndex((preset) => preset.slug === slug);
+	const index = SPACING_PRESETS.findIndex((preset) => preset.slug === slug);
 
-    return index === -1 ? 0 : index;
+	return index === -1 ? 0 : index;
 }
 
 /**
@@ -40,7 +40,7 @@ export function getPresetIndex(slug) {
  * @returns {string} Preset slug.
  */
 export function getPresetSlug(index) {
-    return SPACING_PRESETS[index]?.slug ?? SPACING_PRESETS[0].slug;
+	return SPACING_PRESETS[index]?.slug ?? SPACING_PRESETS[0].slug;
 }
 
 /**
@@ -50,12 +50,12 @@ export function getPresetSlug(index) {
  * @returns {string} Translated side label.
  */
 export function getSideLabel(side) {
-    const labels = {
-        top: __('Top', 'boilerplate-theme'),
-        right: __('Right', 'boilerplate-theme'),
-        bottom: __('Bottom', 'boilerplate-theme'),
-        left: __('Left', 'boilerplate-theme'),
-    };
+	const labels = {
+		top: __('Top', 'boilerplate-theme'),
+		right: __('Right', 'boilerplate-theme'),
+		bottom: __('Bottom', 'boilerplate-theme'),
+		left: __('Left', 'boilerplate-theme'),
+	};
 
-    return labels[side] ?? side;
+	return labels[side] ?? side;
 }

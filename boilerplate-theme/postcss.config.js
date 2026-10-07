@@ -1,4 +1,15 @@
 export default () => {
+    /*
+     * Elements Tailwind Typography leaves alone. Theme block wrappers are excluded themselves
+     * (not their descendants), so the `.prose > :first-child` / `:last-child` margin reset
+     * does not override the block margins from tailwind/custom/components.
+     */
+    const whereNot = ["[class~='not-prose']", "[class~='not-prose'] *", "[class*='wp-block-boilerplate-']"];
+
+    if ('editor' === process.env._TW_TARGET) {
+        whereNot.push("[class~='acf-block-body']:not([class~='acf-block-preview']) *");
+    }
+
     const plugins = {
         'postcss-import-ext-glob': {},
         '@tailwindcss/postcss': {
@@ -8,10 +19,7 @@ export default () => {
         'postcss-advanced-variables': {
             variables: {
                 target: process.env._TW_TARGET || 'frontend',
-                'where-not':
-                    'editor' === process.env._TW_TARGET
-                        ? "[class~='not-prose'], [class~='not-prose'] *, [class~='acf-block-body']:not([class~='acf-block-preview']) *"
-                        : "[class~='not-prose'], [class~='not-prose'] *",
+                'where-not': whereNot.join(', '),
             },
         },
         'postcss-nesting': {},

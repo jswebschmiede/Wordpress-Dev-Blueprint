@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "boilerplate/columns",
+    "version": "1.0.0",
+    "title": "Spalten",
+    "category": "boilerplate-theme",
+    "icon": "columns",
+    "description": "Bis zu vier Spalten pro Zeile in bis zu sechs Zeilen mit optionaler Überschrift, Spalten- und Zeilenabstand pro Gerät sowie Vorlagen für Hintergrund- und Textfarbe.",
+    "keywords": ["columns", "spalten", "grid", "layout"],
+    "textdomain": "boilerplate-theme",
+    "supports": {
+        "html": false,
+        "anchor": true,
+        "className": true,
+        "align": ["wide", "full"]
+    },
+    "attributes": {
+        "heading": {
+            "type": "string",
+            "default": ""
+        },
+        "columns": {
+            "type": "number",
+            "default": 2
+        },
+        "rows": {
+            "type": "number",
+            "default": 1
+        },
+        "layout": {
+            "type": "string",
+            "default": ""
+        },
+        "gap": {
+            "type": "number"
+        },
+        "gapTablet": {
+            "type": "number"
+        },
+        "gapDesktop": {
+            "type": "number"
+        },
+        "rowGap": {
+            "type": "number"
+        },
+        "rowGapTablet": {
+            "type": "number"
+        },
+        "rowGapDesktop": {
+            "type": "number"
+        },
+        "verticalCenter": {
+            "type": "boolean",
+            "default": false
+        },
+        "background": {
+            "type": "string",
+            "enum": ["none", "primary", "secondary", "dark", "light"],
+            "default": "none"
+        },
+        "textColor": {
+            "type": "string",
+            "enum": ["auto", "dark", "light"],
+            "default": "auto"
+        },
+        "spacing": {
+            "type": "object",
+            "default": {}
+        }
+    },
+    "editorScript": "boilerplate-theme-blocks-editor"
+}

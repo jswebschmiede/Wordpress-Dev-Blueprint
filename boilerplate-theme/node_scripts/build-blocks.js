@@ -52,7 +52,7 @@ const buildOptions = {
 	target: 'esnext',
 	minify: isProduction,
 	sourcemap: !isProduction,
-	loader: { '.js': 'jsx' },
+	loader: { '.js': 'jsx', '.css': 'text' },
 	plugins: [externalGlobalPlugin(wpGlobals)],
 	logLevel: 'info',
 };

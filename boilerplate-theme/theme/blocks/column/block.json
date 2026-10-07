@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "boilerplate/column",
+    "version": "1.0.0",
+    "title": "Spalte",
+    "category": "boilerplate-theme",
+    "parent": ["boilerplate/columns"],
+    "icon": "align-center",
+    "description": "Einzelne Spalte innerhalb des Spalten-Blocks.",
+    "textdomain": "boilerplate-theme",
+    "supports": {
+        "html": false,
+        "reusable": false,
+        "className": true
+    },
+    "editorScript": "boilerplate-theme-blocks-editor"
+}

@@ -1,0 +1,7 @@
+.scroll-top.show {
+	@apply visible! translate-y-0! opacity-100!;
+}
+
+.scroll-top:focus-visible {
+	@apply outline-2 outline-offset-2 outline-primary;
+}

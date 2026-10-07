@@ -50,7 +50,7 @@ Required fields:
 
 - `"$schema": "https://schemas.wp.org/trunk/block.json"`
 - `"apiVersion": 3` (WordPress 6.9+)
-- `"name": "boilerplate-theme/<slug>"`
+- `"name": "boilerplate/<slug>"`
 - `"category": "boilerplate-theme"`
 - `"textdomain": "boilerplate-theme"`
 - `"editorScript": "boilerplate-theme-blocks-editor"` (shared handle; do not use file paths)
@@ -107,7 +107,7 @@ If the block uses a package not yet in the bundle, add it to `wpGlobals` in `nod
 Reusable Inspector controls belong in `blocks/_shared/<name>/`, not inside a single block.
 
 - Export the public control, hook, or class helper from `blocks/_shared/index.js`
-- Import it from a block with `import { PageTreeSelectControl, SpacingControl, getSpacingClassName, EditorDeviceSwitcher, useEditorDevice } from '../_shared/index.js';`
+- Import it from a block with `import { PageTreeSelectControl, ImageControl, PresetColorControl, getColorValue, SpacingControl, getSpacingClassName, EditorDeviceSwitcher, useEditorDevice, resolveDeviceValue } from '../_shared/index.js';`
 - Keep other helpers in the control folder. Do not re-export them from the barrel
 - `_shared` is editor-only. Do not import it from `view.js`
 - Directories starting with `_` are ignored by `copy-blocks` and `build-block-views`
@@ -118,11 +118,13 @@ Reusable Inspector controls belong in `blocks/_shared/<name>/`, not inside a sin
 
 `SpacingControl` uses that switcher. It stores preset slugs only: `none`, `xs`, `sm`, `md`, `lg`, `xl`. No free pixel values. `none` is an explicit `0` so a larger viewport can override a smaller one. Reset clears only the active viewport, which then inherits the smaller one.
 
-Spacing classes are mobile-first and use the `mobile` and `tablet` breakpoint tokens from `tailwind/tailwind-theme.css`. Those literals must match `settings.viewport` in `theme.json`. A CSS variable cannot stand in for them, because media queries do not read `var()`.
+Spacing classes are desktop-first. Breakpoint literals in `tailwind/tailwind-theme.css` (`--breakpoint-mobile`, `--breakpoint-tablet`) must match `settings.viewport` in `theme.json`. A CSS variable cannot stand in for them, because media queries do not read `var()`.
 
-- mobile: no prefix
-- tablet: `mobile:` (`settings.viewport.mobile`, default `480px`)
-- desktop: `tablet:` (`settings.viewport.tablet`, default `782px`)
+- desktop: no prefix
+- tablet: `max-tablet:` (below `settings.viewport.tablet`, default `782px`)
+- mobile: `max-mobile:` (below `settings.viewport.mobile`, default `480px`)
+
+An unset viewport inherits the next larger one. A class is printed only when that viewport differs from the larger one. `resolveDeviceValue()` and `Spacing::resolve_device_value()` stay in sync.
 
 Copy-paste samples are in [reference.md](reference.md).
 
@@ -134,13 +136,32 @@ Copy-paste samples are in [reference.md](reference.md).
 
 ### View
 
-Twig keeps `{{ wrapper_attributes }}`. Do not import `_shared` and do not add a second spacing element. Classes such as `pt-sm` and `mobile:pt-md` are already on the wrapper. `_shared` is editor-only.
+Twig keeps `{{ wrapper_attributes }}`. Do not import `_shared` and do not add a second spacing element. Classes such as `pt-sm` and `max-tablet:pt-md` are already on the wrapper. `_shared` is editor-only.
 
-New preset slugs must be added as complete class strings in `blocks/_shared/spacing/spacing-class-names.js` and in `theme/src/Blocks/Spacing.php`, plus the Tailwind spacing token. Tailwind does not see concatenated class names.
+New preset slugs must be added as complete class strings in `blocks/_shared/spacing/spacing-class-names.js` and in `theme/src/Blocks/Spacing.php` (or regenerate with `node node_scripts/write-spacing-php.js`), plus one `@utility` per side in `tailwind/custom/utilities.css` and the `theme.json` spacing preset. Tailwind does not see concatenated class names.
+
+Do not add named `--spacing-*` tokens to `tailwind/tailwind-theme.css`. Tailwind resolves `w-*`, `min-w-*` and `max-w-*` from `--spacing-*` before `--container-*`, so a token such as `--spacing-xl` would turn the built-in `max-w-xl` (36rem) into the spacing value.
 
 ### Device switcher only
 
 Import `useEditorDevice` and `EditorDeviceSwitcher`. Store that block's own values under `deviceKey` (`desktop`, `tablet`, `mobile`). The switcher does not emit CSS. The block's PHP or Twig outputs its own responsive markup.
+
+
+## Editor hover outline
+
+Content edited directly in the canvas gets a dotted outline on hover, so editors see which parts are editable. The styles live in `tailwind/tailwind-editor.css` (editor stylesheet only). Do not copy them into a block stylesheet.
+
+| Class                     | Set on                                       | Effect                                                    |
+| ------------------------- | -------------------------------------------- | --------------------------------------------------------- |
+| `editor-outline-field`    | `RichText` / `PlainText` element             | Outline around the field                                  |
+| `editor-outline-children` | Container block wrapper (`useBlockProps`)    | Outline around each inner block (drawn with `::after`)    |
+| `editor-outline-skip`     | Structural inner block wrapper (e.g. column) | No outline for this block; its own children still get one |
+
+- Add the classes in `edit.js` only. PHP and Twig must not output them.
+- Focused elements are excluded; they keep the editor's selection outline.
+- New blocks with inline fields or Inner Blocks use these classes instead of their own hover rules.
+
+Samples are in [reference.md](reference.md).
 
 ## Viewport visibility
 
