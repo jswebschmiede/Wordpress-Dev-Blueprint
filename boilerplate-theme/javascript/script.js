@@ -20,10 +20,13 @@
  */
 
 
+import './components/anim-menu-btn';
+import './components/flexi-header';
+import BlockAnimationHandler from './components/block-animation-handler';
 import ProgressToTopV2 from './components/progress-to-top';
 
 document.addEventListener('DOMContentLoaded', () => {
-    init();
+	init();
 });
 
 /**
@@ -31,10 +34,34 @@ document.addEventListener('DOMContentLoaded', () => {
  * @returns {void}
  */
 function init() {
-    to_top_button();
-    preloader();
+	to_top_button();
+	preloader();
+	block_animations();
 
-    console.log('%cWe ❤️ WordPress!', 'color: #059669; font-weight: bold;');
+	console.log('%cWe ❤️ WordPress!', 'color: #059669; font-weight: bold;');
+}
+
+/**
+ * Block animations functionality
+ *
+ * @param {Object} [options] - Block animation handler options
+ * @param {boolean} [options.disableOnMobile] - Disable animations on mobile viewports
+ * @param {number} [options.mobileBreakpoint] - Viewport width threshold for mobile
+ * @param {boolean} [options.forceEnable] - Force animations even when mobile is disabled
+ * @returns {void}
+ */
+function block_animations(options = {}) {
+	const animatedBlocks = document.querySelectorAll('[data-ei-animation]');
+	if (animatedBlocks.length > 0) {
+		const defaultOptions = {
+			disableOnMobile: true,
+			mobileBreakpoint: 640,
+		};
+		new BlockAnimationHandler({
+			...defaultOptions,
+			...options,
+		});
+	}
 }
 
 /**
@@ -42,10 +69,10 @@ function init() {
  * @returns {void}
  */
 function to_top_button() {
-    const progressToTop = document.querySelector('#scroll-top');
-    if (progressToTop) {
-        new ProgressToTopV2(progressToTop);
-    }
+	const progressToTop = document.querySelector('#scroll-top');
+	if (progressToTop) {
+		new ProgressToTopV2(progressToTop);
+	}
 }
 
 /**
@@ -54,22 +81,22 @@ function to_top_button() {
  * @returns {void}
  */
 function preloader(onComplete) {
-    const loaderElement = document.getElementById('loader');
+	const loaderElement = document.getElementById('loader');
 
-    // If no preloader exists, run callback immediately
-    if (!loaderElement) {
-        onComplete?.();
-        return;
-    }
+	// If no preloader exists, run callback immediately
+	if (!loaderElement) {
+		onComplete?.();
+		return;
+	}
 
-    setTimeout(() => {
-        loaderElement.classList.add('done');
+	setTimeout(() => {
+		loaderElement.classList.add('done');
 
-        // Remove preloader after fade-out animation
-        setTimeout(() => {
-            loaderElement.remove();
-            onComplete?.();
-        }, 300);
+		// Remove preloader after fade-out animation
+		setTimeout(() => {
+			loaderElement.remove();
+			onComplete?.();
+		}, 300);
 
-    }, 1500);
+	}, 1500);
 }
