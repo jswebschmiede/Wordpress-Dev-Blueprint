@@ -116,6 +116,9 @@ class ThemeManager {
 			);
 		}
 
+		$theme_hardening = new ThemeHardening();
+		$theme_hardening->init();
+
 		$theme_login_security = new ThemeLoginSecurity();
 		$theme_login_security->init();
 	}
